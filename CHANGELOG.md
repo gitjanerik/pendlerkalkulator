@@ -1,3 +1,9 @@
+## 2026-10-02 — v0.5.0: MCP-server
+
+`npm run mcp` starter en MCP-server (stdio) som er en tynn pakke rundt den rene logikken i `src/lib`: `beregn_billetter` (billigste billettkjede med alternativer og årskort-vurdering), `hent_forslag` (Vys priser), `helligdager` og `les_ics`. Verktøyene ligger i `mcp/verktoy.js` og er testet uten transport; SDK og zod er dev-avhengigheter og havner ikke i nettleserbunten.
+
+---
+
 ## 2026-10-02 — v0.4.0: Ferie fra kalenderfil og strekningsforslag
 
 Ferie kan importeres fra en .ics-fil (Outlook, Google, Apple): heldagshendelser er forhåndsvalgt, tidsfestede kan krysses av, og overlappende dager slås sammen. Hver strekning har en «Fyll inn fra forslag»-liste med Vys voksenpriser 2. oktober 2026 for Gulskogen, Drammen, Brakerøya, Lier og Asker (til Oslo S); enkeltpris er bare med der den er lest av.
