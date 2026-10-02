@@ -1,3 +1,9 @@
+## 2026-10-02 — v0.11.3: Infotekst om ny billett som sammenleggbar blokk
+
+Infoteksten om når den nye billetten starter ligger nå i en lukket details-blokk, og nevner at valgte arbeidsdager tas med i beregningen.
+
+---
+
 ## 2026-10-02 — v0.11.2: Fjernet hjemmekontor-teksten
 
 Setningen «Resten regnes som hjemmekontor.» under «Dager på jobb i uka» er fjernet.
