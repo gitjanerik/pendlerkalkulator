@@ -1,3 +1,9 @@
+## 2026-10-02 — v0.15.2: Veiviserknappene på egen rad
+
+Tilbake og Neste ligger igjen på en rad midtstilt over de ni prikkene i veiviseren.
+
+---
+
 ## 2026-10-02 — v0.15.1: Smale piler på kanten i veiviseren
 
 Tilbake- og Neste-pilene i veiviseren er smalere og ligger midt på høyden, sentrert på kortets kantlinje. Prikkene står alene nederst. Hjelpeteksten under «Foreslå fra Entur» er fjernet i steg 3.

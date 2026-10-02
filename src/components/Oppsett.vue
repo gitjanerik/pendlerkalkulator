@@ -74,7 +74,7 @@ const taster = (e) => {
 </script>
 
 <template>
-  <section class="kort oppsett relative flex min-h-[calc(100dvh-6.5rem)] flex-col" aria-labelledby="op-tittel" @keydown="taster">
+  <section class="kort oppsett flex min-h-[calc(100dvh-6.5rem)] flex-col" aria-labelledby="op-tittel" @keydown="taster">
     <h2 id="op-tittel" class="seksjonstittel">Steg {{ i + 1 }} av {{ STEG.length }}</h2>
 
     <div class="mt-3 flex-1 overflow-hidden" style="touch-action: pan-y" @pointerdown="ned" @pointerup="opp" @pointercancel="start = null">
@@ -174,35 +174,24 @@ const taster = (e) => {
       </Transition>
     </div>
 
+    <div class="mt-3 flex justify-center gap-3">
+      <button type="button" class="knapp ikon" aria-label="Tilbake" :disabled="i === 0" @click="gaa(-1)">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
+      </button>
+      <button type="button" class="knapp knapp-primaer ikon" aria-label="Neste" :disabled="i === STEG.length - 1" @click="gaa(1)">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg>
+      </button>
+    </div>
     <ol class="mt-3 flex items-center justify-center gap-2" aria-hidden="true">
       <li v-for="(s, n) in STEG" :key="s" class="h-2 rounded-full transition-all" :class="n === i ? 'w-5 bg-[var(--color-accent)]' : 'w-2 bg-[var(--color-line)]'" />
     </ol>
-    <button type="button" class="knapp pil pil-venstre" aria-label="Tilbake" :disabled="i === 0" @click="gaa(-1)">
-      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
-    </button>
-    <button type="button" class="knapp knapp-primaer pil pil-hoyre" aria-label="Neste" :disabled="i === STEG.length - 1" @click="gaa(1)">
-      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg>
-    </button>
   </section>
 </template>
 
 <style scoped>
-/* Smale piler midt på høyden, sentrert på kortets venstre og høyre kantlinje. */
-.pil {
-  position: absolute;
-  top: 50%;
-  width: 2rem;
-  min-height: 4rem;
+.ikon {
+  width: 3.5rem;
   padding: 0;
-  border-radius: 0.75rem;
-}
-.pil-venstre {
-  left: 0;
-  transform: translate(-50%, -50%);
-}
-.pil-hoyre {
-  right: 0;
-  transform: translate(50%, -50%);
 }
 .steg-tittel {
   font-size: 1.5rem;
