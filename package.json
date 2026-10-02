@@ -1,22 +1,25 @@
 {
   "name": "pendlerkalkulator",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "mcp": "node mcp/server.js"
   },
   "dependencies": {
     "vue": "^3.5.43"
   },
   "devDependencies": {
+    "@modelcontextprotocol/sdk": "^1.31.0",
     "@tailwindcss/vite": "^4.3.3",
     "@vitejs/plugin-vue": "^6.0.9",
     "tailwindcss": "^4.3.3",
     "vite": "^8.3.2",
-    "vitest": "^5.0.3"
+    "vitest": "^5.0.3",
+    "zod": "^4.6.5"
   }
 }
