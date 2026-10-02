@@ -1,11 +1,12 @@
 <script setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useModell } from './composables/useModell.js'
 import { useTema } from './composables/useTema.js'
 import { MONSTER } from './lib/dagmonster.js'
 import MenyKnapp from './components/MenyKnapp.vue'
 import AppMeny from './components/AppMeny.vue'
 import StasjonsValg from './components/StasjonsValg.vue'
+import AvgangerKort from './components/AvgangerKort.vue'
 import PeriodeValg from './components/PeriodeValg.vue'
 import DagerPerUke from './components/DagerPerUke.vue'
 import Hovedtall from './components/Hovedtall.vue'
@@ -17,6 +18,7 @@ import { kr } from './lib/format.js'
 useTema()
 const { modell, utfall, monster, nullstill } = useModell()
 const menyApen = ref(false)
+const stasjon = computed(() => modell.strekninger[0]?.navn.split('–')[0] ?? '')
 const settDager = (n) => (modell.jobbUkedager = [...MONSTER[n]])
 </script>
 
@@ -30,6 +32,7 @@ const settDager = (n) => (modell.jobbUkedager = [...MONSTER[n]])
 
   <main class="mx-auto flex max-w-xl flex-col gap-4 px-4 py-4 pb-12">
     <StasjonsValg v-model="modell" />
+    <AvgangerKort :stasjon="stasjon" />
     <PeriodeValg v-model="modell" />
     <DagerPerUke v-model="modell" />
 
