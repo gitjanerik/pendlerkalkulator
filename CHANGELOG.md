@@ -1,3 +1,9 @@
+## 2026-10-02 — v0.15.5: Infotekst øverst i Innstillinger
+
+Innstillinger åpner med en kort tekst som forklarer hva appen gjør.
+
+---
+
 ## 2026-10-02 — v0.15.4: Infoboksen som snakkeboble
 
 Tipset om Innstillinger vises nå som en grønn snakkeboble med en liten trekant som peker opp på tannhjulet, med kortere tekst tilpasset mobil og en myk skygge under.
