@@ -9,6 +9,7 @@ import StasjonsValg from './StasjonsValg.vue'
 import Beloep from './Beloep.vue'
 import PrefBryter from './PrefBryter.vue'
 import FerieListe from './FerieListe.vue'
+import FritidListe from './FritidListe.vue'
 import EksisterendeBillett from './EksisterendeBillett.vue'
 
 const m = defineModel('modell', { type: Object })
@@ -60,6 +61,11 @@ const klikkBakgrunn = (e) => {
         <PrefBryter v-model="m.innstillinger.jobberPaaskeMandagOnsdag" tittel="Jobber i påske mandag–onsdag" tekst="Skjærtorsdag til 2. påskedag er alltid fri." />
         <PrefBryter v-model="m.innstillinger.jobberRomjul" tittel="Jobber i romjul" tekst="27.–31. desember. Julaften er alltid fri." />
         <div class="mt-3"><FerieListe v-model="m" /></div>
+      </section>
+
+      <section aria-labelledby="m-fritid" class="flex flex-col">
+        <h3 id="m-fritid" class="seksjonstittel mb-1">Fritidsreiser</h3>
+        <FritidListe v-model="m" />
       </section>
 
       <StasjonsValg v-model="m" />

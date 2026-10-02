@@ -16,6 +16,9 @@ defineProps({ utfall: Object })
       {{ flertall(utfall.resultat.billetter.length, 'periodebillett', 'periodebilletter') }}
       <template v-if="utfall.resultat.udekteDager.length"> + {{ flertall(utfall.resultat.udekteDager.length, 'dag', 'dager') }} med enkeltbillett</template>
     </p>
+    <p v-if="utfall.fritid" class="mt-2 text-sm text-[var(--color-ink-2)]">
+      Med {{ flertall(utfall.fritid.reiser.length, 'fritidsreise', 'fritidsreiser') }} til Oslo lufthavn ({{ kr(utfall.fritid.sum) }} i tillegg).
+    </p>
     <p v-if="utfall.resultat.reis" class="mt-2 text-sm text-[var(--color-ink-2)]">
       Ruter Reis sparer {{ kr(utfall.resultat.reis.besparelse) }} på {{ flertall(utfall.resultat.reis.enkeltreiser, 'enkeltreise', 'enkeltreiser') }} (opptil {{ utfall.resultat.reis.maksProsent }} %).
     </p>

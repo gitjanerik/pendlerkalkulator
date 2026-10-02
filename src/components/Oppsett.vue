@@ -7,6 +7,7 @@ import Beloep from './Beloep.vue'
 import PrefBryter from './PrefBryter.vue'
 import EksisterendeBillett from './EksisterendeBillett.vue'
 import FerieListe from './FerieListe.vue'
+import FritidListe from './FritidListe.vue'
 import { usePwaInstall } from '../composables/usePwaInstall.js'
 
 const m = defineModel({ type: Object })
@@ -21,7 +22,7 @@ const settIGang = async () => {
   emit('klar')
 }
 
-const STEG = ['stasjon', 'uke', 'tider', 'billett', 'fri', 'ferie', 'priser', 'klar']
+const STEG = ['stasjon', 'uke', 'tider', 'billett', 'fri', 'ferie', 'fritid', 'priser', 'klar']
 const i = ref(0)
 const retning = ref('frem')
 const strekning = computed(() => m.value.strekninger[0])
@@ -147,6 +148,12 @@ const taster = (e) => {
             <h3 class="steg-tittel">Ferie og fri</h3>
             <p class="steg-tekst">Valgfritt. Legg inn eller importer fra kalenderen, så stemmer beregningen fra start.</p>
             <div class="mt-4"><FerieListe v-model="m" /></div>
+          </template>
+
+          <template v-else-if="STEG[i] === 'fritid'">
+            <h3 class="steg-tittel">Fritidsreiser</h3>
+            <p class="steg-tekst">Valgfritt. Skal du til Oslo lufthavn en bestemt dag? Da regner vi med tilleggsbilletten, og at periodebilletten dekker resten.</p>
+            <div class="mt-4"><FritidListe v-model="m" /></div>
           </template>
 
           <template v-else-if="STEG[i] === 'priser'">

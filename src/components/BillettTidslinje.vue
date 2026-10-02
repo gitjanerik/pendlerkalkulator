@@ -11,15 +11,18 @@ const MND = ['jan', 'feb', 'mar', 'apr', 'mai', 'jun', 'jul', 'aug', 'sep', 'okt
 const SKYGGE = { 7: 45, 30: 70 }
 const skygge = (d) => SKYGGE[d] ?? 100
 
+const fritid = computed(() => p.utfall.fritid?.reiser ?? [])
 const grunnlag = computed(() => {
   const r = p.utfall.resultat
   const start = Math.min(
     ...r.billetter.map((b) => dagNr(b.aktivering.slice(0, 10))),
     ...r.udekteDager.map((d) => dagNr(d.dato)),
+    ...fritid.value.map((f) => dagNr(f.dato)),
   )
   const slutt = Math.max(
     ...r.billetter.map((b) => dagNr(b.sisteTur.dato)),
     ...r.udekteDager.map((d) => dagNr(d.dato)),
+    ...fritid.value.map((f) => dagNr(f.dato)),
   )
   return { start, spenn: Math.max(slutt - start + 1, 1) }
 })
@@ -35,6 +38,7 @@ const segmenter = computed(() =>
 const enkelt = computed(() =>
   p.utfall.resultat.udekteDager.map((d) => ({ ...d, left: pct(dagNr(d.dato)) })),
 )
+const fritidMerker = computed(() => fritid.value.map((f) => ({ ...f, left: pct(dagNr(f.dato)) })))
 const maaneder = computed(() => {
   const { start, spenn } = grunnlag.value
   const ut = []
@@ -53,7 +57,7 @@ const velg = (i) => (valgt.value = valgt.value === i ? null : i)
 <template>
   <section class="kort" aria-labelledby="bt-tittel">
     <h2 id="bt-tittel" class="seksjonstittel">Billettene dine</h2>
-    <div class="relative mt-4 h-14" role="group" aria-label="Billetter langs tidsaksen">
+    <div class="relative mt-4 h-[4.25rem]" role="group" aria-label="Billetter langs tidsaksen">
       <div class="absolute inset-x-0 top-2 h-px bg-[var(--color-line)]"></div>
       <button
         v-for="s in segmenter"
@@ -75,6 +79,14 @@ const velg = (i) => (valgt.value = valgt.value === i ? null : i)
         aria-hidden="true"
       ></span>
       <span
+        v-for="f in fritidMerker"
+        :key="f.tid + f.retning"
+        class="absolute top-[2.25rem] h-2.5 w-2.5 -translate-x-1/2 rotate-45 bg-[var(--color-ink)]"
+        :style="{ left: Math.min(Math.max(f.left, 1), 99) + '%' }"
+        :title="`${norskDato(f.dato)}: fritidsreise til Oslo lufthavn`"
+        aria-hidden="true"
+      ></span>
+      <span
         v-for="mnd in maaneder"
         :key="mnd.left"
         class="absolute bottom-0 -translate-x-1/2 text-xs text-[var(--color-ink-3)]"
@@ -85,6 +97,7 @@ const velg = (i) => (valgt.value = valgt.value === i ? null : i)
     </div>
     <p class="mt-2 flex flex-wrap gap-x-4 text-xs text-[var(--color-ink-2)]">
       <span v-for="d in brukte" :key="d"><i class="mr-1 inline-block h-2 w-3 rounded-sm bg-[var(--color-accent)]" :style="{ opacity: skygge(d) / 100 }"></i>{{ dagerTekst(d) }}</span>
+      <span v-if="fritid.length"><i class="mr-1 inline-block h-2 w-2 rotate-45 bg-[var(--color-ink)]"></i>fritidsreise</span>
       <span v-if="enkelt.length"><i class="mr-1 inline-block h-2 w-0.5 bg-[var(--color-warn)]"></i>enkeltbillett</span>
     </p>
 
