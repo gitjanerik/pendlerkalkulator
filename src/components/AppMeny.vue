@@ -10,6 +10,7 @@ import Beloep from './Beloep.vue'
 import PrefBryter from './PrefBryter.vue'
 import FerieListe from './FerieListe.vue'
 import FritidListe from './FritidListe.vue'
+import ForslagKnapp from './ForslagKnapp.vue'
 import EksisterendeBillett from './EksisterendeBillett.vue'
 
 const m = defineModel('modell', { type: Object })
@@ -87,6 +88,7 @@ const klikkBakgrunn = (e) => {
             <input id="ettermiddag" v-model="m.ettermiddag" class="felt" type="time" />
           </div>
         </div>
+        <ForslagKnapp v-model="m" :stasjon="stasjon" />
         <p class="text-sm text-[var(--color-ink-3)]">Billetten gjelder like lenge fra klokkeslettet du aktiverer den.</p>
       </section>
 

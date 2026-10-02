@@ -7,6 +7,7 @@ import PrefBryter from './PrefBryter.vue'
 import EksisterendeBillett from './EksisterendeBillett.vue'
 import FerieListe from './FerieListe.vue'
 import FritidListe from './FritidListe.vue'
+import ForslagKnapp from './ForslagKnapp.vue'
 import { usePwaInstall } from '../composables/usePwaInstall.js'
 
 const m = defineModel({ type: Object })
@@ -107,6 +108,7 @@ const taster = (e) => {
                 <input id="op-ettermiddag" v-model="m.ettermiddag" class="felt" type="time" />
               </div>
             </div>
+            <div class="mt-3"><ForslagKnapp v-model="m" :stasjon="stasjon" /></div>
           </template>
 
           <template v-else-if="STEG[i] === 'billett'">

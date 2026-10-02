@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { finnStasjon, hentAvganger, klokke, tolkAvganger, velgStasjon } from './entur.js'
+import { finnStasjon, foreslaaAvganger, hentAvganger, klokke, nesteArbeidsdag, osloTid, tolkAvganger, velgForslag, velgStasjon } from './entur.js'
 
 const svar = (data, ok = true, status = 200) => vi.fn().mockResolvedValue({ ok, status, json: async () => data })
 
@@ -59,5 +59,47 @@ describe('Entur', () => {
     expect(JSON.parse(init.body).variables).toEqual({ fra: 'A', til: 'B', n: 3 })
     await expect(hentAvganger('A', 'B', { hent: svar({}, false, 503) })).rejects.toThrow('503')
     expect(await finnStasjon('Asker', svar({ features: [] }))).toBeNull()
+  })
+
+  it('neste arbeidsdag hopper over helgen', () => {
+    expect(nesteArbeidsdag('2026-10-02')).toBe('2026-10-05')
+    expect(nesteArbeidsdag('2026-10-04')).toBe('2026-10-05')
+    expect(nesteArbeidsdag('2026-10-05')).toBe('2026-10-06')
+  })
+
+  it('oslotid får sommer- og vintertid', () => {
+    expect(osloTid('2026-10-05', '08:55')).toBe('2026-10-05T08:55:00+02:00')
+    expect(osloTid('2026-12-07', '08:55')).toBe('2026-12-07T08:55:00+01:00')
+  })
+
+  it('velger siste tog som rekker fram, og første tog etter grensen', () => {
+    const a = (start, slutt, innstilt = false) => ({ start, slutt, innstilt })
+    const liste = [
+      a('2026-10-05T07:10:00+02:00', '2026-10-05T07:40:00+02:00'),
+      a('2026-10-05T08:10:00+02:00', '2026-10-05T08:40:00+02:00'),
+      a('2026-10-05T08:30:00+02:00', '2026-10-05T09:05:00+02:00'),
+    ]
+    expect(velgForslag(liste, { ankomst: true, grense: '2026-10-05T08:55:00+02:00' })).toBe('08:10')
+    const hjem = [
+      a('2026-10-05T14:50:00+02:00', '2026-10-05T15:20:00+02:00'),
+      a('2026-10-05T15:05:00+02:00', '2026-10-05T15:35:00+02:00', true),
+      a('2026-10-05T15:11:00+02:00', '2026-10-05T15:41:00+02:00'),
+    ]
+    expect(velgForslag(hjem, { ankomst: false, grense: '2026-10-05T15:00:00+02:00' })).toBe('15:11')
+    expect(velgForslag([], { ankomst: false, grense: '2026-10-05T15:00:00+02:00' })).toBeNull()
+  })
+
+  it('foreslår begge avganger med riktige spørringer', async () => {
+    const t = (start, slutt) => ({ aimedStartTime: start, expectedStartTime: start, expectedEndTime: slutt, legs: [{ mode: 'rail', line: { publicCode: 'L1' } }] })
+    const hent = vi.fn(async (_u, init) => {
+      const { variables } = JSON.parse(init.body)
+      const data = variables.ankomst
+        ? [t('2026-10-05T08:05:00+02:00', '2026-10-05T08:50:00+02:00')]
+        : [t('2026-10-05T15:11:00+02:00', '2026-10-05T16:04:00+02:00')]
+      return { ok: true, json: async () => ({ data: { trip: { tripPatterns: data } } }) }
+    })
+    expect(await foreslaaAvganger('A', 'O', '2026-10-02', { hent })).toEqual({ morgen: '08:05', ettermiddag: '15:11' })
+    const tider = hent.mock.calls.map(([, i]) => JSON.parse(i.body).variables.tid).sort()
+    expect(tider).toEqual(['2026-10-05T08:55:00+02:00', '2026-10-05T15:00:00+02:00'])
   })
 })

@@ -49,3 +49,8 @@ export function sisteSondag(aar, maaned) {
   const iso = isoFraDagNr(sisteDag)
   return isoFraDagNr(sisteDag - ((ukedag(iso) + 1) % 7))
 }
+
+export function idagIso() {
+  const d = new Date()
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
+}

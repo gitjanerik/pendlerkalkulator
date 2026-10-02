@@ -21,7 +21,7 @@ const skrivCache = (c) => {
 }
 
 // Stasjons-id slås opp én gang og huskes, så vi sparer en rundtur per besøk.
-async function stasjonsId(navn, signal) {
+export async function stasjonsId(navn, signal) {
   const cache = lesCache()
   if (cache[navn]) return cache[navn]
   const s = await finnStasjon(navn, fetch, signal)
