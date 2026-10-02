@@ -1,3 +1,9 @@
+## 2026-10-02 — v0.10.0: Kjernetid, reisetid og påske/romjul i veiviseren
+
+Veiviseren har fått to nye steg. «Når må du være på jobb?» spør etter kjernetid (standard 09–15) og kjenner omtrentlig reisetid fra valgt stasjon (Gulskogen ca. 40 min, Drammen ca. 35, Lier ca. 30; Brakerøya og Asker er anslag). Avreise om morgenen regnes ut fra kjernetidens start minus reisetid, rundet ned til 5 minutter, og avreise hjem er kjernetidens slutt; begge kan finjusteres. «Påske og romjul» spør om du jobber i påskeuka mandag–onsdag og i romjul. Veiviseren har nå 8 steg. Logikken ligger i `src/lib/kjernetid.js` med tester.
+
+---
+
 ## 2026-10-02 — v0.9.0: Førstegangsveiviser
 
 Første besøk starter en veiviser med sju steg: fra-stasjon, jobbdager, reisetider, eksisterende periodebillett (med utløpsdato, klokkeslett og type), ferie (registrer eller importer), prissjekk og en stor «Sett i gang»-knapp. Sveip høyre for neste og venstre for tilbake; prikker nederst og «Steg N av 7» i toppen. Resten av siden og menyen er utilgjengelig til veiviseren er ferdig. Innstillinger: én periodevelger (fra og til) i en egen kalender, «Fri og ferie» øverst og «Utseende» nederst, skriftstørrelsen settes når du slipper slideren, og Nullstill spør «Er du sikker?» og sier at ferie og andre registrerte opplysninger fjernes. Enkeltprisene til Oslo S er oppdatert (Gulskogen 156, Drammen 151, Brakerøya 143, Lier 132, Asker 75). Eksisterende periodebillett starter beregningen ved utløp. Teksten om at priser oppdateres jevnlig er bare tekst; det finnes ingen automatisk prishenting.

@@ -7,6 +7,7 @@ import { PRESETS, strekningFraPreset } from './presets.js'
 import { STANDARD_PRISOKNING } from './priser.js'
 import { aarskortAnalyse, sammenlignAlternativer } from './optimerer.js'
 import { sommertidVarsler } from './varsler.js'
+import { STANDARD_KJERNETID, avreiseFraKjernetid } from './kjernetid.js'
 
 const ISO = /^\d{4}-\d{2}-\d{2}$/
 const KLOKKE = /^([01]\d|2[0-3]):[0-5]\d$/
@@ -19,8 +20,10 @@ export function standardModell(idag) {
     fra: idag,
     fraKlokke: '00:00',
     til: tilEtterMaaneder(idag, 3),
-    morgen: '07:00',
-    ettermiddag: '16:00',
+    // Kjernetid og reisetid gir avreise; avreisetidene kan finjusteres for hånd.
+    kjernetid: { ...STANDARD_KJERNETID },
+    reisetid: PRESETS[0].reisetid,
+    ...avreiseFraKjernetid(STANDARD_KJERNETID, PRESETS[0].reisetid),
     retninger: 'begge',
     innstillinger: { ...STANDARD_INNSTILLINGER },
     ferie: [],
