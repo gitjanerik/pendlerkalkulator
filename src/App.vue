@@ -12,6 +12,7 @@ import DagerPerUke from "./components/DagerPerUke.vue";
 import Hovedtall from "./components/Hovedtall.vue";
 import SammenlignGraf from "./components/SammenlignGraf.vue";
 import BillettTidslinje from "./components/BillettTidslinje.vue";
+import FritidKort from "./components/FritidKort.vue";
 import MonsterGraf from "./components/MonsterGraf.vue";
 import { kr, norskTidspunkt } from "./lib/format.js";
 
@@ -58,6 +59,7 @@ const settDager = (n) => (modell.jobbUkedager = [...MONSTER[n]]);
         <Hovedtall :utfall="utfall" />
         <SammenlignGraf :utfall="utfall" />
         <BillettTidslinje :utfall="utfall" />
+        <FritidKort :utfall="utfall" :stasjon="stasjon" />
         <MonsterGraf
           :monster="monster"
           :antall="modell.jobbUkedager.length"

@@ -7,6 +7,7 @@ import { PRESETS, strekningFraPreset } from './presets.js'
 import { STANDARD_PRISOKNING } from './priser.js'
 import { aarskortAnalyse, sammenlignAlternativer } from './optimerer.js'
 import { sommertidVarsler } from './varsler.js'
+import { OSL_TILLEGG, byggFritidsturer } from './fritid.js'
 import { STANDARD_KJERNETID, avreiseFraKjernetid } from './kjernetid.js'
 
 const ISO = /^\d{4}-\d{2}-\d{2}$/
@@ -28,6 +29,8 @@ export function standardModell(idag) {
     retninger: 'begge',
     innstillinger: { ...STANDARD_INNSTILLINGER },
     ferie: [],
+    // Fritidsreiser til Oslo lufthavn: [{ fra: dato ned, til: dato hjem }]
+    fritidsreiser: [],
     jobbUkedager: [...MONSTER[5]],
     bilUkedager: [0, 1, 2, 3, 4],
     prisokning: { ...STANDARD_PRISOKNING },
@@ -90,13 +93,19 @@ export function beregn(modell) {
     eks?.paa && ISO.test(eks.til ?? '') && KLOKKE.test(eks.klokke ?? '') ? tidspunkt(eks.til, eks.klokke) : null
   const bilUkedager = new Set(modell.bilUkedager)
   const bilDager = new Set(dager.filter((d) => bilUkedager.has(ukedag(d.dato))).map((d) => d.dato))
-  const turer = byggTurer(dager, {
+  const fraTidspunkt = Math.max(tidspunkt(fra, fraKlokke), eksUtloep ?? -Infinity)
+  const jobbTurer = byggTurer(dager, {
     morgen: modell.morgen,
     ettermiddag: modell.ettermiddag,
     retninger: modell.retninger,
-    fraTidspunkt: Math.max(tidspunkt(fra, fraKlokke), eksUtloep ?? -Infinity),
+    fraTidspunkt,
     bilDager,
   })
+  const fritidsturer = byggFritidsturer(
+    (modell.fritidsreiser ?? []).filter((r) => ISO.test(r.fra) && ISO.test(r.til) && r.til >= r.fra),
+    { fra, til, fraKlokke, morgen: modell.morgen, ettermiddag: modell.ettermiddag, bilUkedager },
+  )
+  const turer = [...jobbTurer, ...fritidsturer.filter((t) => t.tid >= fraTidspunkt)].sort((a, b) => a.tid - b.tid)
   if (!turer.length) {
     return tom(eksUtloep === null ? 'Ingen reisedager i perioden.' : 'Periodebilletten din dekker hele perioden.')
   }
@@ -106,6 +115,7 @@ export function beregn(modell) {
     prisokning: modell.prisokning,
     inkluderAarskort: modell.inkluderAarskort,
     reis: Boolean(modell.reis),
+    fritidTillegg: fritidsturer.length * OSL_TILLEGG,
   }
   const { beste, alternativer } = sammenlignAlternativer(turer, strekninger, opsjoner)
   if (!beste.mulig) {
@@ -117,6 +127,18 @@ export function beregn(modell) {
     resultat: beste,
     alternativer: alternativer.filter((a) => a.resultat.mulig),
     aarskort: harAarskort ? aarskortAnalyse(turer, strekninger, opsjoner) : null,
+    fritid: fritidsturer.length
+      ? {
+          tillegg: OSL_TILLEGG,
+          sum: fritidsturer.length * OSL_TILLEGG,
+          reiser: fritidsturer.map((t) => beste.fritid.find((f) => f.tid === t.tid && f.retning === t.retning) ?? {
+            dato: t.dato,
+            retning: t.retning,
+            tid: t.tid,
+            dekning: 'eksisterende',
+          }),
+        }
+      : null,
     varsler: sommertidVarsler(beste.billetter),
     perMaaned: Math.round((beste.kostnad / kalender.length) * 30.44),
     oppsummering: {

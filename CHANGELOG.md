@@ -1,3 +1,9 @@
+## 2026-10-02 — v0.13.0: Fritidsreiser til Oslo lufthavn
+
+Nytt steg i oppsettet og ny seksjon i Innstillinger der du registrerer fritidsreiser til Oslo lufthavn som et par: dagen du reiser ned og dagen du kommer hjem. Reisene tas med når billigste kjede velges. Er periodebilletten gyldig, trenger du bare tilleggsbillett Oslo S–Oslo lufthavn (134 kr); ellers regnes enkeltbillett pluss tillegget. Oversikten viser hva som gjelder for hver reise, og tidslinjen har egne merker. Reiser utenfor beregningsperioden regnes ikke med. Tillegget er ikke Reis-rabattert.
+
+---
+
 ## 2026-10-02 — v0.12.6: Starttidspunkt som tekst
 
 Starttidspunktet i «Periode» vises som ren tekst (klokka nå). Trykk på det for å velge et annet. Klokkeslettet står stille til du oppdaterer det selv: en liten oppdater-knapp vises når minuttet er gammelt, og plassen er reservert så seksjonen ikke hopper.

@@ -20,6 +20,7 @@ function optimaliserKjerne(turer, strekninger, opsjoner = {}) {
     tillatEnkelt = true,
     inkluderAarskort = true,
     kunDager = null,
+    fritidTillegg = 0,
   } = opsjoner
   const n = turer.length
   const f = new Array(n + 1).fill(Infinity)
@@ -62,11 +63,12 @@ function optimaliserKjerne(turer, strekninger, opsjoner = {}) {
     }
   }
 
-  if (!Number.isFinite(f[0]) && n > 0) return { mulig: false, kostnad: null, billetter: [], udekteDager: [] }
+  if (!Number.isFinite(f[0]) && n > 0) return { mulig: false, kostnad: null, billetter: [], udekteDager: [], fritid: [] }
 
   const billetter = []
   const enkeltPerDag = new Map()
   const enkeltReiser = []
+  const fritid = []
   for (let i = 0; i < n; i = valg[i].neste) {
     const v = valg[i]
     if (v.type === 'enkelt') {
@@ -75,6 +77,7 @@ function optimaliserKjerne(turer, strekninger, opsjoner = {}) {
       dag.kostnad += v.pris
       enkeltPerDag.set(dag.dato, dag)
       enkeltReiser.push({ tid: turer[i].tid, dato: turer[i].dato, pris: v.pris, ruter: Boolean(v.strekning.ruter) })
+      if (turer[i].fritid) fritid.push({ dato: turer[i].dato, retning: turer[i].retning, tid: turer[i].tid, dekning: 'enkelt', pris: v.pris })
       continue
     }
     const dekket = turer.slice(i, v.neste)
@@ -94,14 +97,19 @@ function optimaliserKjerne(turer, strekninger, opsjoner = {}) {
       passPaa: margin <= MARGIN_PASS_PAA_MIN,
       bindende: v.dager >= AARSKORT_DAGER,
     })
+    for (const t of dekket) {
+      if (t.fritid) fritid.push({ dato: t.dato, retning: t.retning, tid: t.tid, dekning: 'periode', dager: v.dager })
+    }
   }
 
   return {
     mulig: true,
-    kostnad: billetter.reduce((sum, b) => sum + b.pris, 0) + enkeltReiser.reduce((sum, r) => sum + r.pris, 0),
+    // Tillegget er likt for alle planer, så det påvirker ikke hva som er billigst.
+    kostnad: billetter.reduce((sum, b) => sum + b.pris, 0) + enkeltReiser.reduce((sum, r) => sum + r.pris, 0) + fritidTillegg,
     billetter,
     udekteDager: [...enkeltPerDag.values()],
     enkeltReiser,
+    fritid: fritid.sort((a, b) => a.tid - b.tid),
   }
 }
 

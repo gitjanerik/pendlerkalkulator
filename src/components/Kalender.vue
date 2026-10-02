@@ -5,7 +5,13 @@ import { norskDato } from '../lib/format.js'
 
 // Områdevelger: trykk startdato, så sluttdato. Sender først når begge er valgt,
 // så modellen aldri står med en halv periode.
-const props = defineProps({ fra: { type: String, default: '' }, til: { type: String, default: '' } })
+const props = defineProps({
+  fra: { type: String, default: '' },
+  til: { type: String, default: '' },
+  tekstStart: { type: String, default: 'Velg startdato, så sluttdato.' },
+  // {dato} byttes med den første valgte datoen
+  tekstSlutt: { type: String, default: 'Fra {dato}. Velg sluttdato.' },
+})
 const emit = defineEmits(['velg'])
 
 const MAANEDER = ['januar', 'februar', 'mars', 'april', 'mai', 'juni', 'juli', 'august', 'september', 'oktober', 'november', 'desember']
@@ -79,7 +85,7 @@ function trykk(d) {
       </template>
     </div>
     <p class="mt-2 text-sm text-[var(--color-ink-2)]" aria-live="polite">
-      {{ anker ? `Fra ${norskDato(anker)}. Velg sluttdato.` : 'Velg startdato, så sluttdato.' }}
+      {{ anker ? tekstSlutt.replace('{dato}', norskDato(anker)) : tekstStart }}
     </p>
   </div>
 </template>
