@@ -34,7 +34,6 @@ const settDager = (n) => (modell.jobbUkedager = [...MONSTER[n]]);
   >
     <div class="mx-auto flex max-w-xl items-center gap-2 px-2 py-1">
       <MenyKnapp
-        v-if="modell.oppsettFerdig"
         :apen="menyApen"
         @click="menyApen = true"
       />
@@ -115,7 +114,7 @@ const settDager = (n) => (modell.jobbUkedager = [...MONSTER[n]]);
   </main>
 
   <AppMeny
-    v-if="modell.oppsettFerdig"
+    :wizard="!modell.oppsettFerdig"
     v-model:apen="menyApen"
     v-model:modell="modell"
     @nullstill="nullstill"

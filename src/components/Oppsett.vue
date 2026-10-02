@@ -1,6 +1,6 @@
 <script setup>
 import { computed, ref } from 'vue'
-import { PRESETS, PRESET_DATO, strekningFraPreset } from '../lib/presets.js'
+import { PRESETS, strekningFraPreset } from '../lib/presets.js'
 import { UKEDAGER_KORT, UKEDAGER_LANG } from '../lib/dagmonster.js'
 import Beloep from './Beloep.vue'
 import PrefBryter from './PrefBryter.vue'
@@ -97,7 +97,7 @@ const taster = (e) => {
 
           <template v-else-if="STEG[i] === 'tider'">
             <h3 class="steg-tittel">Når tar du toget?</h3>
-            <p class="steg-tekst">Skriv inn avgangene du faktisk tar. Ny billett starter på første avgang etter at den gamle utløper. Det kan være ettermiddagsturen samme dag, hvis din avgang fra Oslo S er etter klokkeslettet billetten utløper.</p>
+            <p class="steg-tekst">Appen tar hensyn til at ny periodebillett ikke aktiveres før avreise (samme dag eller etter en helg).</p>
             <div class="mt-4 felt-par">
               <div>
                 <label class="etikett" for="op-morgen">Fra {{ stasjon }}</label>
@@ -149,7 +149,7 @@ const taster = (e) => {
               </div>
             </div>
             <p class="mt-3 text-sm text-[var(--color-ink-2)]">
-              Prisene ligger i appen og oppdateres med jevne mellomrom. Sist sjekket {{ PRESET_DATO }}. Vy hever vanligvis prisene 1. februar.
+              Prisene ligger i appen og oppdateres med jevne mellomrom.
             </p>
           </template>
 
