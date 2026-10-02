@@ -39,3 +39,33 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+@layer components {
+  .kort {
+    @apply rounded-2xl border border-[var(--color-line)] bg-[var(--color-surface)] p-4 sm:p-5;
+  }
+  .felt {
+    @apply min-h-11 w-full rounded-xl border border-[var(--color-line)] bg-[var(--color-app)] px-3 text-base text-[var(--color-ink)];
+  }
+  .felt:focus-visible,
+  .knapp:focus-visible,
+  .chip:focus-visible {
+    outline: 3px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+  .etikett {
+    @apply mb-1 block text-sm font-medium text-[var(--color-ink-2)];
+  }
+  .knapp {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[var(--color-line)] px-4 text-sm font-medium text-[var(--color-ink)] transition-colors hover:bg-[var(--color-app)];
+  }
+  .knapp-primaer {
+    @apply border-transparent bg-[var(--color-accent)] text-[var(--color-app)] hover:opacity-90;
+  }
+  .chip {
+    @apply inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border border-[var(--color-line)] px-3 text-sm font-medium transition-colors;
+  }
+  .chip[aria-pressed='true'] {
+    @apply border-transparent bg-[var(--color-accent)] text-[var(--color-app)];
+  }
+}
