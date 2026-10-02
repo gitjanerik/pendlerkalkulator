@@ -1,6 +1,6 @@
 ## 2026-10-02 — v1.0.6: Prisøkning på som standard og ryddigere varsler
 
-Prisøkning er nå slått på som standard (gjelder nye brukere; lagrede innstillinger beholdes). Klokkeskifter vises som to punktlister, sommertid og vintertid, med datoer. Norsk orddeling (hyphens) er slått på. Visningsknappene i «Billettene dine» bryter til egen linje når det er trangt. «Billettsammenligning» heter nå «Sammensetning av billetter».
+Prisøkning er nå slått på som standard (gjelder nye brukere; lagrede innstillinger beholdes). Klokkeskifter vises som to punktlister, sommertid og vintertid, med datoer. Norsk orddeling (hyphens) er slått på. Visningsknappene i «Billettene dine» bryter til egen linje når det er trangt. «Billettsammenligning» heter nå «Sammensetning av billetter». Teksten «lagres i nettleseren» er fjernet fra menyen.
 
 ---
 
