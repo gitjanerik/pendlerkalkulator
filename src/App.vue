@@ -5,7 +5,6 @@ import { useTema } from "./composables/useTema.js";
 import { MONSTER } from "./lib/dagmonster.js";
 import MenyKnapp from "./components/MenyKnapp.vue";
 import AppMeny from "./components/AppMeny.vue";
-import StasjonsValg from "./components/StasjonsValg.vue";
 import Oppsett from "./components/Oppsett.vue";
 import AvgangerKort from "./components/AvgangerKort.vue";
 import PeriodeValg from "./components/PeriodeValg.vue";
@@ -44,7 +43,6 @@ const settDager = (n) => (modell.jobbUkedager = [...MONSTER[n]]);
   <main class="mx-auto flex max-w-xl flex-col gap-4 px-4 py-4 pb-12">
     <Oppsett v-if="!modell.oppsettFerdig" v-model="modell" @klar="ferdig" />
     <div v-else class="flex flex-col gap-4">
-      <StasjonsValg v-model="modell" />
       <AvgangerKort v-if="modell.oppsettFerdig" :stasjon="stasjon" />
       <PeriodeValg v-model="modell" />
       <DagerPerUke v-model="modell" />

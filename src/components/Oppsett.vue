@@ -47,7 +47,7 @@ const PRISFELT = [
   [365, 'Årskort (365 dager)'],
 ]
 
-// Sveip høyre = neste, venstre = tilbake. Felt og knapper sveipes ikke, så glidere virker.
+// Sveip mot venstre = neste, mot høyre = tilbake. Felt og knapper sveipes ikke, så glidere virker.
 let start = null
 const ned = (e) => {
   start = e.pointerType === 'mouse' || e.target.closest('input, textarea, select') ? null : { x: e.clientX, y: e.clientY }
@@ -57,7 +57,7 @@ const opp = (e) => {
   const dx = e.clientX - start.x
   const dy = e.clientY - start.y
   start = null
-  if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) gaa(dx > 0 ? 1 : -1)
+  if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) gaa(dx < 0 ? 1 : -1)
 }
 const taster = (e) => {
   if (e.target.closest('input, textarea, select')) return
@@ -218,15 +218,15 @@ const taster = (e) => {
     transform 0.18s ease,
     opacity 0.18s ease;
 }
-/* Sveip høyre = neste: innholdet følger fingeren mot høyre. */
+/* Sveip mot venstre = neste: innholdet følger fingeren mot venstre. */
 .gli-frem-leave-to,
 .gli-tilbake-enter-from {
-  transform: translateX(2rem);
+  transform: translateX(-2rem);
   opacity: 0;
 }
 .gli-frem-enter-from,
 .gli-tilbake-leave-to {
-  transform: translateX(-2rem);
+  transform: translateX(2rem);
   opacity: 0;
 }
 </style>

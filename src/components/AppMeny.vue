@@ -3,6 +3,7 @@ import { computed, ref, watch } from 'vue'
 import { APP_VERSION } from '../version.js'
 import { PRESET_DATO } from '../lib/presets.js'
 import { useTema } from '../composables/useTema.js'
+import StasjonsValg from './StasjonsValg.vue'
 import Beloep from './Beloep.vue'
 import PrefBryter from './PrefBryter.vue'
 import FerieListe from './FerieListe.vue'
@@ -56,6 +57,8 @@ const klikkBakgrunn = (e) => {
         <PrefBryter v-model="m.innstillinger.jobberRomjul" tittel="Jobber i romjul" tekst="27.–31. desember. Julaften er alltid fri." />
         <div class="mt-3"><FerieListe v-model="m" /></div>
       </section>
+
+      <StasjonsValg v-model="m" />
 
       <section aria-labelledby="m-billett" class="flex flex-col gap-3">
         <h3 id="m-billett" class="seksjonstittel">Periodebillett du har nå</h3>

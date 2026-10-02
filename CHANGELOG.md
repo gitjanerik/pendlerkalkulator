@@ -1,3 +1,9 @@
+## 2026-10-02 — v0.11.0: Neste tog som sammenleggbart kort
+
+Veiviseren sveipes nå riktig vei: mot venstre (fra høyre) er neste steg, mot høyre er tilbake. «Reiser til Oslo S fra» er flyttet inn i Innstillinger (og bytte av stasjon oppdaterer reisetid og avreise). «Neste tog» står øverst og er minimert som standard; overskriften viser linje, avgangstid og status, for eksempel «R12 07:12 i rute», med annen farge ved forsinkelse eller innstilling, og en oppdaterknapp med bare ikon. Retningsvalg og de neste togene åpnes med et trykk på overskriften.
+
+---
+
 ## 2026-10-02 — v0.10.1: Finpuss av veiviseren
 
 Tilbake og Neste er nå piler uten tekst (og passer i boksen på smale skjermer). Avreisetid har egen overskrift med «Fra <stasjon>» og «Fra Oslo S». Steget om eksisterende billett forklarer at ny billett starter ved neste arbeidsreise, ikke rett etter utløp. Beløpsfelt har prefikset «kr» og tusenskille i veiviseren og i menyen. Veiviseren fyller skjermen med lik høyde i alle steg, og resten av siden skjules til den er ferdig. Avreisetidene regnes ut fra kjernetid når veiviseren åpnes.
