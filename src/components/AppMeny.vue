@@ -96,7 +96,6 @@ const klikkBakgrunn = (e) => {
             </div>
           </div>
           <ForslagKnapp v-model="m" :stasjon="stasjon" />
-          <p class="text-sm text-[var(--color-ink-3)]">Billetten gjelder like lenge fra klokkeslettet du aktiverer den.</p>
         </section>
 
         <section aria-labelledby="m-pris" class="flex flex-col">

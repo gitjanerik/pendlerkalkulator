@@ -69,11 +69,8 @@ export async function hentAvganger(fraId, tilId, { hent = fetch, n = 4, signal }
   return tolkAvganger(svar)
 }
 
-// Forslag til faste avganger: første tog som er fremme før kontortid, og første tog hjem etter fri.
-// Hjemreisen kan tidligst gå ARBEIDSDAG_MIN etter at morgentoget er fremme (8 t inkl. 30 min pause).
-// hjemEtter brukes bare når vi ikke fant noe morgentog.
-export const ARBEIDSDAG_MIN = 8 * 60
-export const FORSLAG = { ankomstSenest: '08:55', hjemEtter: '15:00' }
+// Forslag til faste avganger: første tog fra brukerens ønskede klokkeslett, i hver retning.
+export const FORSLAG = { morgen: '07:00', ettermiddag: '16:00' }
 
 export const TUR_FORSLAG = `query ($fra: String!, $til: String!, $n: Int!, $tid: DateTime!, $ankomst: Boolean!) {
   trip(from: { place: $fra }, to: { place: $til }, numTripPatterns: $n, dateTime: $tid, arriveBy: $ankomst,
@@ -126,12 +123,11 @@ async function forslag(fraId, tilId, grense, ankomst, hent, signal) {
   return velgAvgang(tolkAvganger(svar), { ankomst, grense })
 }
 
-export async function foreslaaAvganger(hjemId, osloId, idag, { hent = fetch, signal } = {}) {
+export async function foreslaaAvganger(hjemId, osloId, idag, { morgen = FORSLAG.morgen, ettermiddag = FORSLAG.ettermiddag, hent = fetch, signal } = {}) {
   const dato = nesteArbeidsdag(idag)
-  const morgen = await forslag(hjemId, osloId, osloTid(dato, FORSLAG.ankomstSenest), true, hent, signal)
-  const hjemGrense = morgen
-    ? new Date(new Date(morgen.slutt).getTime() + ARBEIDSDAG_MIN * 60000).toISOString()
-    : osloTid(dato, FORSLAG.hjemEtter)
-  const hjem = await forslag(osloId, hjemId, hjemGrense, false, hent, signal)
-  return { morgen: morgen ? klokke(morgen.start) : null, ettermiddag: hjem ? klokke(hjem.start) : null }
+  const [ut, hjem] = await Promise.all([
+    forslag(hjemId, osloId, osloTid(dato, morgen), false, hent, signal),
+    forslag(osloId, hjemId, osloTid(dato, ettermiddag), false, hent, signal),
+  ])
+  return { morgen: ut ? klokke(ut.start) : null, ettermiddag: hjem ? klokke(hjem.start) : null }
 }

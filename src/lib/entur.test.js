@@ -92,22 +92,25 @@ describe('Entur', () => {
   const tur = (start, slutt) => ({ aimedStartTime: start, expectedStartTime: start, expectedEndTime: slutt, legs: [{ mode: 'rail', line: { publicCode: 'L1' } }] })
   const planSvar = (data) => ({ ok: true, json: async () => ({ data: { trip: { tripPatterns: data } } }) })
 
-  it('hjemreisen går tidligst 8 timer etter ankomst om morgenen', async () => {
-    const hjemTog = [tur('2026-10-05T15:30:00+02:00', '2026-10-05T16:20:00+02:00'), tur('2026-10-05T15:50:00+02:00', '2026-10-05T16:40:00+02:00')]
+  it('foreslår første tog fra ønsket tid i begge retninger', async () => {
     const hent = vi.fn(async (_u, init) => {
       const { variables } = JSON.parse(init.body)
-      return planSvar(variables.ankomst ? [tur('2026-10-05T07:00:00+02:00', '2026-10-05T07:40:00+02:00')] : hjemTog)
+      return planSvar(
+        variables.fra === 'A'
+          ? [tur('2026-10-05T06:42:00+02:00', '2026-10-05T07:20:00+02:00'), tur('2026-10-05T07:12:00+02:00', '2026-10-05T07:50:00+02:00')]
+          : [tur('2026-10-05T15:42:00+02:00', '2026-10-05T16:20:00+02:00'), tur('2026-10-05T16:12:00+02:00', '2026-10-05T16:50:00+02:00')],
+      )
     })
-    expect(await foreslaaAvganger('A', 'O', '2026-10-02', { hent })).toEqual({ morgen: '07:00', ettermiddag: '15:50' })
-    const grenser = hent.mock.calls.map(([, i]) => JSON.parse(i.body).variables.tid)
-    expect(grenser).toEqual(['2026-10-05T08:55:00+02:00', '2026-10-05T13:40:00.000Z'])
+    expect(await foreslaaAvganger('A', 'O', '2026-10-02', { morgen: '07:00', ettermiddag: '16:00', hent })).toEqual({ morgen: '07:12', ettermiddag: '16:12' })
+    const kall = hent.mock.calls.map(([, i]) => JSON.parse(i.body).variables)
+    expect(kall.map((v) => v.tid)).toEqual(['2026-10-05T07:00:00+02:00', '2026-10-05T16:00:00+02:00'])
+    expect(kall.every((v) => v.ankomst === false)).toBe(true)
   })
 
-  it('faller tilbake på 15:00 når det ikke finnes morgentog', async () => {
+  it('gir null for retningen som ikke har tog', async () => {
     const hent = vi.fn(async (_u, init) =>
-      planSvar(JSON.parse(init.body).variables.ankomst ? [] : [tur('2026-10-05T15:11:00+02:00', '2026-10-05T16:04:00+02:00')]),
+      planSvar(JSON.parse(init.body).variables.fra === 'A' ? [] : [tur('2026-10-05T16:12:00+02:00', '2026-10-05T16:50:00+02:00')]),
     )
-    expect(await foreslaaAvganger('A', 'O', '2026-10-02', { hent })).toEqual({ morgen: null, ettermiddag: '15:11' })
-    expect(JSON.parse(hent.mock.calls[1][1].body).variables.tid).toBe('2026-10-05T15:00:00+02:00')
+    expect(await foreslaaAvganger('A', 'O', '2026-10-02', { hent })).toEqual({ morgen: null, ettermiddag: '16:12' })
   })
 })

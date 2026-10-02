@@ -108,7 +108,7 @@ const taster = (e) => {
                 <input id="op-ettermiddag" v-model="m.ettermiddag" class="felt" type="time" />
               </div>
             </div>
-            <div class="mt-3"><ForslagKnapp v-model="m" :stasjon="stasjon" :hint="false" /></div>
+            <div class="mt-3"><ForslagKnapp v-model="m" :stasjon="stasjon" /></div>
           </template>
 
           <template v-else-if="STEG[i] === 'billett'">

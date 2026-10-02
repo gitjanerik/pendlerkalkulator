@@ -1,3 +1,9 @@
+## 2026-10-02 — v0.15.6: Entur-forslag følger ønsket tid
+
+«Foreslå fra Entur» tar nå utgangspunkt i klokkeslettene du har valgt: første tog hjemmefra fra din morgentid, og første tog fra Oslo S fra din ettermiddagstid (for eksempel 07:12 og 16:12 fra Gulskogen). Den faste 8-timersregelen og kravet om ankomst før 09:00 er fjernet, og forklaringstekstene under knappen og billettinfoen i menyen er tatt bort.
+
+---
+
 ## 2026-10-02 — v0.15.5: Infotekst øverst i Innstillinger
 
 Innstillinger åpner med en kort tekst som forklarer hva appen gjør.
