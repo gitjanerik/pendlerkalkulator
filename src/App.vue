@@ -97,7 +97,9 @@ const settDager = (n) => (modell.jobbUkedager = [...MONSTER[n]]);
             norskTidspunkt(
               `${modell.eksisterende.til}T${modell.eksisterende.klokke}`,
             )
-          }}. Beregningen starter da.
+          }}. Beregningen starter da. Vi foreslår aldri ny billett rett
+          etter utløp, men ved neste arbeidsreise. Gjelder billetten til
+          fredag ettermiddag, starter den nye for eksempel mandag morgen.
         </p>
       </template>
     </div>

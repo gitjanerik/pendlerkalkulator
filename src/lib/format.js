@@ -8,6 +8,9 @@ export const UKEDAG_NAVN = UKEDAGER
 // Tusenskille er hardt mellomrom, så beløp aldri brytes midt i.
 export const kr = (n) => `${String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} kr`
 
+// flertall(1, 'billett', 'billetter') → «1 billett», ellers «N billetter»
+export const flertall = (n, entall, flere) => `${n} ${n === 1 ? entall : flere}`
+
 // «365 dager (årskort)», ellers «30 dager»
 export const dagerTekst = (n) => (n >= 365 ? `${n} dager (årskort)` : `${n} dager`)
 

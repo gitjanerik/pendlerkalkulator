@@ -21,12 +21,12 @@ const tekst = computed(() => {
 <template>
   <section class="kort" aria-labelledby="mg-tittel">
     <h2 id="mg-tittel" class="seksjonstittel">Hva er hjemmekontor verdt?</h2>
-    <div class="mt-4 flex h-32 items-end gap-2" role="group" aria-label="Kostnad per antall jobbdager i uka">
+    <div class="@container mt-4 flex h-32 items-end gap-2" role="group" aria-label="Kostnad per antall jobbdager i uka">
       <button
         v-for="m in monster"
         :key="m.antall"
         type="button"
-        class="flex h-full flex-1 flex-col justify-end gap-1 text-center"
+        class="flex h-full min-w-0 flex-1 flex-col justify-end gap-1 text-center"
         :aria-pressed="m.antall === antall"
         :aria-label="`${m.antall} dager i uka, ${m.kostnad ? kr(m.kostnad) : 'ingen løsning'}`"
         @click="emit('velg', m.antall)"
@@ -35,7 +35,7 @@ const tekst = computed(() => {
         @focus="fokus = m.antall"
         @blur="fokus = null"
       >
-        <span class="text-xs tabular-nums text-[var(--color-ink-2)]">{{ m.kostnad ? Math.round(m.kostnad / 100) / 10 + 'k' : '–' }}</span>
+        <span class="text-xs tabular-nums text-[var(--color-ink-2)]" :class="m.antall === antall ? '' : '@max-[19rem]:hidden'">{{ m.kostnad ? Math.round(m.kostnad / 100) / 10 + 'k' : '–' }}</span>
         <span
           class="block w-full rounded-t-md"
           :class="m.antall === antall ? 'bg-[var(--color-accent)]' : 'bg-[var(--color-bar)]'"

@@ -1,3 +1,9 @@
+## 2026-10-02 — v0.12.3: Tåler stor skrift, tydeligere sammenligning
+
+Beløpet i hovedkortet skalerer nå med skjermbredden og brytes i stedet for å sprenge kortet. Innstillingsbrytere, neste tog, periodevalg, søylediagram og sammenligningsrader tåler ekstra stor tekst. Sammenligningen heter «Billigste kjede mot enklere valg», har «Best»-merke og piler som viser at radene kan trykkes. Entall og flertall er rettet («1 periodebillett»), «Årskort binder deg …» er fjernet, og varselet om eksisterende billett forklarer at ny billett aldri starter rett etter utløp.
+
+---
+
 ## 2026-10-02 — v0.12.2: Reis bare fra Asker, enklere ikon
 
 Ruter Reis-rabatten regnes nå bare på enkeltreiser innenfor Ruters soner, altså fra Asker, og bryteren i innstillingene vises bare når en slik stasjon er valgt. Andre stasjoner beholder full enkeltpris. Appikonet er forenklet til et ikonogram av et tog forfra.

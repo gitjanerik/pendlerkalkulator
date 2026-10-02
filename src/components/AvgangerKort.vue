@@ -22,10 +22,10 @@ const status = (a) => {
       <button type="button" class="flex min-h-11 min-w-0 flex-1 items-center gap-2 py-1 text-left" :aria-expanded="apen" aria-controls="av-innhold" @click="apen = !apen">
         <span class="min-w-0 flex-1">
         <h2 id="av-tittel" class="seksjonstittel">Neste tog</h2>
-        <span class="block truncate tabular-nums" aria-live="polite">
+        <span class="block tabular-nums" aria-live="polite">
           <template v-if="foerste">
             <span class="font-semibold">{{ foerste.linjer[0] ?? 'Tog' }} {{ klokke(foerste.start) }}</span>
-            <span class="pille" :class="status(foerste).pille">{{ status(foerste).tekst }}</span>
+            <span class="pille ml-1 inline-block" :class="status(foerste).pille">{{ status(foerste).tekst }}</span>
           </template>
           <span v-else class="text-sm text-[var(--color-ink-2)]">{{ laster ? 'Henter …' : feil ? 'Ingen data' : '' }}</span>
         </span>
