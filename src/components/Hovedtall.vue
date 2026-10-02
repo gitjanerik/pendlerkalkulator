@@ -1,5 +1,6 @@
 <script setup>
 import { flertall, kr } from '../lib/format.js'
+import Estimat from './Estimat.vue'
 
 defineProps({ utfall: Object })
 </script>
@@ -7,9 +8,9 @@ defineProps({ utfall: Object })
 <template>
   <section class="kort" aria-labelledby="ht-tittel">
     <h2 id="ht-tittel" class="seksjonstittel">Billigste løsning</h2>
-    <p class="mt-2 text-[clamp(1.75rem,11vw,3rem)] leading-tight font-semibold tabular-nums break-words">{{ kr(utfall.resultat.kostnad) }}</p>
+    <p class="mt-2 text-[clamp(1.75rem,11vw,3rem)] leading-tight font-semibold tabular-nums break-words">{{ kr(utfall.resultat.kostnad) }}<Estimat v-if="utfall.resultat.estimert" /></p>
     <p class="mt-2 text-[var(--color-ink-2)]">
-      ca. <strong class="text-[var(--color-ink)]">{{ kr(utfall.perMaaned) }}</strong> i måneden
+      ca. <strong class="text-[var(--color-ink)]">{{ kr(utfall.perMaaned) }}</strong><Estimat v-if="utfall.resultat.estimert" /> i måneden
     </p>
     <p class="mt-3 text-sm text-[var(--color-ink-2)]">
       {{ flertall(utfall.oppsummering.turer, 'reise', 'reiser') }} på {{ flertall(utfall.oppsummering.reisedager, 'dag', 'dager') }} ·
@@ -21,6 +22,9 @@ defineProps({ utfall: Object })
     </p>
     <p v-if="utfall.resultat.reis" class="mt-2 text-sm text-[var(--color-ink-2)]">
       Ruter Reis sparer {{ kr(utfall.resultat.reis.besparelse) }} på {{ flertall(utfall.resultat.reis.enkeltreiser, 'enkeltreise', 'enkeltreiser') }} (opptil {{ utfall.resultat.reis.maksProsent }} %).
+    </p>
+    <p v-if="utfall.resultat.estimert" class="mt-3 text-xs text-[var(--color-ink-3)]">
+      * Estimat: regner med {{ utfall.prisokningProsent }} % prisøkning hver 1. februar.
     </p>
   </section>
 </template>

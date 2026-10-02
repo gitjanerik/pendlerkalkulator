@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import { dagNr, isoFraDagNr, ukedag } from '../lib/dato.js'
 import { kr, norskTidspunkt, norskDato, dagerTekst, UKEDAG_NAVN } from '../lib/format.js'
 import { isoUke, utnyttelse } from '../lib/billetter.js'
+import Estimat from './Estimat.vue'
 
 const p = defineProps({ utfall: Object })
 const valgt = ref(null)
@@ -83,6 +84,7 @@ const rader = computed(() =>
 const sum = computed(() => ({
   pris: rader.value.reduce((t, r) => t + r.pris, 0),
   turer: rader.value.reduce((t, r) => t + r.antallTurer, 0),
+  estimert: rader.value.some((r) => r.estimert),
 }))
 
 // Kalendervisning: én måned om gangen, fargelagt etter billetten som dekker dagen.
@@ -175,7 +177,7 @@ const uker = computed(() => {
         class="absolute top-0 h-5 rounded-sm bg-[var(--color-accent)] outline-offset-2"
         :class="valgt === s.i ? 'outline-2 outline-[var(--color-ink)]' : ''"
         :style="{ left: s.left + '%', width: s.width + '%', opacity: skygge(s.dager) / 100 }"
-        :aria-label="`${dagerTekst(s.dager)}, ${kr(s.pris)}`"
+        :aria-label="`${dagerTekst(s.dager)}, ${kr(s.pris)}${s.estimert ? ' (estimert)' : ''}`"
         :aria-pressed="valgt === s.i"
         @click="velg(s.i)"
       ></button>
@@ -211,7 +213,7 @@ const uker = computed(() => {
     </p>
 
     <div v-if="detalj" class="mt-4 rounded-xl bg-[var(--color-app)] p-3 text-sm" aria-live="polite">
-      <p class="font-semibold">{{ dagerTekst(detalj.dager) }} · {{ kr(detalj.pris) }}</p>
+      <p class="font-semibold">{{ dagerTekst(detalj.dager) }} · {{ kr(detalj.pris) }}<Estimat v-if="detalj.estimert" /></p>
       <dl class="mt-1 grid grid-cols-[auto_1fr] gap-x-3 text-[var(--color-ink-2)]">
         <dt>Aktiver</dt><dd>{{ norskTidspunkt(detalj.aktivering) }}</dd>
         <dt>Utløper</dt><dd>{{ norskTidspunkt(detalj.utloper) }}</dd>
@@ -263,7 +265,7 @@ const uker = computed(() => {
         <span v-if="enkelt.length"><i class="mr-1 inline-block h-0.5 w-3 bg-[var(--color-warn)]"></i>enkeltbillett</span>
       </p>
       <div v-if="detalj" class="mt-4 rounded-xl bg-[var(--color-app)] p-3 text-sm" aria-live="polite">
-        <p class="font-semibold">{{ dagerTekst(detalj.dager) }} · {{ kr(detalj.pris) }}</p>
+        <p class="font-semibold">{{ dagerTekst(detalj.dager) }} · {{ kr(detalj.pris) }}<Estimat v-if="detalj.estimert" /></p>
         <dl class="mt-1 grid grid-cols-[auto_1fr] gap-x-3 text-[var(--color-ink-2)]">
           <dt>Aktiver</dt><dd>{{ norskTidspunkt(detalj.aktivering) }}</dd>
           <dt>Utløper</dt><dd>{{ norskTidspunkt(detalj.utloper) }}</dd>
@@ -299,7 +301,7 @@ const uker = computed(() => {
               <td class="px-3 py-2">{{ dagTekst(r.fra) }}<span class="block text-xs text-[var(--color-ink-3)]">{{ r.klokkeFra }}</span></td>
               <td class="px-3 py-2">{{ dagTekst(r.til) }}<span class="block text-xs text-[var(--color-ink-3)]">{{ r.klokkeTil }}</span></td>
               <td class="px-3 py-2">{{ r.dager >= 365 ? `${r.dager} d (årskort)` : `${r.dager} d` }}</td>
-              <td class="py-2 pl-3">{{ kr(r.pris) }}</td>
+              <td class="py-2 pl-3">{{ kr(r.pris) }}<Estimat v-if="r.estimert" /></td>
             </tr>
           </tbody>
           <tfoot>
@@ -308,12 +310,12 @@ const uker = computed(() => {
               <td></td>
               <td class="px-3 py-2">{{ sum.turer }}</td>
               <td colspan="3"></td>
-              <td class="py-2 pl-3">{{ kr(sum.pris) }}</td>
+              <td class="py-2 pl-3">{{ kr(sum.pris) }}<Estimat v-if="sum.estimert" /></td>
             </tr>
           </tfoot>
         </table>
       </div>
-      <p class="mt-2 text-xs text-[var(--color-ink-3)]">Utn. = utnyttelse: reiser billetten dekker ÷ reiser en full arbeidsuke (man–fre) ville gitt i gyldighetstiden. Hjemmekontor, ferie og fridager gir lavere tall.</p>
+      <p class="mt-2 text-xs text-[var(--color-ink-3)]">Utn. = utnyttelse: reiser billetten dekker ÷ reiser en full arbeidsuke (man–fre) ville gitt i gyldighetstiden. Hjemmekontor, ferie og fridager gir lavere tall.<template v-if="sum.estimert"> * Estimert pris med prisøkning.</template></p>
     </template>
   </section>
 </template>

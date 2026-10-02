@@ -1,5 +1,5 @@
 import { MIN_DOEGN, formaterTidspunkt } from './dato.js'
-import { prisPaaDato, STANDARD_PRISOKNING } from './priser.js'
+import { antallPrisokninger, prisPaaDato, STANDARD_PRISOKNING } from './priser.js'
 import { anvendReis } from './reis.js'
 
 const AARSKORT_DAGER = 365
@@ -28,6 +28,8 @@ function optimaliserKjerne(turer, strekninger, opsjoner = {}) {
   f[n] = 0
 
   const pris = (grunn, tur) => prisPaaDato(grunn, prisDato, tur.dato, prisokning)
+  // Priset etter minst én økning er et estimat; før første økning er det brukerens egne priser.
+  const estimert = (tur) => Boolean(prisokning.paa) && antallPrisokninger(prisDato, tur.dato, prisokning) > 0
 
   for (let i = n - 1; i >= 0; i--) {
     const tur = turer[i]
@@ -72,11 +74,12 @@ function optimaliserKjerne(turer, strekninger, opsjoner = {}) {
   for (let i = 0; i < n; i = valg[i].neste) {
     const v = valg[i]
     if (v.type === 'enkelt') {
-      const dag = enkeltPerDag.get(turer[i].dato) ?? { dato: turer[i].dato, antallTurer: 0, kostnad: 0 }
+      const dag = enkeltPerDag.get(turer[i].dato) ?? { dato: turer[i].dato, antallTurer: 0, kostnad: 0, estimert: false }
+      dag.estimert ||= estimert(turer[i])
       dag.antallTurer++
       dag.kostnad += v.pris
       enkeltPerDag.set(dag.dato, dag)
-      enkeltReiser.push({ tid: turer[i].tid, dato: turer[i].dato, pris: v.pris, ruter: Boolean(v.strekning.ruter) })
+      enkeltReiser.push({ tid: turer[i].tid, dato: turer[i].dato, pris: v.pris, ruter: Boolean(v.strekning.ruter), estimert: estimert(turer[i]) })
       if (turer[i].fritid) fritid.push({ dato: turer[i].dato, retning: turer[i].retning, tid: turer[i].tid, dekning: 'enkelt', pris: v.pris })
       continue
     }
@@ -96,6 +99,7 @@ function optimaliserKjerne(turer, strekninger, opsjoner = {}) {
       marginMin: margin,
       passPaa: margin <= MARGIN_PASS_PAA_MIN,
       bindende: v.dager >= AARSKORT_DAGER,
+      estimert: estimert(turer[i]),
     })
     for (const t of dekket) {
       if (t.fritid) fritid.push({ dato: t.dato, retning: t.retning, tid: t.tid, dekning: 'periode', dager: v.dager })
@@ -104,6 +108,7 @@ function optimaliserKjerne(turer, strekninger, opsjoner = {}) {
 
   return {
     mulig: true,
+    estimert: billetter.some((b) => b.estimert) || enkeltReiser.some((r) => r.estimert),
     // Tillegget er likt for alle planer, så det påvirker ikke hva som er billigst.
     kostnad: billetter.reduce((sum, b) => sum + b.pris, 0) + enkeltReiser.reduce((sum, r) => sum + r.pris, 0) + fritidTillegg,
     billetter,
@@ -126,7 +131,8 @@ function prisMedReis(plan) {
   const nettoPerTid = new Map(reiser.map((r) => [r.tid, r.netto]))
   const perDag = new Map()
   for (const r of plan.enkeltReiser) {
-    const dag = perDag.get(r.dato) ?? { dato: r.dato, antallTurer: 0, kostnad: 0 }
+    const dag = perDag.get(r.dato) ?? { dato: r.dato, antallTurer: 0, kostnad: 0, estimert: false }
+    dag.estimert ||= r.estimert
     dag.antallTurer++
     dag.kostnad += r.ruter ? nettoPerTid.get(r.tid) : r.pris
     perDag.set(r.dato, dag)

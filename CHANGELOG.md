@@ -1,3 +1,9 @@
+## 2026-10-02 — v1.0.4: Stjerne på estimerte priser
+
+Når prisøkning er på, merkes priser satt etter en økning med en liten stjerne: totalen, per måned, sammenligningen og hver billett i tidslinje, kalender og tabell. En fotnote forklarer at det er et estimat med valgt prosent hver 1. februar. Priser før første økning merkes ikke. Prisøkningen regnes som rente på rente (1,04² etter andre februar).
+
+---
+
 ## 2026-10-02 — v1.0.3: Fjernet 36 mnd-valget
 
 «36 mnd» ga feilen «Velg en periode på høyst 1095 dager», fordi tre år fra startdato er 1096 dager. Lengdevalgene er nå 1, 3, 6, 12 og 24 måneder.

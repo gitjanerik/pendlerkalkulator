@@ -78,7 +78,7 @@ describe('optimaliser — egenskaper', () => {
     const turer = byggTurer([{ dato: '2026-10-02' }], { retninger: 'morgen' })
     const res = optimaliser(turer, [gulskogen])
     expect(res.kostnad).toBe(156)
-    expect(res.udekteDager).toEqual([{ dato: '2026-10-02', antallTurer: 1, kostnad: 156 }])
+    expect(res.udekteDager).toEqual([{ dato: '2026-10-02', antallTurer: 1, kostnad: 156, estimert: false }])
   })
 
   it('årskort velges når det lønner seg og markeres som bindende', () => {
@@ -95,6 +95,30 @@ describe('optimaliser — egenskaper', () => {
     const turer = byggTurer(reisedager(byggKalender({ fra: '2027-01-04', til: '2027-12-31' })))
     const res = optimaliser(turer, [gulskogen], { prisDato: '2026-10-02', prisokning })
     expect(res.billetter[0]).toMatchObject({ dager: 365, pris: 20380 })
+  })
+
+  it('merker priser satt etter en prisøkning som estimert', () => {
+    const prisokning = { paa: true, prosent: 4, dato: '02-01' }
+    const turer = byggTurer(reisedager(byggKalender({ fra: '2027-01-04', til: '2027-03-31' })))
+    const opsjoner = { prisDato: '2026-10-02', kunDager: [30], tillatEnkelt: false }
+    const res = optimaliser(turer, [gulskogen], { ...opsjoner, prisokning })
+    expect(res.billetter[0].estimert).toBe(false)
+    expect(res.billetter.at(-1).estimert).toBe(true)
+    expect(res.estimert).toBe(true)
+    expect(optimaliser(turer, [gulskogen], { ...opsjoner, prisokning: { ...prisokning, paa: false } }).estimert).toBe(false)
+  })
+
+  it('er ikke estimert når alle reiser ligger før første prisøkning', () => {
+    const prisokning = { paa: true, prosent: 4, dato: '02-01' }
+    const turer = byggTurer(reisedager(byggKalender({ fra: '2026-10-05', til: '2026-12-18' })))
+    expect(optimaliser(turer, [gulskogen], { prisDato: '2026-10-02', prisokning }).estimert).toBe(false)
+  })
+
+  it('regner prisøkning på prisøkning etter andre februar', () => {
+    const prisokning = { paa: true, prosent: 4, dato: '02-01' }
+    const turer = byggTurer(reisedager(byggKalender({ fra: '2028-03-06', til: '2028-03-10' })))
+    const res = optimaliser(turer, [gulskogen], { prisDato: '2026-10-02', prisokning, kunDager: [7], tillatEnkelt: false })
+    expect(res.billetter[0].pris).toBe(Math.round(gulskogen.perioder.find((q) => q.dager === 7).pris * 1.04 ** 2))
   })
 
   it('Asker-kort brukes bare på bil-dager og brytes ellers', () => {
