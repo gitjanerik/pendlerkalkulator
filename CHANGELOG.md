@@ -1,3 +1,9 @@
+## 2026-10-02 — v0.15.0: Innstillinger i veiviseren
+
+Innstillinger kan åpnes også under oppsettet, med bare Utseende, App og versjonsnummer. Nullstill er skjult der. Steg 3 har kortere tekst så veiviseren ikke scroller, og steg 8 mistet linjen om «sist sjekket».
+
+---
+
 ## 2026-10-02 — v0.14.3: Entur-forslaget tar hensyn til arbeidsdagen
 
 «Foreslå fra Entur» velger nå første hjemtog som går minst 8 timer (inkl. 30 min pause) etter at morgentoget er fremme, i stedet for en fast grense kl. 15. Finnes det ikke noe morgentog, brukes kl. 15 som før.

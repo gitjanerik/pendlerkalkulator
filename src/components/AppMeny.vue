@@ -16,6 +16,8 @@ import EksisterendeBillett from './EksisterendeBillett.vue'
 const m = defineModel('modell', { type: Object })
 const stasjon = computed(() => m.value.strekninger[0]?.navn.split('–')[0] ?? 'stasjon')
 const apen = defineModel('apen', { type: Boolean })
+// I veiviseren vises bare faste valg (utseende, app, versjon).
+defineProps({ wizard: Boolean })
 const emit = defineEmits(['nullstill'])
 
 const { tema, skala } = useTema()
@@ -57,72 +59,75 @@ const klikkBakgrunn = (e) => {
         </button>
       </div>
 
-      <section aria-labelledby="m-dager" class="flex flex-col">
-        <h3 id="m-dager" class="seksjonstittel mb-1">Fri og ferie</h3>
-        <PrefBryter v-model="m.innstillinger.jobberPaaskeMandagOnsdag" tittel="Jobber i påske mandag–onsdag" tekst="Skjærtorsdag til 2. påskedag er alltid fri." />
-        <PrefBryter v-model="m.innstillinger.jobberRomjul" tittel="Jobber i romjul" tekst="27.–31. desember. Julaften er alltid fri." />
-        <div class="mt-3"><FerieListe v-model="m" /></div>
-      </section>
+      <template v-if="!wizard">
+        <section aria-labelledby="m-dager" class="flex flex-col">
+          <h3 id="m-dager" class="seksjonstittel mb-1">Fri og ferie</h3>
+          <PrefBryter v-model="m.innstillinger.jobberPaaskeMandagOnsdag" tittel="Jobber i påske mandag–onsdag" tekst="Skjærtorsdag til 2. påskedag er alltid fri." />
+          <PrefBryter v-model="m.innstillinger.jobberRomjul" tittel="Jobber i romjul" tekst="27.–31. desember. Julaften er alltid fri." />
+          <div class="mt-3"><FerieListe v-model="m" /></div>
+        </section>
 
-      <section aria-labelledby="m-fritid" class="flex flex-col">
-        <h3 id="m-fritid" class="seksjonstittel mb-1">Fritidsreiser</h3>
-        <FritidListe v-model="m" />
-      </section>
+        <section aria-labelledby="m-fritid" class="flex flex-col">
+          <h3 id="m-fritid" class="seksjonstittel mb-1">Fritidsreiser</h3>
+          <FritidListe v-model="m" />
+        </section>
 
-      <StasjonsValg v-model="m" />
+        <StasjonsValg v-model="m" />
 
-      <section aria-labelledby="m-billett" class="flex flex-col gap-3">
-        <h3 id="m-billett" class="seksjonstittel">Periodebillett du har nå</h3>
-        <EksisterendeBillett v-model="m" />
-      </section>
+        <section aria-labelledby="m-billett" class="flex flex-col gap-3">
+          <h3 id="m-billett" class="seksjonstittel">Periodebillett du har nå</h3>
+          <EksisterendeBillett v-model="m" />
+        </section>
 
-      <section aria-labelledby="m-tider" class="flex flex-col gap-3">
-        <h3 id="m-tider" class="seksjonstittel">Avreisetid</h3>
-        <div class="felt-par">
-          <div>
-            <label class="etikett" for="morgen">Fra {{ stasjon }}</label>
-            <input id="morgen" v-model="m.morgen" class="felt" type="time" />
-          </div>
-          <div>
-            <label class="etikett" for="ettermiddag">Fra Oslo S</label>
-            <input id="ettermiddag" v-model="m.ettermiddag" class="felt" type="time" />
-          </div>
-        </div>
-        <ForslagKnapp v-model="m" :stasjon="stasjon" />
-        <p class="text-sm text-[var(--color-ink-3)]">Billetten gjelder like lenge fra klokkeslettet du aktiverer den.</p>
-      </section>
-
-      <section aria-labelledby="m-pris" class="flex flex-col">
-        <h3 id="m-pris" class="seksjonstittel mb-1">Priser og beregning</h3>
-        <PrefBryter v-model="m.inkluderAarskort" tittel="Vurder årskort" tekst="Binder deg i 12 måneder." />
-        <PrefBryter v-if="m.strekninger.some((s) => s.ruter)" v-model="m.reis" tittel="Ruter Reis på enkeltbilletter" tekst="Rabatt fra 5 % på reise nr. 5 til 40 % fra reise nr. 40 de siste 30 dagene. Gjelder bare innenfor Ruters soner (Oslo og Akershus), altså fra Asker. Vy Smartpris er ikke med." />
-        <PrefBryter v-model="m.prisokning.paa" tittel="Prisøkning hver 1. februar" tekst="Regn med at prisene stiger." />
-        <div v-if="m.prisokning.paa" class="mt-2 felt-par">
-          <div>
-            <label class="etikett" for="prosent">Økning (%)</label>
-            <input id="prosent" v-model.number="m.prisokning.prosent" class="felt" type="number" inputmode="decimal" min="0" step="0.1" />
-          </div>
-          <div>
-            <label class="etikett" for="prisdato">Prisene gjelder fra</label>
-            <input id="prisdato" v-model="m.prisDato" class="felt" type="date" />
-          </div>
-        </div>
-
-        <details v-for="s in m.strekninger" :key="s.id" class="mt-3 rounded-xl border border-[var(--color-line)] px-3">
-          <summary class="flex min-h-11 cursor-pointer items-center font-medium">{{ s.navn }} – priser</summary>
-          <div class="grid grid-cols-2 gap-3 pb-3">
+        <section aria-labelledby="m-tider" class="flex flex-col gap-3">
+          <h3 id="m-tider" class="seksjonstittel">Avreisetid</h3>
+          <div class="felt-par">
             <div>
-              <label class="etikett" :for="`enkelt-${s.id}`">Enkeltbillett</label>
-              <Beloep :id="`enkelt-${s.id}`" v-model="s.enkelt" placeholder="Ukjent" />
+              <label class="etikett" for="morgen">Fra {{ stasjon }}</label>
+              <input id="morgen" v-model="m.morgen" class="felt" type="time" />
             </div>
-            <div v-for="p in s.perioder" :key="p.dager">
-              <label class="etikett" :for="`p-${s.id}-${p.dager}`">{{ dagerTekst(p.dager) }}</label>
-              <Beloep :id="`p-${s.id}-${p.dager}`" v-model="p.pris" />
+            <div>
+              <label class="etikett" for="ettermiddag">Fra Oslo S</label>
+              <input id="ettermiddag" v-model="m.ettermiddag" class="felt" type="time" />
             </div>
-            <p class="col-span-2 text-sm text-[var(--color-ink-3)]">Forslagsprisene er Vys voksenpriser {{ PRESET_DATO }}. Sjekk dem mot appen.</p>
           </div>
-        </details>
-      </section>
+          <ForslagKnapp v-model="m" :stasjon="stasjon" />
+          <p class="text-sm text-[var(--color-ink-3)]">Billetten gjelder like lenge fra klokkeslettet du aktiverer den.</p>
+        </section>
+
+        <section aria-labelledby="m-pris" class="flex flex-col">
+          <h3 id="m-pris" class="seksjonstittel mb-1">Priser og beregning</h3>
+          <PrefBryter v-model="m.inkluderAarskort" tittel="Vurder årskort" tekst="Binder deg i 12 måneder." />
+          <PrefBryter v-if="m.strekninger.some((s) => s.ruter)" v-model="m.reis" tittel="Ruter Reis på enkeltbilletter" tekst="Rabatt fra 5 % på reise nr. 5 til 40 % fra reise nr. 40 de siste 30 dagene. Gjelder bare innenfor Ruters soner (Oslo og Akershus), altså fra Asker. Vy Smartpris er ikke med." />
+          <PrefBryter v-model="m.prisokning.paa" tittel="Prisøkning hver 1. februar" tekst="Regn med at prisene stiger." />
+          <div v-if="m.prisokning.paa" class="mt-2 felt-par">
+            <div>
+              <label class="etikett" for="prosent">Økning (%)</label>
+              <input id="prosent" v-model.number="m.prisokning.prosent" class="felt" type="number" inputmode="decimal" min="0" step="0.1" />
+            </div>
+            <div>
+              <label class="etikett" for="prisdato">Prisene gjelder fra</label>
+              <input id="prisdato" v-model="m.prisDato" class="felt" type="date" />
+            </div>
+          </div>
+
+          <details v-for="s in m.strekninger" :key="s.id" class="mt-3 rounded-xl border border-[var(--color-line)] px-3">
+            <summary class="flex min-h-11 cursor-pointer items-center font-medium">{{ s.navn }} – priser</summary>
+            <div class="grid grid-cols-2 gap-3 pb-3">
+              <div>
+                <label class="etikett" :for="`enkelt-${s.id}`">Enkeltbillett</label>
+                <Beloep :id="`enkelt-${s.id}`" v-model="s.enkelt" placeholder="Ukjent" />
+              </div>
+              <div v-for="p in s.perioder" :key="p.dager">
+                <label class="etikett" :for="`p-${s.id}-${p.dager}`">{{ dagerTekst(p.dager) }}</label>
+                <Beloep :id="`p-${s.id}-${p.dager}`" v-model="p.pris" />
+              </div>
+              <p class="col-span-2 text-sm text-[var(--color-ink-3)]">Forslagsprisene er Vys voksenpriser {{ PRESET_DATO }}. Sjekk dem mot appen.</p>
+            </div>
+          </details>
+        </section>
+
+      </template>
 
       <section aria-labelledby="m-utseende" class="flex flex-col gap-3">
         <h3 id="m-utseende" class="seksjonstittel">Utseende</h3>
@@ -145,8 +150,8 @@ const klikkBakgrunn = (e) => {
       </section>
 
       <footer class="flex items-center justify-between gap-3 border-t border-[var(--color-line)] pt-4 text-sm text-[var(--color-ink-3)]">
-        <span>v{{ APP_VERSION }} · lagres i nettleseren</span>
-        <button type="button" class="knapp" @click="bekreft.showModal()">Nullstill</button>
+        <span>v{{ APP_VERSION }}<template v-if="!wizard"> · lagres i nettleseren</template></span>
+        <button v-if="!wizard" type="button" class="knapp" @click="bekreft.showModal()">Nullstill</button>
       </footer>
     </div>
   </dialog>
