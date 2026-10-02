@@ -1,13 +1,10 @@
 <script setup>
 import { computed } from 'vue'
-import { MONSTER, UKEDAGER_KORT, UKEDAGER_LANG } from '../lib/dagmonster.js'
+import { UKEDAGER_KORT, UKEDAGER_LANG } from '../lib/dagmonster.js'
 
 const m = defineModel({ type: Object })
 const antall = computed(() => m.value.jobbUkedager.length)
 
-const sett = (n) => {
-  m.value.jobbUkedager = [...MONSTER[n]]
-}
 const veksle = (i) => {
   const s = new Set(m.value.jobbUkedager)
   if (s.has(i)) {
@@ -25,21 +22,7 @@ const tekst = computed(() =>
   <section class="kort" aria-labelledby="dp-tittel">
     <div class="flex items-baseline justify-between gap-3">
       <h2 id="dp-tittel" class="seksjonstittel">Dager på jobb i uka</h2>
-      <output class="text-2xl font-semibold tabular-nums" for="dp-slider">{{ antall }}</output>
-    </div>
-    <input
-      id="dp-slider"
-      type="range"
-      min="1"
-      max="5"
-      step="1"
-      :value="antall"
-      :aria-valuetext="tekst"
-      aria-labelledby="dp-tittel"
-      @input="sett(Number($event.target.value))"
-    />
-    <div class="flex justify-between px-1 text-xs text-[var(--color-ink-3)]" aria-hidden="true">
-      <span v-for="n in 5" :key="n">{{ n }}</span>
+      <output class="text-2xl font-semibold tabular-nums" :aria-label="tekst">{{ antall }}</output>
     </div>
     <div class="mt-3 flex flex-wrap gap-2" role="group" aria-label="Hvilke dager er du på jobb?">
       <button
