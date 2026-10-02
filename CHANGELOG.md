@@ -1,3 +1,9 @@
+## 2026-10-02 — v0.15.1: Smale piler på kanten i veiviseren
+
+Tilbake- og Neste-pilene i veiviseren er smalere og ligger midt på høyden, sentrert på kortets kantlinje. Prikkene står alene nederst. Hjelpeteksten under «Foreslå fra Entur» er fjernet i steg 3.
+
+---
+
 ## 2026-10-02 — v0.15.0: Innstillinger i veiviseren
 
 Innstillinger kan åpnes også under oppsettet, med bare Utseende, App og versjonsnummer. Nullstill er skjult der. Steg 3 har kortere tekst så veiviseren ikke scroller, og steg 8 mistet linjen om «sist sjekket».
