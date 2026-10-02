@@ -92,7 +92,7 @@ const taster = (e) => {
           <template v-else-if="STEG[i] === 'tider'">
             <h3 class="steg-tittel">Når må du være på jobb?</h3>
             <p class="steg-tekst">Kjernetiden er tidene du må være på kontoret. Vi regner ut avreise fra reisetiden.</p>
-            <div class="mt-4 grid grid-cols-2 gap-3">
+            <div class="mt-4 felt-par">
               <div>
                 <label class="etikett" for="op-kjerne-fra">Kjernetid fra</label>
                 <input id="op-kjerne-fra" v-model="m.kjernetid.fra" class="felt" type="time" @change="settAvreise" />
@@ -107,7 +107,7 @@ const taster = (e) => {
               </div>
             </div>
             <h4 class="mt-4 font-semibold">Avreisetid</h4>
-            <div class="mt-2 grid grid-cols-2 gap-3">
+            <div class="mt-2 felt-par">
               <div>
                 <label class="etikett" for="op-morgen">Fra {{ stasjon }}</label>
                 <input id="op-morgen" v-model="m.morgen" class="felt" type="time" />
