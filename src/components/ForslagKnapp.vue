@@ -5,7 +5,7 @@ import { stasjonsId } from '../composables/useAvganger.js'
 import { idagIso } from '../lib/dato.js'
 
 const m = defineModel({ type: Object })
-const props = defineProps({ stasjon: { type: String, required: true } })
+const props = defineProps({ stasjon: { type: String, required: true }, hint: { type: Boolean, default: true } })
 const laster = ref(false)
 const melding = ref('')
 
@@ -31,7 +31,7 @@ async function foreslaa() {
     <button type="button" class="chip self-start px-3" :disabled="laster" @click="foreslaa">
       {{ laster ? 'Henter …' : 'Foreslå fra Entur' }}
     </button>
-    <p class="text-sm text-[var(--color-ink-3)]">Første tog som er fremme på Oslo S før 09:00, og første tog hjem når du har vært 8 timer på jobb (inkl. 30 min pause).</p>
+    <p v-if="hint" class="text-sm text-[var(--color-ink-3)]">Første tog som er fremme på Oslo S før 09:00, og første tog hjem når du har vært 8 timer på jobb (inkl. 30 min pause).</p>
     <p v-if="melding" class="text-sm" role="status">{{ melding }}</p>
   </div>
 </template>
