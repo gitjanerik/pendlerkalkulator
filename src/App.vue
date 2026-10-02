@@ -18,6 +18,7 @@ import { kr, norskTidspunkt } from "./lib/format.js";
 useTema();
 const { modell, utfall, monster, nullstill } = useModell();
 const menyApen = ref(false);
+const strekning = computed(() => modell.strekninger[0]?.navn.replace("–", " – ") ?? "");
 const stasjon = computed(() => modell.strekninger[0]?.navn.split("–")[0] ?? "");
 const ferdig = () => {
   modell.oppsettFerdig = true;
@@ -36,7 +37,10 @@ const settDager = (n) => (modell.jobbUkedager = [...MONSTER[n]]);
         :apen="menyApen"
         @click="menyApen = true"
       />
-      <h1 class="text-lg font-semibold">Pendlerkalkulator</h1>
+      <div class="min-w-0 leading-tight">
+        <h1 class="text-lg font-semibold">Pendlerkalkulator</h1>
+        <p v-if="modell.oppsettFerdig && strekning" class="truncate text-sm text-[var(--color-ink-2)]">{{ strekning }}</p>
+      </div>
     </div>
   </header>
 
