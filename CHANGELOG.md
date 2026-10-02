@@ -1,3 +1,9 @@
+## 2026-10-02 — v0.11.2: Fjernet hjemmekontor-teksten
+
+Setningen «Resten regnes som hjemmekontor.» under «Dager på jobb i uka» er fjernet.
+
+---
+
 ## 2026-10-02 — v0.11.1: Strekning i headeren
 
 Valgt strekning, for eksempel «Gulskogen – Oslo S», står nå under appnavnet i headeren. I «Neste tog» ligger tittelen på egen linje over linje, avgangstid og status, så teksten ikke kuttes.
