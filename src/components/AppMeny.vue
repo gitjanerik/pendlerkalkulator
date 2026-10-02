@@ -59,6 +59,10 @@ const klikkBakgrunn = (e) => {
         </button>
       </div>
 
+      <p class="-mt-4 text-sm text-[var(--color-ink-2)]">
+        Lønner det seg å fornye månedskortet? Sammenlign periodebilletter og finn billigste kombinasjon for din arbeidsuke.
+      </p>
+
       <template v-if="!wizard">
         <section aria-labelledby="m-dager" class="flex flex-col">
           <h3 id="m-dager" class="seksjonstittel mb-1">Fri og ferie</h3>
