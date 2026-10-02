@@ -83,7 +83,6 @@ const taster = (e) => {
 
           <template v-else-if="STEG[i] === 'uke'">
             <h3 class="steg-tittel">Hvilke dager drar du på jobb?</h3>
-            <p class="steg-tekst">Resten av ukedagene regnes som hjemmekontor.</p>
             <div class="mt-4 flex flex-wrap gap-2" role="group" aria-label="Jobbdager">
               <button v-for="(d, n) in UKEDAGER_KORT" :key="d" type="button" class="chip" :aria-pressed="m.jobbUkedager.includes(n)" :aria-label="UKEDAGER_LANG[n]" @click="veksleDag(n)">{{ d }}</button>
             </div>
