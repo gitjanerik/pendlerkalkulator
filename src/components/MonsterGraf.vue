@@ -1,8 +1,9 @@
 <script setup>
 import { computed, ref } from 'vue'
 import { flertall, kr } from '../lib/format.js'
+import Estimat from './Estimat.vue'
 
-const p = defineProps({ monster: Array, antall: Number })
+const p = defineProps({ monster: Array, antall: Number, prosent: Number })
 const emit = defineEmits(['velg'])
 const fokus = ref(null)
 
@@ -16,6 +17,8 @@ const tekst = computed(() => {
   const d = naa.value.kostnad - v.kostnad
   return `${flertall(v.antall, 'dag', 'dager')} i uka: ${kr(v.kostnad)} – ${d >= 0 ? `${kr(d)} billigere` : `${kr(-d)} dyrere`} enn nå.`
 })
+const tekstEstimert = computed(() => Boolean(valgt.value?.estimert) || (!!naa.value?.estimert && valgt.value?.antall !== p.antall))
+const sparingEstimert = computed(() => Boolean(valgt.value?.estimert || p.monster.find((m) => m.antall === 5)?.estimert))
 const sparing = computed(() => {
   const v = valgt.value
   const full = p.monster.find((m) => m.antall === 5)
@@ -37,7 +40,7 @@ const sparing = computed(() => {
         type="button"
         class="flex h-full min-w-0 flex-1 flex-col justify-end gap-1 text-center"
         :aria-pressed="m.antall === antall"
-        :aria-label="`${flertall(m.antall, 'dag', 'dager')} i uka, ${m.kostnad ? kr(m.kostnad) : 'ingen løsning'}`"
+        :aria-label="`${flertall(m.antall, 'dag', 'dager')} i uka, ${m.kostnad ? kr(m.kostnad) + (m.estimert ? ' (estimert)' : '') : 'ingen løsning'}`"
         @click="emit('velg', m.antall)"
         @mouseenter="fokus = m.antall"
         @mouseleave="fokus = null"
@@ -55,6 +58,7 @@ const sparing = computed(() => {
     <div class="mt-1 flex gap-2" aria-hidden="true">
       <span v-for="m in monster" :key="m.antall" class="flex-1 text-center text-xs text-[var(--color-ink-3)]">{{ m.antall }}</span>
     </div>
-    <p class="mt-3 text-sm text-[var(--color-ink-2)]" aria-live="polite">{{ tekst }}<span v-if="sparing" class="mt-1 block font-medium text-[var(--color-ink)]">{{ sparing }}</span></p>
+    <p class="mt-3 text-sm text-[var(--color-ink-2)]" aria-live="polite">{{ tekst }}<Estimat v-if="tekst && tekstEstimert" /><span v-if="sparing" class="mt-1 block font-medium text-[var(--color-ink)]">{{ sparing }}<Estimat v-if="sparingEstimert" /></span></p>
+    <p v-if="monster.some((m) => m.estimert)" class="mt-2 text-xs text-[var(--color-ink-3)]">* Estimat: regner med {{ prosent }} % prisøkning hver 1. februar.</p>
   </section>
 </template>

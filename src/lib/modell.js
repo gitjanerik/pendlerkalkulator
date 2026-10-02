@@ -162,6 +162,7 @@ export function monsterAnalyse(modell) {
       antall: Number(antall),
       kostnad: r.feil ? null : r.resultat.kostnad,
       perMaaned: r.feil ? null : r.perMaaned,
+      estimert: r.feil ? false : r.resultat.estimert,
     }
   })
 }

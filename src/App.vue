@@ -82,6 +82,7 @@ const settDager = (n) => (modell.jobbUkedager = [...MONSTER[n]]);
         <MonsterGraf
           :monster="monster"
           :antall="modell.jobbUkedager.length"
+          :prosent="utfall.prisokningProsent"
           @velg="settDager"
         />
 
