@@ -1,3 +1,9 @@
+## 2026-10-02 — v0.13.2: Avgangstider direkte, uten kjernetid
+
+Kjernetid og reisetid er fjernet. Du skriver inn avgangene du faktisk tar fra stasjonen og fra Oslo S (standard 07:00 og 16:00). Ny billett starter ved første avgang etter at den gamle utløper, så en avgang 15:11 i dag blir med når du velger «Bruk nå» etter 15:00.
+
+---
+
 ## 2026-10-02 — v0.13.1: Heggedal, Røyken og Spikkestad
 
 Tre nye stasjoner å velge mellom, med enkelt-, uke-, måneds- og årskortpris og reisetid til Oslo S: Heggedal (45 min), Røyken (50 min) og Spikkestad (53 min). Heggedal har Asker-prisene og får Ruter Reis på enkeltbilletter.

@@ -1,7 +1,6 @@
 <script setup>
 import { computed } from 'vue'
 import { PRESETS, strekningFraPreset } from '../lib/presets.js'
-import { avreiseFraKjernetid } from '../lib/kjernetid.js'
 import { UKEDAGER_KORT } from '../lib/dagmonster.js'
 
 const m = defineModel({ type: Object })
@@ -10,8 +9,6 @@ const kort = (p) => p.navn.split('–')[0]
 
 const velg = (p) => {
   m.value.strekninger = [strekningFraPreset(p, p.id)]
-  m.value.reisetid = p.reisetid
-  Object.assign(m.value, avreiseFraKjernetid(m.value.kjernetid, p.reisetid))
 }
 const bildag = (i) => {
   const s = new Set(m.value.bilUkedager)
