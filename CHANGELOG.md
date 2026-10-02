@@ -1,3 +1,9 @@
+## 2026-10-02 — v0.14.2: Fjernet slider for dager på jobb
+
+«Dager på jobb i uka» har nå bare ukedagsknappene. Slideren var overflødig og ga to kontroller for samme valg.
+
+---
+
 ## 2026-10-02 — v0.14.1: Tydeligere tekst om start av ny billett
 
 Veiviseren sier nå at ny billett starter på første avgang etter at den gamle utløper, og at det kan være ettermiddagsturen samme dag.
