@@ -21,7 +21,7 @@ export function paaskedag(aar) {
   return `${aar}-${pad(maaned)}-${pad(dag)}`
 }
 
-// Offentlige fridager. Julaften og nyttårsaften er ikke med: de er arbeidsgiverens valg.
+// Offentlige fridager, pluss nyttårsaften som alltid er fri. Julaften er ikke med: den er arbeidsgiverens valg.
 export function norskeHelligdager(aar) {
   const p = paaskedag(aar)
   const rel = (n) => leggTilDager(p, n)
@@ -38,6 +38,7 @@ export function norskeHelligdager(aar) {
     [rel(50)]: '2. pinsedag',
     [`${aar}-12-25`]: '1. juledag',
     [`${aar}-12-26`]: '2. juledag',
+    [`${aar}-12-31`]: 'Nyttårsaften',
   }
 }
 

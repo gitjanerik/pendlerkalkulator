@@ -35,17 +35,18 @@ describe('byggKalender', () => {
     expect(Object.values(t)).toEqual(['fri', 'fri', 'fri'])
   })
 
-  it('romjul 27.–31.12 følger bryteren, julaften er alltid fri', () => {
+  it('romjul 27.–30.12 følger bryteren, julaften og nyttårsaften er alltid fri', () => {
     const paa = typer(byggKalender({ fra: '2026-12-24', til: '2026-12-31' }))
     expect(paa['2026-12-24']).toBe('fri')
     expect(paa['2026-12-25']).toBe('helligdag')
     expect(paa['2026-12-28']).toBe('arbeid')
-    expect(paa['2026-12-31']).toBe('arbeid')
+    expect(paa['2026-12-30']).toBe('arbeid')
+    expect(paa['2026-12-31']).toBe('helligdag')
 
     const av = typer(
-      byggKalender({ fra: '2026-12-28', til: '2026-12-31', innstillinger: { jobberRomjul: false } }),
+      byggKalender({ fra: '2026-12-28', til: '2026-12-30', innstillinger: { jobberRomjul: false } }),
     )
-    expect(Object.values(av)).toEqual(['fri', 'fri', 'fri', 'fri'])
+    expect(Object.values(av)).toEqual(['fri', 'fri', 'fri'])
   })
 
   it('ferie, hjemmekontor og ekstra arbeidsdag overstyrer', () => {
