@@ -96,7 +96,6 @@ const velg = (i) => (valgt.value = valgt.value === i ? null : i)
         <dt>Dekker</dt><dd>{{ detalj.antallTurer }} reiser</dd>
       </dl>
       <p v-if="detalj.passPaa" class="mt-2 text-[var(--color-warn)]">⚠ Tett margin – aktiver i tide.</p>
-      <p v-if="detalj.bindende" class="mt-2 text-[var(--color-ink-2)]">Årskort binder deg for hele året.</p>
     </div>
     <p v-else class="mt-3 text-sm text-[var(--color-ink-3)]">Trykk på en billett for detaljer.</p>
   </section>

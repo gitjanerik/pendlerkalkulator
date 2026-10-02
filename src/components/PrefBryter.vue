@@ -4,10 +4,10 @@ const modell = defineModel({ type: Boolean })
 </script>
 
 <template>
-  <label class="flex min-h-11 cursor-pointer items-start justify-between gap-4 py-2">
-    <span>
-      <span class="block font-medium">{{ tittel }}</span>
-      <span v-if="tekst" class="block text-sm text-[var(--color-ink-2)]">{{ tekst }}</span>
+  <label class="flex min-h-11 cursor-pointer items-start justify-between gap-3 py-2">
+    <span class="min-w-0">
+      <span class="block font-medium break-words">{{ tittel }}</span>
+      <span v-if="tekst" class="block text-sm break-words text-[var(--color-ink-2)]">{{ tekst }}</span>
     </span>
     <input v-model="modell" type="checkbox" role="switch" class="peer sr-only" />
     <span

@@ -1,6 +1,6 @@
 <script setup>
 import { computed, ref } from 'vue'
-import { kr } from '../lib/format.js'
+import { flertall, kr } from '../lib/format.js'
 
 const p = defineProps({ utfall: Object })
 const valgt = ref(null)
@@ -23,7 +23,8 @@ const rader = computed(() => {
 
 <template>
   <section class="kort" aria-labelledby="sg-tittel">
-    <h2 id="sg-tittel" class="seksjonstittel">Mot enklere alternativer</h2>
+    <h2 id="sg-tittel" class="seksjonstittel">Billigste kjede mot enklere valg</h2>
+    <p class="mt-1 text-sm text-[var(--color-ink-2)]">Øverste rad er løsningen vi anbefaler. Trykk på en rad for detaljer.</p>
     <ul class="mt-3 flex flex-col gap-1">
       <li v-for="r in rader" :key="r.navn">
         <button
@@ -32,11 +33,15 @@ const rader = computed(() => {
           :aria-pressed="valgt === r.navn"
           @click="valgt = valgt === r.navn ? null : r.navn"
         >
-          <span class="flex items-baseline justify-between gap-2 text-sm">
-            <span :class="r.beste ? 'font-semibold' : ''">{{ r.navn }}</span>
-            <span class="tabular-nums">
+          <span class="flex flex-wrap items-baseline justify-between gap-x-2 gap-y-0.5 text-sm">
+            <span class="flex min-w-0 items-center gap-1.5 break-words" :class="r.beste ? 'font-semibold' : ''">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="shrink-0 text-[var(--color-ink-3)] transition-transform" :class="{ 'rotate-180': valgt === r.navn }"><path d="M6 9l6 6 6-6" /></svg>
+              {{ r.navn }}
+              <span v-if="r.beste" class="pille shrink-0">Best</span>
+            </span>
+            <span class="ml-auto tabular-nums">
               {{ kr(r.kost) }}
-              <span v-if="r.diff > 0" class="text-[var(--color-warn)]">&nbsp;+{{ kr(r.diff) }}</span>
+              <span v-if="r.diff > 0" class="text-[var(--color-warn)]">+{{ kr(r.diff) }}</span>
             </span>
           </span>
           <span class="mt-1 flex h-3" aria-hidden="true">

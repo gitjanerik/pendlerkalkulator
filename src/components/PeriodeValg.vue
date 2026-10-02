@@ -22,8 +22,8 @@ const dager = computed(() => (m.value.fra && m.value.til >= m.value.fra ? datoer
   <section class="kort" aria-labelledby="pe-tittel">
     <h2 id="pe-tittel" class="seksjonstittel">Periode</h2>
     <button type="button" class="felt mt-3 flex items-center justify-between text-left" :aria-expanded="apen" @click="apen = !apen">
-      <span>{{ norskDato(m.fra) }} – {{ norskDato(m.til, true) }}</span>
-      <span aria-hidden="true">{{ apen ? '▴' : '▾' }}</span>
+      <span class="min-w-0">{{ norskDato(m.fra) }} – {{ norskDato(m.til, true) }}</span>
+      <span class="ml-2 shrink-0" aria-hidden="true">{{ apen ? '▴' : '▾' }}</span>
     </button>
     <div v-if="apen" class="mt-3 rounded-xl border border-[var(--color-line)] p-3">
       <Kalender :fra="m.fra" :til="m.til" @velg="velgOmraade" />
