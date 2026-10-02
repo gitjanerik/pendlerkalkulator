@@ -1,19 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <rect width="512" height="512" fill="#15803d"/>
-  <!-- Tog sett fra siden; innenfor maskable safe zone (sirkel r≈205) -->
-  <path d="M110 128h292" stroke="#fff" stroke-width="10" stroke-linecap="round"/>
-  <path d="M206 128l-28 56h56z" fill="none" stroke="#fff" stroke-width="10" stroke-linejoin="round" stroke-linecap="round"/>
-  <path d="M86 340V218a32 32 0 0 1 32-32h196c22 0 36 8 50 24l54 62c8 9 8 14 8 24v44z" fill="#fff"/>
-  <g fill="#15803d">
-    <rect x="116" y="218" width="48" height="52" rx="10"/>
-    <rect x="178" y="218" width="48" height="52" rx="10"/>
-    <rect x="240" y="218" width="48" height="52" rx="10"/>
-    <path d="M302 218h26c10 0 16 4 22 11l24 29H302z"/>
-    <rect x="86" y="296" width="340" height="12" fill="#15803d" opacity=".25"/>
-  </g>
-  <g fill="#fff" stroke="#15803d" stroke-width="10">
-    <circle cx="156" cy="344" r="22"/>
-    <circle cx="356" cy="344" r="22"/>
-  </g>
-  <path d="M96 392h320" stroke="#fff" stroke-width="14" stroke-linecap="round"/>
+  <!-- Tog forfra som ikonogram; innenfor maskable safe zone (sirkel r≈205) -->
+  <rect x="146" y="106" width="220" height="260" rx="64" fill="#fff"/>
+  <rect x="180" y="146" width="152" height="96" rx="22" fill="#15803d"/>
+  <circle cx="198" cy="306" r="18" fill="#15803d"/>
+  <circle cx="314" cy="306" r="18" fill="#15803d"/>
+  <path d="M176 406h160" stroke="#fff" stroke-width="22" stroke-linecap="round"/>
 </svg>

@@ -130,7 +130,14 @@ describe('sommertidVarsler', () => {
 describe('Reis', () => {
   const dager = Array.from({ length: 40 }, (_, i) => ({ dato: leggTilDager('2026-10-05', i) }))
   const turer = byggTurer(dager, { retninger: 'morgen' })
-  const strekninger = [{ id: 'a', navn: 'A', enkelt: 100, perioder: [] }]
+  const strekninger = [{ id: 'a', navn: 'A', ruter: true, enkelt: 100, perioder: [] }]
+
+  it('gir ingen Reis-rabatt utenfor Ruters soner', () => {
+    const utenfor = [{ id: 'b', navn: 'B', enkelt: 100, perioder: [] }]
+    const med = optimaliser(turer, utenfor, { reis: true })
+    expect(med.kostnad).toBe(4000)
+    expect(med.reis).toBeNull()
+  })
 
   it('rabatterer enkeltbilletter med glidende 30-dagersvindu', () => {
     const uten = optimaliser(turer, strekninger)
@@ -142,7 +149,7 @@ describe('Reis', () => {
   })
 
   it('velger periodekort når det blir billigere enn rabattert enkelt', () => {
-    const s = [{ id: 'a', navn: 'A', enkelt: 100, perioder: [{ dager: 30, pris: 900 }] }]
+    const s = [{ id: 'a', navn: 'A', ruter: true, enkelt: 100, perioder: [{ dager: 30, pris: 900 }] }]
     const med = optimaliser(turer, s, { reis: true })
     expect(med.billetter.length).toBeGreaterThan(0)
     expect(med.kostnad).toBeLessThanOrEqual(optimaliser(turer, s).kostnad)

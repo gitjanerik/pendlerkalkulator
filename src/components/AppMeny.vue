@@ -87,7 +87,7 @@ const klikkBakgrunn = (e) => {
       <section aria-labelledby="m-pris" class="flex flex-col">
         <h3 id="m-pris" class="seksjonstittel mb-1">Priser og beregning</h3>
         <PrefBryter v-model="m.inkluderAarskort" tittel="Vurder årskort" tekst="Binder deg i 12 måneder." />
-        <PrefBryter v-model="m.reis" tittel="Ruter Reis på enkeltbilletter" tekst="Rabatt fra 5 % på reise nr. 5 til 40 % fra reise nr. 40 de siste 30 dagene. Gjelder bare der Reis er tilgjengelig, og er ikke Vy Smartpris." />
+        <PrefBryter v-if="m.strekninger.some((s) => s.ruter)" v-model="m.reis" tittel="Ruter Reis på enkeltbilletter" tekst="Rabatt fra 5 % på reise nr. 5 til 40 % fra reise nr. 40 de siste 30 dagene. Gjelder bare innenfor Ruters soner (Oslo og Akershus), altså fra Asker. Vy Smartpris er ikke med." />
         <PrefBryter v-model="m.prisokning.paa" tittel="Prisøkning hver 1. februar" tekst="Regn med at prisene stiger." />
         <div v-if="m.prisokning.paa" class="mt-2 felt-par">
           <div>

@@ -46,6 +46,7 @@ export function normaliserStrekninger(strekninger) {
       id: s.id,
       navn: String(s.navn ?? '').trim() || 'Uten navn',
       bil: Boolean(s.bil),
+      ruter: Boolean(s.ruter),
       enkelt: Number(s.enkelt) > 0 ? Number(s.enkelt) : Infinity,
       perioder: s.perioder
         .map((p) => ({ dager: Number(p.dager), pris: Number(p.pris) }))
