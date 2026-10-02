@@ -7,9 +7,19 @@ import Beloep from './Beloep.vue'
 import PrefBryter from './PrefBryter.vue'
 import EksisterendeBillett from './EksisterendeBillett.vue'
 import FerieListe from './FerieListe.vue'
+import { usePwaInstall } from '../composables/usePwaInstall.js'
 
 const m = defineModel({ type: Object })
 const emit = defineEmits(['klar'])
+
+const { canInstall, isInstalled, isIOS, installer } = usePwaInstall()
+const tilbyInstall = computed(() => !isInstalled.value && (canInstall.value || isIOS.value))
+const installerValgt = ref(false)
+const settIGang = async () => {
+  // Prompten må startes av selve trykket, så den kjøres før vi går videre
+  if (installerValgt.value && canInstall.value) await installer()
+  emit('klar')
+}
 
 const STEG = ['stasjon', 'uke', 'tider', 'billett', 'fri', 'ferie', 'priser', 'klar']
 const i = ref(0)
@@ -157,7 +167,17 @@ const taster = (e) => {
           <template v-else>
             <h3 class="steg-tittel">Alt klart!</h3>
             <p class="steg-tekst">Vi har nok til å finne billettene som holder deg på skinnene til lavest mulig pris.</p>
-            <button type="button" class="klar" @click="emit('klar')">
+            <label v-if="tilbyInstall && !isIOS" class="mt-6 flex min-h-11 cursor-pointer items-start gap-3 rounded-xl border border-[var(--color-line)] bg-[var(--color-surface-2)] p-3">
+              <input v-model="installerValgt" type="checkbox" class="mt-1 h-5 w-5 shrink-0 accent-[var(--color-accent)]" />
+              <span>
+                <span class="block font-medium">Installer som app</span>
+                <span class="block text-sm text-[var(--color-ink-2)]">Eget ikon på hjemskjermen, full skjerm og raskere start.</span>
+              </span>
+            </label>
+            <p v-else-if="tilbyInstall" class="mt-6 rounded-xl border border-[var(--color-line)] bg-[var(--color-surface-2)] p-3 text-sm text-[var(--color-ink-2)]">
+              <strong class="text-[var(--color-ink)]">Legg til som app:</strong> trykk Del-ikonet i Safari og velg «Legg til på Hjem-skjerm».
+            </p>
+            <button type="button" class="klar" :class="{ 'mt-4!': tilbyInstall }" @click="settIGang">
               <span aria-hidden="true">🚂</span> Sett i gang! <span aria-hidden="true">💨</span>
             </button>
           </template>

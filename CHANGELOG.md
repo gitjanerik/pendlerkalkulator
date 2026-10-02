@@ -1,3 +1,9 @@
+## 2026-10-02 — v0.12.0: Installer som app
+
+Pendlerkalkulator kan nå installeres som app (PWA). Siste steg i veiviseren har en avkrysning «Installer som app» som må huskes før den store knappen trykkes; på iOS vises en veiledning om Del → «Legg til på Hjem-skjerm». Valget ligger også nederst i innstillingene, og skjules når appen allerede er installert. Ny manifest, ikoner og service worker som lagrer appskallet for rask oppstart og oppstart uten dekning.
+
+---
+
 ## 2026-10-02 — v0.11.4: Årskort uten klokkeskifte-varsel
 
 Varselet om overgang til sommer- og vintertid vises ikke lenger for årskort, som gjelder i hele dager. Steder som sa «365 dager» sier nå «365 dager (årskort)». Hjemmekontor-setningen i veiviseren er fjernet. Statusen på «Neste tog» (i rute, forsinket, innstilt) vises som en farget pille. «Neste tog» bytter til hjemreisen ved klokka 12, også om appen står åpen.

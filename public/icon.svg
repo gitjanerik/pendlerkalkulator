@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#15803d"/>
+  <!-- Tog sett forfra; innenfor maskable safe zone (sirkel r≈205) -->
+  <rect x="156" y="110" width="200" height="236" rx="44" fill="#fff"/>
+  <rect x="182" y="140" width="148" height="86" rx="16" fill="#15803d"/>
+  <circle cx="204" cy="292" r="16" fill="#15803d"/>
+  <circle cx="308" cy="292" r="16" fill="#15803d"/>
+  <path d="M190 346l-26 56M322 346l26 56M176 384h160" stroke="#fff" stroke-width="16" stroke-linecap="round" fill="none"/>
+</svg>

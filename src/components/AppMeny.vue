@@ -4,6 +4,7 @@ import { APP_VERSION } from '../version.js'
 import { PRESET_DATO } from '../lib/presets.js'
 import { dagerTekst } from '../lib/format.js'
 import { useTema } from '../composables/useTema.js'
+import { usePwaInstall } from '../composables/usePwaInstall.js'
 import StasjonsValg from './StasjonsValg.vue'
 import Beloep from './Beloep.vue'
 import PrefBryter from './PrefBryter.vue'
@@ -16,6 +17,8 @@ const apen = defineModel('apen', { type: Boolean })
 const emit = defineEmits(['nullstill'])
 
 const { tema, skala } = useTema()
+const { canInstall, isInstalled, isIOS, installer } = usePwaInstall()
+const tilbyInstall = computed(() => !isInstalled.value && (canInstall.value || isIOS.value))
 const dlg = ref(null)
 const bekreft = ref(null)
 // Tekststørrelsen settes ved slipp, så ikke menyen flytter seg under fingeren.
@@ -122,6 +125,15 @@ const klikkBakgrunn = (e) => {
           <label class="etikett" for="skala">Tekststørrelse: {{ skalaVis }} %</label>
           <input id="skala" v-model.number="skalaVis" type="range" min="100" max="200" step="5" @change="settSkala" />
         </div>
+      </section>
+
+      <section v-if="tilbyInstall" aria-labelledby="m-app" class="flex flex-col gap-3">
+        <h3 id="m-app" class="seksjonstittel">App</h3>
+        <p v-if="isIOS" class="text-sm text-[var(--color-ink-2)]">Trykk Del-ikonet i Safari og velg «Legg til på Hjem-skjerm».</p>
+        <template v-else>
+          <p class="text-sm text-[var(--color-ink-2)]">Eget ikon på hjemskjermen, full skjerm og raskere start.</p>
+          <button type="button" class="knapp knapp-primaer" @click="installer">Installer som app</button>
+        </template>
       </section>
 
       <footer class="flex items-center justify-between gap-3 border-t border-[var(--color-line)] pt-4 text-sm text-[var(--color-ink-3)]">
