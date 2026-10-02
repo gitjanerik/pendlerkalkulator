@@ -1,3 +1,9 @@
+## 2026-10-02 — v0.12.4: Hjelpetekst om Vy Smartpris
+
+Når du reiser færre enn fem dager i uka, viser appen nå en kort tekst om at Vy Smartpris kan bli billigere enn månedskort. Smartpris er ikke med i beregningen, fordi Vy ikke oppgir hele rabattstigen, og den er capped på prisen for 30 dager.
+
+---
+
 ## 2026-10-02 — v0.12.3: Tåler stor skrift, tydeligere sammenligning
 
 Beløpet i hovedkortet skalerer nå med skjermbredden og brytes i stedet for å sprenge kortet. Innstillingsbrytere, neste tog, periodevalg, søylediagram og sammenligningsrader tåler ekstra stor tekst. Sammenligningen heter «Billigste kjede mot enklere valg», har «Best»-merke og piler som viser at radene kan trykkes. Entall og flertall er rettet («1 periodebillett»), «Årskort binder deg …» er fjernet, og varselet om eksisterende billett forklarer at ny billett aldri starter rett etter utløp.
