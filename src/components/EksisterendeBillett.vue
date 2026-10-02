@@ -28,7 +28,7 @@ const sett = (paa) => {
         <input v-model="m.eksisterende.til" class="felt" type="date" aria-label="Utløpsdato" />
         <input v-model="m.eksisterende.klokke" class="felt" type="time" aria-label="Utløpsklokkeslett" />
       </div>
-      <p class="text-sm text-[var(--color-ink-2)]">Beregningen starter når billetten din utløper.</p>
+      <p class="text-sm text-[var(--color-ink-2)]">Beregningen starter når billetten din utløper. Vi foreslår aldri ny billett rett etter utløp, men ved neste arbeidsreise. Gjelder billetten til fredag ettermiddag, starter den nye for eksempel mandag morgen.</p>
     </div>
   </div>
 </template>

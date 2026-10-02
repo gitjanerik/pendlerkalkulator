@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import { PRESETS, PRESET_DATO, strekningFraPreset } from '../lib/presets.js'
 import { UKEDAGER_KORT, UKEDAGER_LANG } from '../lib/dagmonster.js'
 import { avreiseFraKjernetid } from '../lib/kjernetid.js'
+import Beloep from './Beloep.vue'
 import PrefBryter from './PrefBryter.vue'
 import EksisterendeBillett from './EksisterendeBillett.vue'
 import FerieListe from './FerieListe.vue'
@@ -24,6 +25,7 @@ const gaa = (n) => {
 }
 
 const settAvreise = () => Object.assign(m.value, avreiseFraKjernetid(m.value.kjernetid, m.value.reisetid))
+settAvreise()
 const velgStasjon = (p) => {
   m.value.strekninger = [strekningFraPreset(p, p.id)]
   m.value.reisetid = p.reisetid
@@ -65,12 +67,12 @@ const taster = (e) => {
 </script>
 
 <template>
-  <section class="kort oppsett" aria-labelledby="op-tittel" @keydown="taster">
+  <section class="kort oppsett flex min-h-[calc(100dvh-6.5rem)] flex-col" aria-labelledby="op-tittel" @keydown="taster">
     <h2 id="op-tittel" class="seksjonstittel">Steg {{ i + 1 }} av {{ STEG.length }}</h2>
 
-    <div class="mt-3 overflow-hidden" style="touch-action: pan-y" @pointerdown="ned" @pointerup="opp" @pointercancel="start = null">
+    <div class="mt-3 flex-1 overflow-hidden" style="touch-action: pan-y" @pointerdown="ned" @pointerup="opp" @pointercancel="start = null">
       <Transition :name="`gli-${retning}`" mode="out-in">
-        <div :key="STEG[i]" class="min-h-[22rem]">
+        <div :key="STEG[i]">
           <template v-if="STEG[i] === 'stasjon'">
             <h3 class="steg-tittel">Hvor reiser du fra?</h3>
             <p class="steg-tekst">Oslo S er målet.</p>
@@ -104,14 +106,14 @@ const taster = (e) => {
                 <input id="op-reisetid" v-model.number="m.reisetid" class="felt" type="number" inputmode="numeric" min="0" step="1" @change="settAvreise" />
               </div>
             </div>
-            <h4 class="etikett mt-4">Du reiser omtrent</h4>
-            <div class="grid grid-cols-2 gap-3">
+            <h4 class="mt-4 font-semibold">Avreisetid</h4>
+            <div class="mt-2 grid grid-cols-2 gap-3">
               <div>
-                <label class="etikett" for="op-morgen">Avreise morgen</label>
+                <label class="etikett" for="op-morgen">Fra {{ stasjon }}</label>
                 <input id="op-morgen" v-model="m.morgen" class="felt" type="time" />
               </div>
               <div>
-                <label class="etikett" for="op-ettermiddag">Avreise ettermiddag</label>
+                <label class="etikett" for="op-ettermiddag">Fra Oslo S</label>
                 <input id="op-ettermiddag" v-model="m.ettermiddag" class="felt" type="time" />
               </div>
             </div>
@@ -141,11 +143,11 @@ const taster = (e) => {
           <template v-else-if="STEG[i] === 'priser'">
             <h3 class="steg-tittel">Stemmer prisene?</h3>
             <p class="steg-tekst">{{ stasjon }} – Oslo S, voksen. Rett dem hvis de er feil.</p>
-            <div class="mt-4 grid grid-cols-2 gap-3">
+            <div class="mt-4 grid grid-cols-2 items-end gap-3">
               <div v-for="[n, navn] in PRISFELT" :key="n">
-                <label class="etikett" :for="`pr-${n}`">{{ navn }} (kr)</label>
-                <input v-if="n === 'enkelt'" :id="`pr-${n}`" v-model.number="strekning.enkelt" class="felt" type="number" inputmode="decimal" min="0" />
-                <input v-else-if="pris(n)" :id="`pr-${n}`" v-model.number="pris(n).pris" class="felt" type="number" inputmode="decimal" min="0" />
+                <label class="etikett" :for="`pr-${n}`">{{ navn }}</label>
+                <Beloep v-if="n === 'enkelt'" :id="`pr-${n}`" v-model="strekning.enkelt" />
+                <Beloep v-else-if="pris(n)" :id="`pr-${n}`" v-model="pris(n).pris" />
               </div>
             </div>
             <p class="mt-3 text-sm text-[var(--color-ink-2)]">
@@ -164,17 +166,25 @@ const taster = (e) => {
       </Transition>
     </div>
 
-    <div class="mt-3 flex items-center justify-between gap-3">
-      <button type="button" class="knapp" :disabled="i === 0" @click="gaa(-1)">Tilbake</button>
-      <ol class="flex items-center gap-2" aria-hidden="true">
+    <div class="mt-3 grid grid-cols-[auto_1fr_auto] items-center gap-3">
+      <button type="button" class="knapp ikon" aria-label="Tilbake" :disabled="i === 0" @click="gaa(-1)">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
+      </button>
+      <ol class="flex items-center justify-center gap-2" aria-hidden="true">
         <li v-for="(s, n) in STEG" :key="s" class="h-2 rounded-full transition-all" :class="n === i ? 'w-5 bg-[var(--color-accent)]' : 'w-2 bg-[var(--color-line)]'" />
       </ol>
-      <button type="button" class="knapp knapp-primaer" :disabled="i === STEG.length - 1" @click="gaa(1)">Neste</button>
+      <button type="button" class="knapp knapp-primaer ikon" aria-label="Neste" :disabled="i === STEG.length - 1" @click="gaa(1)">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg>
+      </button>
     </div>
   </section>
 </template>
 
 <style scoped>
+.ikon {
+  width: 2.75rem;
+  padding: 0;
+}
 .steg-tittel {
   font-size: 1.5rem;
   line-height: 1.2;

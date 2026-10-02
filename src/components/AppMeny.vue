@@ -1,13 +1,15 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { APP_VERSION } from '../version.js'
 import { PRESET_DATO } from '../lib/presets.js'
 import { useTema } from '../composables/useTema.js'
+import Beloep from './Beloep.vue'
 import PrefBryter from './PrefBryter.vue'
 import FerieListe from './FerieListe.vue'
 import EksisterendeBillett from './EksisterendeBillett.vue'
 
 const m = defineModel('modell', { type: Object })
+const stasjon = computed(() => m.value.strekninger[0]?.navn.split('–')[0] ?? 'stasjon')
 const apen = defineModel('apen', { type: Boolean })
 const emit = defineEmits(['nullstill'])
 
@@ -61,14 +63,14 @@ const klikkBakgrunn = (e) => {
       </section>
 
       <section aria-labelledby="m-tider" class="flex flex-col gap-3">
-        <h3 id="m-tider" class="seksjonstittel">Reisetider</h3>
+        <h3 id="m-tider" class="seksjonstittel">Avreisetid</h3>
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="etikett" for="morgen">Avreise morgen</label>
+            <label class="etikett" for="morgen">Fra {{ stasjon }}</label>
             <input id="morgen" v-model="m.morgen" class="felt" type="time" />
           </div>
           <div>
-            <label class="etikett" for="ettermiddag">Avreise ettermiddag</label>
+            <label class="etikett" for="ettermiddag">Fra Oslo S</label>
             <input id="ettermiddag" v-model="m.ettermiddag" class="felt" type="time" />
           </div>
         </div>
@@ -95,12 +97,12 @@ const klikkBakgrunn = (e) => {
           <summary class="flex min-h-11 cursor-pointer items-center font-medium">{{ s.navn }} – priser</summary>
           <div class="grid grid-cols-2 gap-3 pb-3">
             <div>
-              <label class="etikett" :for="`enkelt-${s.id}`">Enkeltbillett (kr)</label>
-              <input :id="`enkelt-${s.id}`" v-model.number="s.enkelt" class="felt" type="number" inputmode="decimal" min="0" placeholder="Ukjent" />
+              <label class="etikett" :for="`enkelt-${s.id}`">Enkeltbillett</label>
+              <Beloep :id="`enkelt-${s.id}`" v-model="s.enkelt" placeholder="Ukjent" />
             </div>
             <div v-for="p in s.perioder" :key="p.dager">
-              <label class="etikett" :for="`p-${s.id}-${p.dager}`">{{ p.dager }} dager (kr)</label>
-              <input :id="`p-${s.id}-${p.dager}`" v-model.number="p.pris" class="felt" type="number" inputmode="decimal" min="0" />
+              <label class="etikett" :for="`p-${s.id}-${p.dager}`">{{ p.dager }} dager</label>
+              <Beloep :id="`p-${s.id}-${p.dager}`" v-model="p.pris" />
             </div>
             <p class="col-span-2 text-sm text-[var(--color-ink-3)]">Forslagsprisene er Vys voksenpriser {{ PRESET_DATO }}. Sjekk dem mot appen.</p>
           </div>
