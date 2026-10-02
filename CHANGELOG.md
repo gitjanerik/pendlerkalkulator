@@ -1,3 +1,9 @@
+## 2026-10-02 — v0.12.5: Tre neste tog og startklokkeslett
+
+«Neste tog» viser nå de tre neste avgangene i den utvidede delen. I «Periode» er det et klokkeslett for når beregningen starter. Standard er klokka nå (første dag), og du kan overstyre den, for eksempel hvis du er på kontoret og først skal fornye billetten i ettermiddag. «Bruk nå» tilbakestiller.
+
+---
+
 ## 2026-10-02 — v0.12.4: Hjelpetekst om Vy Smartpris
 
 Når du reiser færre enn fem dager i uka, viser appen nå en kort tekst om at Vy Smartpris kan bli billigere enn månedskort. Smartpris er ikke med i beregningen, fordi Vy ikke oppgir hele rabattstigen, og den er capped på prisen for 30 dager.
