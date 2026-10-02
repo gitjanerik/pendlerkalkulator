@@ -32,6 +32,6 @@ describe('norske helligdager 2026', () => {
     expect(h['2026-05-17']).toBe('Grunnlovsdag')
     expect(h['2026-12-25']).toBe('1. juledag')
     expect(h['2026-12-24']).toBeUndefined()
-    expect(Object.keys(h)).toHaveLength(12)
+    expect(Object.keys(h)).toHaveLength(13)
   })
 })

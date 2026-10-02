@@ -122,7 +122,7 @@ const taster = (e) => {
             <p class="steg-tekst">Jobber du disse dagene? Helligdagene er alltid fri.</p>
             <div class="mt-3 flex flex-col">
               <PrefBryter v-model="m.innstillinger.jobberPaaskeMandagOnsdag" tittel="Jobber i påske mandag–onsdag" tekst="Skjærtorsdag til 2. påskedag er alltid fri." />
-              <PrefBryter v-model="m.innstillinger.jobberRomjul" tittel="Jobber i romjul" tekst="27.–31. desember. Julaften er alltid fri." />
+              <PrefBryter v-model="m.innstillinger.jobberRomjul" tittel="Jobber i romjul" tekst="27.–30. desember. Julaften og nyttårsaften er alltid fri." />
             </div>
           </template>
 

@@ -67,7 +67,7 @@ const klikkBakgrunn = (e) => {
         <section aria-labelledby="m-dager" class="flex flex-col">
           <h3 id="m-dager" class="seksjonstittel mb-1">Fri og ferie</h3>
           <PrefBryter v-model="m.innstillinger.jobberPaaskeMandagOnsdag" tittel="Jobber i påske mandag–onsdag" tekst="Skjærtorsdag til 2. påskedag er alltid fri." />
-          <PrefBryter v-model="m.innstillinger.jobberRomjul" tittel="Jobber i romjul" tekst="27.–31. desember. Julaften er alltid fri." />
+          <PrefBryter v-model="m.innstillinger.jobberRomjul" tittel="Jobber i romjul" tekst="27.–30. desember. Julaften og nyttårsaften er alltid fri." />
           <div class="mt-3"><FerieListe v-model="m" /></div>
         </section>
 
