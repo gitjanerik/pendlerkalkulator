@@ -74,7 +74,7 @@ function optimaliserKjerne(turer, strekninger, opsjoner = {}) {
       dag.antallTurer++
       dag.kostnad += v.pris
       enkeltPerDag.set(dag.dato, dag)
-      enkeltReiser.push({ tid: turer[i].tid, dato: turer[i].dato, pris: v.pris })
+      enkeltReiser.push({ tid: turer[i].tid, dato: turer[i].dato, pris: v.pris, ruter: Boolean(v.strekning.ruter) })
       continue
     }
     const dekket = turer.slice(i, v.neste)
@@ -112,12 +112,15 @@ const REIS_NIVAAER = [1, 0.95, 0.9, 0.85, 0.8, 0.75, 0.7, 0.65, 0.6]
 
 function prisMedReis(plan) {
   if (!plan.mulig || !plan.enkeltReiser.length) return { ...plan, reis: null }
-  const reiser = anvendReis(plan.enkeltReiser)
+  // Reis gjelder bare reiser innenfor Ruters soner; andre enkeltbilletter beholder prisen.
+  const reiser = anvendReis(plan.enkeltReiser.filter((r) => r.ruter))
+  if (!reiser.length) return { ...plan, reis: null }
+  const nettoPerTid = new Map(reiser.map((r) => [r.tid, r.netto]))
   const perDag = new Map()
-  for (const r of reiser) {
+  for (const r of plan.enkeltReiser) {
     const dag = perDag.get(r.dato) ?? { dato: r.dato, antallTurer: 0, kostnad: 0 }
     dag.antallTurer++
-    dag.kostnad += r.netto
+    dag.kostnad += r.ruter ? nettoPerTid.get(r.tid) : r.pris
     perDag.set(r.dato, dag)
   }
   const foer = reiser.reduce((sum, r) => sum + r.pris, 0)

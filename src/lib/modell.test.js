@@ -44,11 +44,11 @@ describe('beregn', () => {
 describe('normaliserStrekninger', () => {
   it('dropper tomme perioder og strekninger uten priser', () => {
     const res = normaliserStrekninger([
-      { id: '1', navn: ' ', bil: false, enkelt: '156', perioder: [{ dager: 7, pris: '' }, { dager: 30, pris: 100 }] },
+      { id: '1', navn: ' ', bil: false, ruter: true, enkelt: '156', perioder: [{ dager: 7, pris: '' }, { dager: 30, pris: 100 }] },
       { id: '2', navn: 'Tom', enkelt: '', perioder: [] },
     ])
     expect(res).toEqual([
-      { id: '1', navn: 'Uten navn', bil: false, enkelt: 156, perioder: [{ dager: 30, pris: 100 }] },
+      { id: '1', navn: 'Uten navn', bil: false, ruter: true, enkelt: 156, perioder: [{ dager: 30, pris: 100 }] },
     ])
   })
 })
@@ -67,7 +67,7 @@ describe('jobbdager og rabatt', () => {
   })
 
   it('Reis gjør enkeltbilletter billigere og berører ikke periodekort', () => {
-    const m = { ...base(), strekninger: [{ id: 'a', navn: 'A', enkelt: 100, perioder: [] }] }
+    const m = { ...base(), strekninger: [{ id: 'a', navn: 'A', ruter: true, enkelt: 100, perioder: [] }] }
     const uten = beregn(m)
     const med = beregn({ ...m, reis: true })
     expect(med.resultat.kostnad).toBeLessThan(uten.resultat.kostnad)

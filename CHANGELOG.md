@@ -1,3 +1,9 @@
+## 2026-10-02 — v0.12.2: Reis bare fra Asker, enklere ikon
+
+Ruter Reis-rabatten regnes nå bare på enkeltreiser innenfor Ruters soner, altså fra Asker, og bryteren i innstillingene vises bare når en slik stasjon er valgt. Andre stasjoner beholder full enkeltpris. Appikonet er forenklet til et ikonogram av et tog forfra.
+
+---
+
 ## 2026-10-02 — v0.12.1: Nytt appikon
 
 Appikonet er tegnet om som et enkelt tog sett fra siden, med pantograf, kjøreledning og skinne, hvitt på grønn flate. Samme motiv brukes som favicon.
