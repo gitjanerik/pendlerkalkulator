@@ -1,6 +1,7 @@
 <script setup>
 import { computed, ref } from 'vue'
 import { dagerTekst, flertall, kr } from '../lib/format.js'
+import Estimat from './Estimat.vue'
 
 const p = defineProps({ utfall: Object })
 const valgt = ref(null)
@@ -21,8 +22,8 @@ const rader = computed(() => {
   const typer = new Set(p.utfall.resultat.billetter.map((b) => b.dager))
   if (p.utfall.resultat.udekteDager.length) typer.add('enkelt')
   const alle = [
-    { navn: 'Billigst', kost: beste, diff: 0, beste: true, flereTyper: typer.size > 1 },
-    ...p.utfall.alternativer.map((a) => ({ navn: a.navn, kost: a.resultat.kostnad, diff: a.differanse })),
+    { navn: 'Billigst', kost: beste, estimert: p.utfall.resultat.estimert, diff: 0, beste: true, flereTyper: typer.size > 1 },
+    ...p.utfall.alternativer.map((a) => ({ navn: a.navn, kost: a.resultat.kostnad, estimert: a.resultat.estimert, diff: a.differanse })),
   ]
   const maks = Math.max(...alle.map((r) => r.kost)) || 1
   return alle.map((r) => ({
@@ -52,8 +53,8 @@ const rader = computed(() => {
               <svg v-if="r.flereTyper" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 text-[var(--color-accent)]" role="img" aria-label="Kombinerer flere billettyper"><title>Kombinerer flere billettyper</title><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" /></svg>
             </span>
             <span class="ml-auto tabular-nums">
-              {{ kr(r.kost) }}
-              <span v-if="r.diff > 0" class="text-[var(--color-warn)]">+{{ kr(r.diff) }}</span>
+              {{ kr(r.kost) }}<Estimat v-if="r.estimert" />
+              <span v-if="r.diff > 0" class="ml-1 text-[var(--color-warn)]">+{{ kr(r.diff) }}</span>
             </span>
           </span>
           <span class="mt-1 flex h-3" aria-hidden="true">
@@ -66,5 +67,8 @@ const rader = computed(() => {
         </button>
       </li>
     </ul>
+    <p v-if="rader.some((r) => r.estimert)" class="mt-3 text-xs text-[var(--color-ink-3)]">
+      * Estimat: regner med {{ p.utfall.prisokningProsent }} % prisøkning hver 1. februar.
+    </p>
   </section>
 </template>

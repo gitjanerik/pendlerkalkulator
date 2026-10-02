@@ -142,6 +142,7 @@ export function beregn(modell) {
     varsler: sommertidVarsler(beste.billetter),
     kalender,
     tidsramme: { morgen: modell.morgen, ettermiddag: modell.ettermiddag, retninger: modell.retninger },
+    prisokningProsent: modell.prisokning?.paa ? Number(modell.prisokning.prosent) : null,
     perMaaned: Math.round((beste.kostnad / kalender.length) * 30.44),
     oppsummering: {
       kalenderdager: kalender.length,
