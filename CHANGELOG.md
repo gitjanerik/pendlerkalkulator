@@ -1,3 +1,9 @@
+## 2026-10-02 — v1.0.0: Første stabile versjon
+
+«Nullstill» i menyen og «Ja, nullstill» i bekreftelsesdialogen har nå rød bakgrunn og hvit tekst (kontrast 6,5:1, også i mørk modus).
+
+---
+
 ## 2026-10-02 — v0.16.9: Dynamisk overskrift for pendledager
 
 Overskriften over ukedagsvalget følger valget: «Full pendleruke» når alle fem dager er på, «4 dager pendling» osv. ved færre, og «1 dag pendling i uka» ved én dag. Tallet til høyre er fjernet.
