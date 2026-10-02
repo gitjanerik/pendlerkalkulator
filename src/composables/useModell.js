@@ -1,5 +1,5 @@
 import { computed, reactive, watch } from 'vue'
-import { beregn, standardModell } from '../lib/modell.js'
+import { beregn, monsterAnalyse, standardModell } from '../lib/modell.js'
 
 const NOKKEL = 'pendler-modell'
 
@@ -34,6 +34,7 @@ export function useModell() {
     { deep: true },
   )
   const utfall = computed(() => beregn(modell))
+  const monster = computed(() => monsterAnalyse(modell))
   const nullstill = () => Object.assign(modell, standardModell(idag()))
-  return { modell, utfall, nullstill }
+  return { modell, utfall, monster, nullstill }
 }

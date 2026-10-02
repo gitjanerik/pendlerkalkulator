@@ -1,35 +1,54 @@
 <script setup>
-import { APP_VERSION } from './version.js'
+import { ref } from 'vue'
 import { useModell } from './composables/useModell.js'
-import ResultatSeksjon from './components/ResultatSeksjon.vue'
-import StrekningerSeksjon from './components/StrekningerSeksjon.vue'
-import PeriodeSeksjon from './components/PeriodeSeksjon.vue'
-import InnstillingerSeksjon from './components/InnstillingerSeksjon.vue'
+import { useTema } from './composables/useTema.js'
+import { MONSTER } from './lib/dagmonster.js'
+import MenyKnapp from './components/MenyKnapp.vue'
+import AppMeny from './components/AppMeny.vue'
+import StasjonsValg from './components/StasjonsValg.vue'
+import PeriodeValg from './components/PeriodeValg.vue'
+import DagerPerUke from './components/DagerPerUke.vue'
+import Hovedtall from './components/Hovedtall.vue'
+import SammenlignGraf from './components/SammenlignGraf.vue'
+import BillettTidslinje from './components/BillettTidslinje.vue'
+import MonsterGraf from './components/MonsterGraf.vue'
+import { kr } from './lib/format.js'
 
-const { modell, utfall, nullstill } = useModell()
+useTema()
+const { modell, utfall, monster, nullstill } = useModell()
+const menyApen = ref(false)
+const settDager = (n) => (modell.jobbUkedager = [...MONSTER[n]])
 </script>
 
 <template>
-  <main class="mx-auto flex min-h-dvh max-w-xl flex-col gap-6 px-4 py-8">
-    <header>
-      <p class="text-sm font-medium tracking-wide text-[var(--color-accent)] uppercase">
-        Pendlerkalkulator
-      </p>
-      <h1 class="mt-1 text-3xl leading-tight font-semibold">Billigste billettkjede</h1>
-      <p class="mt-2 text-[var(--color-ink-2)]">
-        Hvilke 7-, 30- og 365-dagersbilletter dekker arbeidsreisen din billigst? Prisene under er et
-        eksempel – skriv inn dine egne.
-      </p>
-    </header>
+  <header class="sticky top-0 z-10 border-b border-[var(--color-line)] bg-[var(--color-app)]">
+    <div class="mx-auto flex max-w-xl items-center gap-2 px-2 py-1">
+      <MenyKnapp :apen="menyApen" @click="menyApen = true" />
+      <h1 class="text-lg font-semibold">Pendlerkalkulator</h1>
+    </div>
+  </header>
 
-    <ResultatSeksjon :utfall="utfall" />
-    <StrekningerSeksjon v-model="modell.strekninger" />
-    <PeriodeSeksjon v-model="modell" />
-    <InnstillingerSeksjon v-model="modell" />
+  <main class="mx-auto flex max-w-xl flex-col gap-4 px-4 py-4 pb-12">
+    <StasjonsValg v-model="modell" />
+    <PeriodeValg v-model="modell" />
+    <DagerPerUke v-model="modell" />
 
-    <footer class="mt-auto flex items-center justify-between pt-4 text-xs text-[var(--color-ink-2)]">
-      <span>v{{ APP_VERSION }} · Lagres bare i denne nettleseren</span>
-      <button type="button" class="knapp" @click="nullstill">Nullstill</button>
-    </footer>
+    <p v-if="utfall.feil" class="kort text-[var(--color-bad)]" role="alert">{{ utfall.feil }}</p>
+    <template v-else>
+      <Hovedtall :utfall="utfall" />
+      <SammenlignGraf :utfall="utfall" />
+      <BillettTidslinje :utfall="utfall" />
+      <MonsterGraf :monster="monster" :antall="modell.jobbUkedager.length" @velg="settDager" />
+
+      <ul v-if="utfall.varsler.length" class="kort flex flex-col gap-2 text-sm">
+        <li v-for="v in utfall.varsler" :key="v.tekst ?? v" class="text-[var(--color-warn)]">⚠ {{ v.tekst ?? v }}</li>
+      </ul>
+      <p v-if="utfall.aarskort?.besparelse != null" class="kort text-sm text-[var(--color-ink-2)]">
+        <template v-if="utfall.aarskort.lonnerSeg">Årskort sparer deg {{ kr(utfall.aarskort.besparelse) }} i perioden.</template>
+        <template v-else>Årskort lønner seg ikke for denne perioden.</template>
+      </p>
+    </template>
   </main>
+
+  <AppMeny v-model:apen="menyApen" v-model:modell="modell" @nullstill="nullstill" />
 </template>

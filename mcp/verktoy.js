@@ -28,9 +28,11 @@ export const beregnSkjema = {
   retninger: z.enum(['begge', 'morgen', 'ettermiddag']).optional(),
   ferie: z.array(z.object({ fra: dato, til: dato })).optional(),
   bilUkedager: z.array(z.number().int().min(0).max(6)).optional().describe('0 = mandag'),
+  jobbUkedager: z.array(z.number().int().min(0).max(4)).min(1).optional().describe('Dager på jobb, 0 = mandag. Resten regnes som hjemmekontor'),
   jobberPaaskeMandagOnsdag: z.boolean().optional(),
   jobberRomjul: z.boolean().optional(),
   inkluderAarskort: z.boolean().optional(),
+  reis: z.boolean().optional().describe('Ruter Reis: rabatt på enkeltbilletter etter antall reiser siste 30 dager'),
   prisDato: dato.optional().describe('Dato prisene gjelder fra, standard = fra'),
 }
 
@@ -44,7 +46,7 @@ export function beregnBilletter(inn) {
     enkelt: s.enkelt ?? '',
     perioder: s.perioder,
   }))
-  for (const k of ['fraKlokke', 'morgen', 'ettermiddag', 'retninger', 'ferie', 'bilUkedager', 'inkluderAarskort', 'prisDato']) {
+  for (const k of ['fraKlokke', 'morgen', 'ettermiddag', 'retninger', 'ferie', 'bilUkedager', 'jobbUkedager', 'reis', 'inkluderAarskort', 'prisDato']) {
     if (inn[k] !== undefined) m[k] = inn[k]
   }
   if (inn.jobberPaaskeMandagOnsdag !== undefined) m.innstillinger.jobberPaaskeMandagOnsdag = inn.jobberPaaskeMandagOnsdag
