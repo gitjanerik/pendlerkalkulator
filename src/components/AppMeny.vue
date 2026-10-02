@@ -62,8 +62,8 @@ const klikkBakgrunn = (e) => {
       <div class="-mt-4 text-sm text-[var(--color-ink-2)]">
         <p>Lønner det seg å fornye månedskortet? Sammenlign periodebilletter og finn billigste kombinasjon for din arbeidsuke.</p>
         <details class="mt-2">
-          <summary class="cursor-pointer font-medium text-[var(--color-ink)]">Litt mindre hodebry</summary>
-          <p class="mt-1">Å regne ut billigste billett er ofte tungt før sommer- og juleferie. Appen passer best for litt lengre perioder enn måned til måned.</p>
+          <summary class="cursor-pointer font-medium text-[var(--color-ink)]">Lei av månedsbasert billettpsykose?</summary>
+          <p class="mt-1">Som pendler er det surt å subsidiere Vy med dårlig utnyttede ukes- og månedskort. Legg inn ferie og fravær i god tid, så finner appen billigste totalpris. Jo lengre periode, jo bedre optimalisering.</p>
         </details>
       </div>
 

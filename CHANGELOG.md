@@ -1,3 +1,9 @@
+## 2026-10-02 — v1.0.2: Ny introtekst i menyen
+
+Introteksten i menyen er skrevet om og gjort kortere: den sier hvorfor appen finnes og oppfordrer til å legge inn ferie og fravær i god tid. Den utfoldbare overskriften er endret fra «Litt mindre hodebry» til «Lei av månedsbasert billettpsykose?».
+
+---
+
 ## 2026-10-02 — v1.0.1: Ny kolonnerekkefølge i tabellvisningen
 
 Utnyttelse er flyttet til kolonne 2, antall turer til kolonne 3, pris står sist, og all tekst er venstrejustert. Uka der et årskort starter har et lite ∞ hevet ved ukenummeret. Utnyttelse under 90 % vises i advarselsfarge.
