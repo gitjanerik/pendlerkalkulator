@@ -158,7 +158,7 @@ const klikkBakgrunn = (e) => {
 
       <footer class="flex items-center justify-between gap-3 border-t border-[var(--color-line)] pt-4 text-sm text-[var(--color-ink-3)]">
         <span>v{{ APP_VERSION }}<template v-if="!wizard"> · lagres i nettleseren</template></span>
-        <button v-if="!wizard" type="button" class="knapp" @click="bekreft.showModal()">Nullstill</button>
+        <button v-if="!wizard" type="button" class="knapp knapp-fare" @click="bekreft.showModal()">Nullstill</button>
       </footer>
     </div>
   </dialog>
@@ -171,7 +171,7 @@ const klikkBakgrunn = (e) => {
       </p>
       <div class="flex justify-end gap-2">
         <button type="button" class="knapp" autofocus @click="bekreft.close()">Avbryt</button>
-        <button type="button" class="knapp knapp-primaer" @click="nullstillNaa">Ja, nullstill</button>
+        <button type="button" class="knapp knapp-fare" @click="nullstillNaa">Ja, nullstill</button>
       </div>
     </div>
   </dialog>
