@@ -21,7 +21,7 @@ describe('beregn', () => {
     expect(beregn({ ...handoff(), til: '2026-09-01' }).feil).toMatch(/før startdatoen/)
     expect(beregn({ ...handoff(), fra: '' }).feil).toMatch(/dato/)
     expect(beregn({ ...handoff(), morgen: '7' }).feil).toMatch(/Avgangstidene/)
-    expect(beregn({ ...handoff(), til: '2030-01-01' }).feil).toMatch(/høyst/)
+    expect(beregn({ ...handoff(), til: '2031-01-01' }).feil).toMatch(/høyst/)
     expect(beregn({ ...handoff(), strekninger: [] }).feil).toMatch(/minst én/)
   })
 

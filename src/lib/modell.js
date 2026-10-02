@@ -11,7 +11,7 @@ import { OSL_TILLEGG, byggFritidsturer } from './fritid.js'
 
 const ISO = /^\d{4}-\d{2}-\d{2}$/
 const KLOKKE = /^([01]\d|2[0-3]):[0-5]\d$/
-const MAKS_DAGER = 800
+const MAKS_DAGER = 365 * 3
 
 // Startverdiene er Gulskogen–Oslo S med Vys priser høsten 2026.
 export function standardModell(idag) {
@@ -140,6 +140,8 @@ export function beregn(modell) {
         }
       : null,
     varsler: sommertidVarsler(beste.billetter),
+    kalender,
+    tidsramme: { morgen: modell.morgen, ettermiddag: modell.ettermiddag, retninger: modell.retninger },
     perMaaned: Math.round((beste.kostnad / kalender.length) * 30.44),
     oppsummering: {
       kalenderdager: kalender.length,

@@ -1,3 +1,51 @@
+## 2026-10-02 — v0.16.6: Antall billetter per type
+
+Når du trykker på «Billigst» står det nå hvor mange billetter av hver type løsningen består av (for eksempel «2 × 7 dager, 1 × 30 dager, 3 enkeltbilletter») i stedet for den generelle forklaringen.
+
+---
+
+## 2026-10-02 — v0.16.5: «Billigst» med kjede-ikon
+
+Raden «Billigste kombinasjon» heter nå «Billigst» og har fått et lite kjede-ikon når løsningen kombinerer flere billettyper (inkludert enkeltbilletter). «Best»-pillen er fjernet siden «Billigst» sier det samme.
+
+---
+
+## 2026-10-02 — v0.16.4: Kortere infotekst i Billettsammenligning
+
+Setningen «Øverste rad er løsningen vi anbefaler» er fjernet; igjen står «Trykk på en rad for detaljer.»
+
+---
+
+## 2026-10-02 — v0.16.3: Hjemmekontor mot full uke
+
+Under grafen «Spart med hjemmekontor» står det nå hva full uke (5 dager) ville kostet og hvor mye du sparer med valgt antall dager.
+
+---
+
+## 2026-10-02 — v0.16.2: «Billettsammenligning»
+
+Seksjonen som sammenligner billettvalg heter nå «Billettsammenligning», og «Billigste kjede» er byttet med «Billigste kombinasjon» (kjede var en direkte oversettelse av «chain»).
+
+---
+
+## 2026-10-02 — v0.16.1: «Spart med hjemmekontor»
+
+Overskriften i hjemmekontor-seksjonen er ikke lenger et spørsmål, og teksten bruker entall der det passer («1 dag i uka»).
+
+---
+
+## 2026-10-02 — v0.16.0: Tre visninger av billettene
+
+«Billettene dine» har fått tre små ikonknapper øverst til høyre: tidslinje (som før), kalender (én måned om gangen, fargelagt etter billett, med uke­numre og markering av fri/ferie/hjemmekontor) og tabell (uke, fra–til med ukedag, klokkeslett, pris, turer og utnyttelse). Utnyttelse er reiser billetten dekker delt på reiser en full arbeidsuke (man–fre) ville gitt i gyldighetstiden.
+
+---
+
+## 2026-10-02 — v0.15.10: Tre års periode, «Starter kl.» beholdes
+
+Sluttdatoen kan nå ligge inntil 3 år (365 × 3 dager) fram, og periodevalget har fått 24 og 36 mnd, slik at man ser at årskort fornyet hvert år lønner seg. «Starter kl.» med «Bruk nå» er uendret: reiser før klokkeslettet regnes ikke med, og billettene aktiveres ved første reise etter det.
+
+---
+
 ## 2026-10-02 — v0.15.8: Hodebry-tekst i Innstillinger
 
 Under infoteksten øverst i Innstillinger ligger nå en sammenleggbar «Litt mindre hodebry» (details) om at utregningen er tung før sommer- og juleferie, og at appen passer best for litt lengre perioder enn måned til måned.
