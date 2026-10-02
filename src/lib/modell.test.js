@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { beregn, standardModell, normaliserStrekninger } from './modell.js'
+import { beregn, standardModell, normaliserStrekninger, monsterAnalyse } from './modell.js'
 
 const handoff = () => ({
   ...standardModell('2026-10-02'),
@@ -50,5 +50,31 @@ describe('normaliserStrekninger', () => {
     expect(res).toEqual([
       { id: '1', navn: 'Uten navn', bil: false, enkelt: 156, perioder: [{ dager: 30, pris: 100 }] },
     ])
+  })
+})
+
+describe('jobbdager og rabatt', () => {
+  const base = () => ({ ...standardModell('2026-10-05'), til: '2026-12-18', inkluderAarskort: false })
+
+  it('færre jobbdager gir lavere eller lik kostnad', () => {
+    const alle = beregn(base()).resultat.kostnad
+    const tre = beregn({ ...base(), jobbUkedager: [1, 2, 3] }).resultat.kostnad
+    expect(tre).toBeLessThanOrEqual(alle)
+  })
+
+  it('uten jobbdager gir feilmelding', () => {
+    expect(beregn({ ...base(), jobbUkedager: [] }).feil).toMatch(/jobbdag/)
+  })
+
+  it('Reis-rabatt gjelder bare enkeltbilletter', () => {
+    const [s] = normaliserStrekninger([{ id: 'a', navn: 'A', enkelt: 100, reisRabattProsent: 20, perioder: [{ dager: 7, pris: 500 }] }])
+    expect(s.enkelt).toBe(80)
+    expect(s.perioder[0].pris).toBe(500)
+  })
+
+  it('mønsteranalyse gir fem punkter', () => {
+    const a = monsterAnalyse(base())
+    expect(a.map((x) => x.antall)).toEqual([1, 2, 3, 4, 5])
+    expect(a[4].kostnad).toBe(beregn(base()).resultat.kostnad)
   })
 })
