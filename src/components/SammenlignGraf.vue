@@ -36,7 +36,7 @@ const rader = computed(() => {
 
 <template>
   <section class="kort" aria-labelledby="sg-tittel">
-    <h2 id="sg-tittel" class="seksjonstittel">Billettsammenligning</h2>
+    <h2 id="sg-tittel" class="seksjonstittel">Sammensetning av billetter</h2>
     <p class="mt-1 text-sm text-[var(--color-ink-2)]">Trykk på en rad for detaljer.</p>
     <ul class="mt-3 flex flex-col gap-1">
       <li v-for="r in rader" :key="r.navn">

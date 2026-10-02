@@ -1,6 +1,6 @@
 import { leggTilDager } from './dato.js'
 
-export const STANDARD_PRISOKNING = { paa: false, prosent: 4, dato: '02-01' }
+export const STANDARD_PRISOKNING = { paa: true, prosent: 4, dato: '02-01' }
 
 // Antall prisøkninger som har trådt i kraft etter prisDato og senest på dato.
 export function antallPrisokninger(prisDato, dato, prisokning) {

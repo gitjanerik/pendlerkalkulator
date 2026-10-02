@@ -149,7 +149,7 @@ const uker = computed(() => {
 
 <template>
   <section class="kort" aria-labelledby="bt-tittel">
-    <div class="flex items-center justify-between gap-3">
+    <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
       <h2 id="bt-tittel" class="seksjonstittel">Billettene dine</h2>
       <div class="flex gap-1 rounded-xl border border-[var(--color-line)] p-0.5" role="group" aria-label="Visning">
         <button
