@@ -2,13 +2,15 @@
 import { computed, ref } from 'vue'
 import { PRESETS, PRESET_DATO, strekningFraPreset } from '../lib/presets.js'
 import { UKEDAGER_KORT, UKEDAGER_LANG } from '../lib/dagmonster.js'
+import { avreiseFraKjernetid } from '../lib/kjernetid.js'
+import PrefBryter from './PrefBryter.vue'
 import EksisterendeBillett from './EksisterendeBillett.vue'
 import FerieListe from './FerieListe.vue'
 
 const m = defineModel({ type: Object })
 const emit = defineEmits(['klar'])
 
-const STEG = ['stasjon', 'uke', 'tider', 'billett', 'ferie', 'priser', 'klar']
+const STEG = ['stasjon', 'uke', 'tider', 'billett', 'fri', 'ferie', 'priser', 'klar']
 const i = ref(0)
 const retning = ref('frem')
 const strekning = computed(() => m.value.strekninger[0])
@@ -21,7 +23,12 @@ const gaa = (n) => {
   i.value = ny
 }
 
-const velgStasjon = (p) => (m.value.strekninger = [strekningFraPreset(p, p.id)])
+const settAvreise = () => Object.assign(m.value, avreiseFraKjernetid(m.value.kjernetid, m.value.reisetid))
+const velgStasjon = (p) => {
+  m.value.strekninger = [strekningFraPreset(p, p.id)]
+  m.value.reisetid = p.reisetid
+  settAvreise()
+}
 const veksleDag = (d) => {
   const s = new Set(m.value.jobbUkedager)
   if (s.has(d)) {
@@ -81,9 +88,24 @@ const taster = (e) => {
           </template>
 
           <template v-else-if="STEG[i] === 'tider'">
-            <h3 class="steg-tittel">Når reiser du?</h3>
-            <p class="steg-tekst">Billetten gjelder like lenge fra klokkeslettet du aktiverer den.</p>
+            <h3 class="steg-tittel">Når må du være på jobb?</h3>
+            <p class="steg-tekst">Kjernetiden er tidene du må være på kontoret. Vi regner ut avreise fra reisetiden.</p>
             <div class="mt-4 grid grid-cols-2 gap-3">
+              <div>
+                <label class="etikett" for="op-kjerne-fra">Kjernetid fra</label>
+                <input id="op-kjerne-fra" v-model="m.kjernetid.fra" class="felt" type="time" @change="settAvreise" />
+              </div>
+              <div>
+                <label class="etikett" for="op-kjerne-til">Kjernetid til</label>
+                <input id="op-kjerne-til" v-model="m.kjernetid.til" class="felt" type="time" @change="settAvreise" />
+              </div>
+              <div class="col-span-2">
+                <label class="etikett" for="op-reisetid">Reisetid fra {{ stasjon }} (minutter, ca.)</label>
+                <input id="op-reisetid" v-model.number="m.reisetid" class="felt" type="number" inputmode="numeric" min="0" step="1" @change="settAvreise" />
+              </div>
+            </div>
+            <h4 class="etikett mt-4">Du reiser omtrent</h4>
+            <div class="grid grid-cols-2 gap-3">
               <div>
                 <label class="etikett" for="op-morgen">Avreise morgen</label>
                 <input id="op-morgen" v-model="m.morgen" class="felt" type="time" />
@@ -99,6 +121,15 @@ const taster = (e) => {
             <h3 class="steg-tittel">Har du en periodebillett nå?</h3>
             <p class="steg-tekst">Da starter beregningen når den utløper.</p>
             <div class="mt-4"><EksisterendeBillett v-model="m" /></div>
+          </template>
+
+          <template v-else-if="STEG[i] === 'fri'">
+            <h3 class="steg-tittel">Påske og romjul</h3>
+            <p class="steg-tekst">Jobber du disse dagene? Helligdagene er alltid fri.</p>
+            <div class="mt-3 flex flex-col">
+              <PrefBryter v-model="m.innstillinger.jobberPaaskeMandagOnsdag" tittel="Jobber i påske mandag–onsdag" tekst="Skjærtorsdag til 2. påskedag er alltid fri." />
+              <PrefBryter v-model="m.innstillinger.jobberRomjul" tittel="Jobber i romjul" tekst="27.–31. desember. Julaften er alltid fri." />
+            </div>
           </template>
 
           <template v-else-if="STEG[i] === 'ferie'">
