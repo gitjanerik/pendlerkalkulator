@@ -1,24 +1,22 @@
 <script setup>
-import { computed, nextTick, ref } from 'vue'
+import { computed, ref } from 'vue'
 import { tilEtterMaaneder } from '../lib/periode.js'
-import { datoerMellom } from '../lib/dato.js'
+import { datoerMellom, idagIso } from '../lib/dato.js'
 import { norskDato } from '../lib/format.js'
 import Kalender from './Kalender.vue'
 
 const m = defineModel({ type: Object })
 defineProps({ startKlokke: { type: String, default: '00:00' }, utdatert: Boolean })
 defineEmits(['oppdater-na'])
-const redigerer = ref(false)
-const klokkeFelt = ref(null)
-const rediger = async () => {
-  redigerer.value = true
-  await nextTick()
-  klokkeFelt.value?.focus()
-}
-const brukNa = () => {
-  m.value.fraKlokke = ''
-  redigerer.value = false
-}
+const brukNa = () => (m.value.fraKlokke = '')
+const automatisk = computed(() => !m.value.fraKlokke)
+const hjelp = computed(() =>
+  !automatisk.value
+    ? 'Valgt av deg. Reiser før dette klokkeslettet regnes ikke med.'
+    : m.value.fra === idagIso()
+      ? 'Følger klokka nå, så reiser som allerede har gått regnes ikke med. Endre klokkeslettet hvis du for eksempel først skal fornye billetten i ettermiddag.'
+      : 'Starter ved midnatt på startdatoen. Velg et klokkeslett for å begynne senere den dagen.',
+)
 const LENGDER = [1, 3, 6, 12, 24, 36]
 const apen = ref(false)
 const maaneder = computed(() => LENGDER.find((n) => tilEtterMaaneder(m.value.fra, n) === m.value.til) ?? null)
@@ -46,12 +44,11 @@ const dager = computed(() => (m.value.fra && m.value.til >= m.value.fra ? datoer
     </div>
     <div class="mt-3 flex flex-wrap items-center gap-x-2">
       <span id="pe-klokke-ledd" class="text-sm font-medium">Starter kl.</span>
-      <input v-if="redigerer || m.fraKlokke" ref="klokkeFelt" class="felt !w-auto" type="time" aria-labelledby="pe-klokke-ledd" :value="startKlokke" @change="m.fraKlokke = $event.target.value" />
-      <button v-else type="button" class="min-h-11 font-semibold tabular-nums underline decoration-dotted underline-offset-4" aria-label="Endre starttidspunkt" @click="rediger">{{ startKlokke }}</button>
-      <button v-if="m.fraKlokke" type="button" class="chip px-3" @click="brukNa">Bruk nå</button>
+      <input class="felt !w-auto" type="time" aria-labelledby="pe-klokke-ledd" :value="startKlokke" @change="m.fraKlokke = $event.target.value" />
+      <button type="button" class="chip px-3" :aria-pressed="automatisk" @click="brukNa">Bruk nå</button>
       <!-- Plassen er alltid reservert, så seksjonen ikke hopper når knappen dukker opp. -->
       <button
-        v-else
+        v-if="automatisk"
         type="button"
         class="grid h-11 w-11 shrink-0 place-items-center rounded-full hover:bg-[var(--color-app)]"
         :class="{ invisible: !utdatert }"
@@ -63,7 +60,7 @@ const dager = computed(() => (m.value.fra && m.value.til >= m.value.fra ? datoer
         <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.5-5.8" /><path d="M20 4v5h-5" /></svg>
       </button>
     </div>
-    <p class="mt-1 text-sm text-[var(--color-ink-2)]">Reiser før dette klokkeslettet regnes ikke med. Endre hvis du for eksempel først skal fornye billetten i ettermiddag.</p>
+    <p class="mt-1 text-sm text-[var(--color-ink-2)]">{{ hjelp }}</p>
     <p v-if="dager" class="mt-3 text-sm text-[var(--color-ink-2)]">{{ dager }} dager</p>
   </section>
 </template>

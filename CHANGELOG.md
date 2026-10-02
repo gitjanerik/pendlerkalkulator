@@ -1,3 +1,15 @@
+## 2026-10-02 — v0.16.9: Dynamisk overskrift for pendledager
+
+Overskriften over ukedagsvalget følger valget: «Full pendleruke» når alle fem dager er på, «4 dager pendling» osv. ved færre, og «1 dag pendling i uka» ved én dag. Tallet til høyre er fjernet.
+
+---
+
+## 2026-10-02 — v0.16.8: «Starter kl.» er alltid synlig
+
+Klokkeslettfeltet under Periode vises nå alltid som et vanlig tidsfelt, også når «Bruk nå» er valgt. «Bruk nå» er en av/på-knapp som viser om starten følger klokka, og teksten under forklarer hva som er valgt. Å endre klokkeslettet velger tiden manuelt.
+
+---
+
 ## 2026-10-02 — v0.16.7: Bredere tabell med fast første kolonne
 
 Tabellvisningen av billettene scroller nå sideveis i stedet for å presse kolonnene sammen. Ukekolonnen står fast mens du scroller, og «Fra» og «Til» har egne kolonner (dato med klokkeslett under) uten «kl.» i overskriftene.
