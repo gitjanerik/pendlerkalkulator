@@ -1,3 +1,9 @@
+## 2026-10-02 — v1.0.3: Fjernet 36 mnd-valget
+
+«36 mnd» ga feilen «Velg en periode på høyst 1095 dager», fordi tre år fra startdato er 1096 dager. Lengdevalgene er nå 1, 3, 6, 12 og 24 måneder.
+
+---
+
 ## 2026-10-02 — v1.0.2: Ny introtekst i menyen
 
 Introteksten i menyen er skrevet om og gjort kortere: den sier hvorfor appen finnes og oppfordrer til å legge inn ferie og fravær i god tid. Den utfoldbare overskriften er endret fra «Litt mindre hodebry» til «Lei av månedsbasert billettpsykose?».
