@@ -1,3 +1,9 @@
+## 2026-10-02 — v0.11.1: Strekning i headeren
+
+Valgt strekning, for eksempel «Gulskogen – Oslo S», står nå under appnavnet i headeren. I «Neste tog» ligger tittelen på egen linje over linje, avgangstid og status, så teksten ikke kuttes.
+
+---
+
 ## 2026-10-02 — v0.11.0: Neste tog som sammenleggbart kort
 
 Veiviseren sveipes nå riktig vei: mot venstre (fra høyre) er neste steg, mot høyre er tilbake. «Reiser til Oslo S fra» er flyttet inn i Innstillinger (og bytte av stasjon oppdaterer reisetid og avreise). «Neste tog» står øverst og er minimert som standard; overskriften viser linje, avgangstid og status, for eksempel «R12 07:12 i rute», med annen farge ved forsinkelse eller innstilling, og en oppdaterknapp med bare ikon. Retningsvalg og de neste togene åpnes med et trykk på overskriften.

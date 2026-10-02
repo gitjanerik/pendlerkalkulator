@@ -19,14 +19,16 @@ const status = (a) => {
 <template>
   <section v-if="stasjon" class="kort" aria-labelledby="av-tittel">
     <div class="flex items-center gap-2">
-      <button type="button" class="flex min-h-11 min-w-0 flex-1 items-center gap-2 text-left" :aria-expanded="apen" aria-controls="av-innhold" @click="apen = !apen">
-        <h2 id="av-tittel" class="seksjonstittel shrink-0">Neste tog</h2>
-        <span class="min-w-0 truncate tabular-nums" aria-live="polite">
+      <button type="button" class="flex min-h-11 min-w-0 flex-1 items-center gap-2 py-1 text-left" :aria-expanded="apen" aria-controls="av-innhold" @click="apen = !apen">
+        <span class="min-w-0 flex-1">
+        <h2 id="av-tittel" class="seksjonstittel">Neste tog</h2>
+        <span class="block truncate tabular-nums" aria-live="polite">
           <template v-if="foerste">
             <span class="font-semibold">{{ foerste.linjer[0] ?? 'Tog' }} {{ klokke(foerste.start) }}</span>
             <span class="ml-1 text-sm font-medium" :class="status(foerste).varsel ? 'text-[var(--color-warn)]' : 'text-[var(--color-ink-2)]'">{{ status(foerste).tekst }}</span>
           </template>
           <span v-else class="text-sm text-[var(--color-ink-2)]">{{ laster ? 'Henter …' : feil ? 'Ingen data' : '' }}</span>
+        </span>
         </span>
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="ml-auto shrink-0 transition-transform" :class="{ 'rotate-180': apen }"><path d="M6 9l6 6 6-6" /></svg>
       </button>
