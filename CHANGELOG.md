@@ -1,3 +1,9 @@
+## 2026-10-02 — v0.13.1: Heggedal, Røyken og Spikkestad
+
+Tre nye stasjoner å velge mellom, med enkelt-, uke-, måneds- og årskortpris og reisetid til Oslo S: Heggedal (45 min), Røyken (50 min) og Spikkestad (53 min). Heggedal har Asker-prisene og får Ruter Reis på enkeltbilletter.
+
+---
+
 ## 2026-10-02 — v0.13.0: Fritidsreiser til Oslo lufthavn
 
 Nytt steg i oppsettet og ny seksjon i Innstillinger der du registrerer fritidsreiser til Oslo lufthavn som et par: dagen du reiser ned og dagen du kommer hjem. Reisene tas med når billigste kjede velges. Er periodebilletten gyldig, trenger du bare tilleggsbillett Oslo S–Oslo lufthavn (134 kr); ellers regnes enkeltbillett pluss tillegget. Oversikten viser hva som gjelder for hver reise, og tidslinjen har egne merker. Reiser utenfor beregningsperioden regnes ikke med. Tillegget er ikke Reis-rabattert.

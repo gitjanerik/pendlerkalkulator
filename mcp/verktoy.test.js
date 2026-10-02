@@ -22,7 +22,7 @@ describe('MCP-verktøy', () => {
   })
 
   it('forslag, helligdager og ICS', () => {
-    expect(forslag().strekninger).toHaveLength(5)
+    expect(forslag().strekninger).toHaveLength(8)
     expect(helligdager({ aar: 2026 }).paaskeukeMandagOnsdag).toEqual(['2026-03-30', '2026-03-31', '2026-04-01'])
     const ics = 'BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nDTSTART;VALUE=DATE:20261221\r\nDTEND;VALUE=DATE:20261224\r\nSUMMARY:Ferie\r\nEND:VEVENT\r\nEND:VCALENDAR'
     expect(lesIcs({ tekst: ics }).ferie).toEqual([{ fra: '2026-12-21', til: '2026-12-23' }])
