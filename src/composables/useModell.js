@@ -43,8 +43,12 @@ export function useModell() {
     },
     { deep: true },
   )
+  // «Nå» står stille til brukeren selv oppdaterer; klokken under tikker bare for å vise om den er eldre.
   const na = ref(naKlokke())
-  const tikk = setInterval(() => (na.value = naKlokke()), 30_000)
+  const naReelt = ref(na.value)
+  const tikk = setInterval(() => (naReelt.value = naKlokke()), 15_000)
+  const utdatert = computed(() => naReelt.value !== na.value)
+  const oppdaterNa = () => (na.value = naReelt.value = naKlokke())
   onUnmounted(() => clearInterval(tikk))
   // Effektiv startklokke: valgt tid, ellers nå når start er i dag, ellers 00:00.
   const startKlokke = computed(() => modell.fraKlokke || (modell.fra === idag() ? na.value : '00:00'))
@@ -52,5 +56,5 @@ export function useModell() {
   const utfall = computed(() => beregn(effektiv.value))
   const monster = computed(() => monsterAnalyse(effektiv.value))
   const nullstill = () => Object.assign(modell, standardModell(idag()))
-  return { modell, utfall, monster, nullstill, startKlokke }
+  return { modell, utfall, monster, nullstill, startKlokke, utdatert, oppdaterNa }
 }

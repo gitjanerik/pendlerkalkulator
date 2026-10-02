@@ -1,3 +1,9 @@
+## 2026-10-02 — v0.12.6: Starttidspunkt som tekst
+
+Starttidspunktet i «Periode» vises som ren tekst (klokka nå). Trykk på det for å velge et annet. Klokkeslettet står stille til du oppdaterer det selv: en liten oppdater-knapp vises når minuttet er gammelt, og plassen er reservert så seksjonen ikke hopper.
+
+---
+
 ## 2026-10-02 — v0.12.5: Tre neste tog og startklokkeslett
 
 «Neste tog» viser nå de tre neste avgangene i den utvidede delen. I «Periode» er det et klokkeslett for når beregningen starter. Standard er klokka nå (første dag), og du kan overstyre den, for eksempel hvis du er på kontoret og først skal fornye billetten i ettermiddag. «Bruk nå» tilbakestiller.
