@@ -1,3 +1,9 @@
+## 2026-10-02 — v0.7.0: Ruter Reis
+
+Ny bryter i menyen: «Ruter Reis på enkeltbilletter». Reglene (5 % fra reise nr. 5, opp til 40 % fra reise nr. 40 de siste 30 dagene) ligger i `src/lib/reis.js` som en tabell og en ren funksjon med tester, så de kan endres uten å røre resten. Optimeringen prøver planer med ulike forutsatte rabattnivåer og priser hver plan eksakt med glidende 30-dagersvindu; bare enkeltbilletter teller og får rabatt, periodebilletter berøres ikke. Hovedtallet viser hva Reis sparer. Den flate rabattprosenten per strekning fra v0.6.0 er erstattet av dette. Vy Smartpris er en egen ordning og er ikke med. Reglene er lagt inn slik de ble oppgitt og er ikke sjekket mot Ruters og Vys sider (utilgjengelige herfra).
+
+---
+
 ## 2026-10-02 — v0.6.0: Nytt grensesnitt i Lendes uttrykk
 
 Forsiden er redusert til tre valg: stasjon, periode og «dager på jobb i uka». Sliderne og dagene regner resten som hjemmekontor og tar det med i beregningen. Resultatet vises som hovedtall, søylegraf mot enklere alternativer (differansen i varselfarge), en billett-tidslinje med detaljer ved trykk, og en graf over hva hjemmekontor er verdt. Sjelden brukte valg ligger i en meny øverst til venstre (tannhjul): tema, tekststørrelse, ferie og .ics, reisetider, priser og årskort. Egendefinerte strekninger og perioder er fjernet. Strekningene har et felt for rabatt på enkeltbilletter (`reisRabattProsent`) som forberedelse til Vy Reis og Ruter. MCP-verktøyet støtter `jobbUkedager` og `reisRabattProsent`. Lagret tilstand nullstilles ved oppdatering.

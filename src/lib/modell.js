@@ -29,17 +29,9 @@ export function standardModell(idag) {
     prisokning: { ...STANDARD_PRISOKNING },
     prisDato: idag,
     inkluderAarskort: true,
+    reis: false,
     strekninger: [strekningFraPreset(PRESETS[0], PRESETS[0].id)],
   }
-}
-
-// Rabatt på enkeltbilletter (Vy Reis, Ruter m.fl.) i prosent; periodebilletter
-// berøres ikke. Satsene legges inn automatisk senere, til da skriver brukeren dem selv.
-function enkeltPris(s) {
-  const pris = Number(s.enkelt)
-  if (!(pris > 0)) return Infinity
-  const rabatt = Math.min(Math.max(Number(s.reisRabattProsent) || 0, 0), 100)
-  return Math.round(pris * (1 - rabatt / 100))
 }
 
 export function normaliserStrekninger(strekninger) {
@@ -48,7 +40,7 @@ export function normaliserStrekninger(strekninger) {
       id: s.id,
       navn: String(s.navn ?? '').trim() || 'Uten navn',
       bil: Boolean(s.bil),
-      enkelt: enkeltPris(s),
+      enkelt: Number(s.enkelt) > 0 ? Number(s.enkelt) : Infinity,
       perioder: s.perioder
         .map((p) => ({ dager: Number(p.dager), pris: Number(p.pris) }))
         .filter((p) => Number.isInteger(p.dager) && p.dager > 0 && p.pris > 0),
@@ -99,6 +91,7 @@ export function beregn(modell) {
     prisDato: ISO.test(modell.prisDato ?? '') ? modell.prisDato : fra,
     prisokning: modell.prisokning,
     inkluderAarskort: modell.inkluderAarskort,
+    reis: Boolean(modell.reis),
   }
   const { beste, alternativer } = sammenlignAlternativer(turer, strekninger, opsjoner)
   if (!beste.mulig) {

@@ -66,10 +66,15 @@ describe('jobbdager og rabatt', () => {
     expect(beregn({ ...base(), jobbUkedager: [] }).feil).toMatch(/jobbdag/)
   })
 
-  it('Reis-rabatt gjelder bare enkeltbilletter', () => {
-    const [s] = normaliserStrekninger([{ id: 'a', navn: 'A', enkelt: 100, reisRabattProsent: 20, perioder: [{ dager: 7, pris: 500 }] }])
-    expect(s.enkelt).toBe(80)
-    expect(s.perioder[0].pris).toBe(500)
+  it('Reis gjør enkeltbilletter billigere og berører ikke periodekort', () => {
+    const m = { ...base(), strekninger: [{ id: 'a', navn: 'A', enkelt: 100, perioder: [] }] }
+    const uten = beregn(m)
+    const med = beregn({ ...m, reis: true })
+    expect(med.resultat.kostnad).toBeLessThan(uten.resultat.kostnad)
+    expect(med.resultat.reis.maksProsent).toBe(40)
+    expect(uten.resultat.reis).toBeNull()
+    const pk = { ...base(), reis: true }
+    expect(beregn(pk).resultat.kostnad).toBe(beregn(base()).resultat.kostnad)
   })
 
   it('mønsteranalyse gir fem punkter', () => {
