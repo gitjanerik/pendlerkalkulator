@@ -1,3 +1,9 @@
+## 2026-10-02 — v0.4.0: Ferie fra kalenderfil og strekningsforslag
+
+Ferie kan importeres fra en .ics-fil (Outlook, Google, Apple): heldagshendelser er forhåndsvalgt, tidsfestede kan krysses av, og overlappende dager slås sammen. Hver strekning har en «Fyll inn fra forslag»-liste med Vys voksenpriser 2. oktober 2026 for Gulskogen, Drammen, Brakerøya, Lier og Asker (til Oslo S); enkeltpris er bare med der den er lest av.
+
+---
+
 ## 2026-10-02 — v0.3.0: Brukergrensesnitt og innstillinger
 
 Første brukbare utgave. Resultatet står øverst: billigste kostnad, billettene som tidslinje med aktivering, utløp og «vær på toget»-merking, sommertid-varsel, årskort-vurdering og dyrere alternativer. Under ligger skjemaene for strekninger med egne priser (også bil-strekninger og bildager), periode og avgangstider, innstillingene «jobber i påske mandag–onsdag» og «jobber i romjul» (begge PÅ), prisøkning 1. februar og ferie. Alt lagres i nettleseren. Ny ren modell (`lib/modell.js`) kobler skjemaet til optimereren, med feilmeldinger for ugyldig input.
