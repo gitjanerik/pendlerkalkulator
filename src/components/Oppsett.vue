@@ -1,0 +1,191 @@
+<script setup>
+import { computed, ref } from 'vue'
+import { PRESETS, PRESET_DATO, strekningFraPreset } from '../lib/presets.js'
+import { UKEDAGER_KORT, UKEDAGER_LANG } from '../lib/dagmonster.js'
+import EksisterendeBillett from './EksisterendeBillett.vue'
+import FerieListe from './FerieListe.vue'
+
+const m = defineModel({ type: Object })
+const emit = defineEmits(['klar'])
+
+const STEG = ['stasjon', 'uke', 'tider', 'billett', 'ferie', 'priser', 'klar']
+const i = ref(0)
+const retning = ref('frem')
+const strekning = computed(() => m.value.strekninger[0])
+const stasjon = computed(() => strekning.value?.navn.split('–')[0] ?? '')
+
+const gaa = (n) => {
+  const ny = Math.min(Math.max(i.value + n, 0), STEG.length - 1)
+  if (ny === i.value) return
+  retning.value = n > 0 ? 'frem' : 'tilbake'
+  i.value = ny
+}
+
+const velgStasjon = (p) => (m.value.strekninger = [strekningFraPreset(p, p.id)])
+const veksleDag = (d) => {
+  const s = new Set(m.value.jobbUkedager)
+  if (s.has(d)) {
+    if (s.size === 1) return // minst én jobbdag
+    s.delete(d)
+  } else s.add(d)
+  m.value.jobbUkedager = [...s].sort()
+}
+const pris = (dager) => strekning.value.perioder.find((p) => p.dager === dager)
+const PRISFELT = [
+  ['enkelt', 'Enkeltbillett'],
+  [7, 'Ukeskort (7 dager)'],
+  [30, 'Månedskort (30 dager)'],
+  [365, 'Årskort (365 dager)'],
+]
+
+// Sveip høyre = neste, venstre = tilbake. Felt og knapper sveipes ikke, så glidere virker.
+let start = null
+const ned = (e) => {
+  start = e.pointerType === 'mouse' || e.target.closest('input, textarea, select') ? null : { x: e.clientX, y: e.clientY }
+}
+const opp = (e) => {
+  if (!start) return
+  const dx = e.clientX - start.x
+  const dy = e.clientY - start.y
+  start = null
+  if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) gaa(dx > 0 ? 1 : -1)
+}
+const taster = (e) => {
+  if (e.target.closest('input, textarea, select')) return
+  if (e.key === 'ArrowRight') gaa(1)
+  if (e.key === 'ArrowLeft') gaa(-1)
+}
+</script>
+
+<template>
+  <section class="kort oppsett" aria-labelledby="op-tittel" @keydown="taster">
+    <h2 id="op-tittel" class="seksjonstittel">Steg {{ i + 1 }} av {{ STEG.length }}</h2>
+
+    <div class="mt-3 overflow-hidden" style="touch-action: pan-y" @pointerdown="ned" @pointerup="opp" @pointercancel="start = null">
+      <Transition :name="`gli-${retning}`" mode="out-in">
+        <div :key="STEG[i]" class="min-h-[22rem]">
+          <template v-if="STEG[i] === 'stasjon'">
+            <h3 class="steg-tittel">Hvor reiser du fra?</h3>
+            <p class="steg-tekst">Oslo S er målet.</p>
+            <div class="mt-4 flex flex-wrap gap-2" role="group" aria-label="Fra-stasjon">
+              <button v-for="p in PRESETS" :key="p.id" type="button" class="chip" :aria-pressed="strekning?.id === p.id" @click="velgStasjon(p)">{{ p.navn.split('–')[0] }}</button>
+            </div>
+          </template>
+
+          <template v-else-if="STEG[i] === 'uke'">
+            <h3 class="steg-tittel">Hvilke dager drar du på jobb?</h3>
+            <p class="steg-tekst">Resten av ukedagene regnes som hjemmekontor.</p>
+            <div class="mt-4 flex flex-wrap gap-2" role="group" aria-label="Jobbdager">
+              <button v-for="(d, n) in UKEDAGER_KORT" :key="d" type="button" class="chip" :aria-pressed="m.jobbUkedager.includes(n)" :aria-label="UKEDAGER_LANG[n]" @click="veksleDag(n)">{{ d }}</button>
+            </div>
+          </template>
+
+          <template v-else-if="STEG[i] === 'tider'">
+            <h3 class="steg-tittel">Når reiser du?</h3>
+            <p class="steg-tekst">Billetten gjelder like lenge fra klokkeslettet du aktiverer den.</p>
+            <div class="mt-4 grid grid-cols-2 gap-3">
+              <div>
+                <label class="etikett" for="op-morgen">Avreise morgen</label>
+                <input id="op-morgen" v-model="m.morgen" class="felt" type="time" />
+              </div>
+              <div>
+                <label class="etikett" for="op-ettermiddag">Avreise ettermiddag</label>
+                <input id="op-ettermiddag" v-model="m.ettermiddag" class="felt" type="time" />
+              </div>
+            </div>
+          </template>
+
+          <template v-else-if="STEG[i] === 'billett'">
+            <h3 class="steg-tittel">Har du en periodebillett nå?</h3>
+            <p class="steg-tekst">Da starter beregningen når den utløper.</p>
+            <div class="mt-4"><EksisterendeBillett v-model="m" /></div>
+          </template>
+
+          <template v-else-if="STEG[i] === 'ferie'">
+            <h3 class="steg-tittel">Ferie og fri</h3>
+            <p class="steg-tekst">Valgfritt. Legg inn eller importer fra kalenderen, så stemmer beregningen fra start.</p>
+            <div class="mt-4"><FerieListe v-model="m" /></div>
+          </template>
+
+          <template v-else-if="STEG[i] === 'priser'">
+            <h3 class="steg-tittel">Stemmer prisene?</h3>
+            <p class="steg-tekst">{{ stasjon }} – Oslo S, voksen. Rett dem hvis de er feil.</p>
+            <div class="mt-4 grid grid-cols-2 gap-3">
+              <div v-for="[n, navn] in PRISFELT" :key="n">
+                <label class="etikett" :for="`pr-${n}`">{{ navn }} (kr)</label>
+                <input v-if="n === 'enkelt'" :id="`pr-${n}`" v-model.number="strekning.enkelt" class="felt" type="number" inputmode="decimal" min="0" />
+                <input v-else-if="pris(n)" :id="`pr-${n}`" v-model.number="pris(n).pris" class="felt" type="number" inputmode="decimal" min="0" />
+              </div>
+            </div>
+            <p class="mt-3 text-sm text-[var(--color-ink-2)]">
+              Prisene ligger i appen og oppdateres med jevne mellomrom. Sist sjekket {{ PRESET_DATO }}. Vy hever vanligvis prisene 1. februar.
+            </p>
+          </template>
+
+          <template v-else>
+            <h3 class="steg-tittel">Alt klart!</h3>
+            <p class="steg-tekst">Vi har nok til å finne billettene som holder deg på skinnene til lavest mulig pris.</p>
+            <button type="button" class="klar" @click="emit('klar')">
+              <span aria-hidden="true">🚂</span> Sett i gang! <span aria-hidden="true">💨</span>
+            </button>
+          </template>
+        </div>
+      </Transition>
+    </div>
+
+    <div class="mt-3 flex items-center justify-between gap-3">
+      <button type="button" class="knapp" :disabled="i === 0" @click="gaa(-1)">Tilbake</button>
+      <ol class="flex items-center gap-2" aria-hidden="true">
+        <li v-for="(s, n) in STEG" :key="s" class="h-2 rounded-full transition-all" :class="n === i ? 'w-5 bg-[var(--color-accent)]' : 'w-2 bg-[var(--color-line)]'" />
+      </ol>
+      <button type="button" class="knapp knapp-primaer" :disabled="i === STEG.length - 1" @click="gaa(1)">Neste</button>
+    </div>
+  </section>
+</template>
+
+<style scoped>
+.steg-tittel {
+  font-size: 1.5rem;
+  line-height: 1.2;
+  font-weight: 600;
+}
+.steg-tekst {
+  margin-top: 0.25rem;
+  color: var(--color-ink-2);
+}
+.klar {
+  margin-top: 2rem;
+  width: 100%;
+  min-height: 5rem;
+  border-radius: 1.25rem;
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  font-size: 1.5rem;
+  font-weight: 700;
+  animation: puls 2s ease-in-out infinite;
+}
+@keyframes puls {
+  50% {
+    transform: scale(1.03);
+  }
+}
+.gli-frem-enter-active,
+.gli-frem-leave-active,
+.gli-tilbake-enter-active,
+.gli-tilbake-leave-active {
+  transition:
+    transform 0.18s ease,
+    opacity 0.18s ease;
+}
+/* Sveip høyre = neste: innholdet følger fingeren mot høyre. */
+.gli-frem-leave-to,
+.gli-tilbake-enter-from {
+  transform: translateX(2rem);
+  opacity: 0;
+}
+.gli-frem-enter-from,
+.gli-tilbake-leave-to {
+  transform: translateX(-2rem);
+  opacity: 0;
+}
+</style>

@@ -12,7 +12,7 @@ describe('presets', () => {
   })
 
   it('gir gyldig strekning også uten enkeltpris', () => {
-    const s = strekningFraPreset(PRESETS.find((p) => p.id === 'lier'), 'x')
+    const s = strekningFraPreset({ ...PRESETS.find((p) => p.id === 'lier'), enkelt: null }, 'x')
     expect(s.enkelt).toBe('')
     expect(normaliserStrekninger([s])[0]).toMatchObject({ enkelt: Infinity })
     expect(normaliserStrekninger([s])[0].perioder).toHaveLength(3)

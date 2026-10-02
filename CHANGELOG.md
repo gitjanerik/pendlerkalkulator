@@ -1,3 +1,9 @@
+## 2026-10-02 — v0.9.0: Førstegangsveiviser
+
+Første besøk starter en veiviser med sju steg: fra-stasjon, jobbdager, reisetider, eksisterende periodebillett (med utløpsdato, klokkeslett og type), ferie (registrer eller importer), prissjekk og en stor «Sett i gang»-knapp. Sveip høyre for neste og venstre for tilbake; prikker nederst og «Steg N av 7» i toppen. Resten av siden og menyen er utilgjengelig til veiviseren er ferdig. Innstillinger: én periodevelger (fra og til) i en egen kalender, «Fri og ferie» øverst og «Utseende» nederst, skriftstørrelsen settes når du slipper slideren, og Nullstill spør «Er du sikker?» og sier at ferie og andre registrerte opplysninger fjernes. Enkeltprisene til Oslo S er oppdatert (Gulskogen 156, Drammen 151, Brakerøya 143, Lier 132, Asker 75). Eksisterende periodebillett starter beregningen ved utløp. Teksten om at priser oppdateres jevnlig er bare tekst; det finnes ingen automatisk prishenting.
+
+---
+
 ## 2026-10-02 — v0.8.0: Live avganger og helligdagsjekk
 
 Nytt kort «Neste tog» under stasjonsvalget: de neste fire togene mellom valgt stasjon og Oslo S fra Entur Journey Planner, med klokkeslett, linje, bytter og forsinkelse eller innstilling i tekst. Retning velges med to knapper (til Oslo S før kl. 12, ellers fra). Stasjons-id slås opp via Enturs geocoder og huskes i nettleseren; kortet oppdaterer seg hvert minutt mens siden er synlig, og feiler stille med en vennlig melding. Logikken ligger i `src/lib/entur.js` med tester mot fiksturer (Entur er utilgjengelig herfra, så live-oppførsel er ikke prøvd). Ny `scripts/sjekk-helligdager.mjs` sammenlikner våre utregnede helligdager med date.nager.at, kjørt månedlig og på forespørsel i workflowen «Helligdagsjekk».
