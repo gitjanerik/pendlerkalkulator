@@ -14,7 +14,7 @@ async function foreslaa() {
   melding.value = ''
   try {
     const [hjem, oslo] = await Promise.all([stasjonsId(props.stasjon), stasjonsId('Oslo S')])
-    const f = await foreslaaAvganger(hjem, oslo, idagIso())
+    const f = await foreslaaAvganger(hjem, oslo, idagIso(), { morgen: m.value.morgen, ettermiddag: m.value.ettermiddag })
     if (f.morgen) m.value.morgen = f.morgen
     if (f.ettermiddag) m.value.ettermiddag = f.ettermiddag
     melding.value = f.morgen && f.ettermiddag ? 'Avgangene er fylt inn.' : 'Fant ikke alle avgangene. Fyll inn selv.'
@@ -31,7 +31,7 @@ async function foreslaa() {
     <button type="button" class="chip self-start px-3" :disabled="laster" @click="foreslaa">
       {{ laster ? 'Henter …' : 'Foreslå fra Entur' }}
     </button>
-    <p v-if="hint" class="text-sm text-[var(--color-ink-3)]">Første tog som er fremme på Oslo S før 09:00, og første tog hjem når du har vært 8 timer på jobb (inkl. 30 min pause).</p>
+    <p v-if="hint" class="text-sm text-[var(--color-ink-3)]">Første tog fra klokkeslettene du har valgt, til og fra Oslo S.</p>
     <p v-if="melding" class="text-sm" role="status">{{ melding }}</p>
   </div>
 </template>
