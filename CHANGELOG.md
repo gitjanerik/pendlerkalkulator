@@ -1,3 +1,9 @@
+## 2026-10-02 — v1.0.7: «Vurder årskort» i infoboksen
+
+Infoboksen om årskort har fått en bryter «Vurder årskort», som en snarvei til samme innstilling som i menyen (standard er fortsatt på). Bryteren vises når årskort lønner seg, eller når det allerede er slått på. Besparelsen får stjerne og fotnote om prisøkning når årskort- eller sammenligningsprisene er satt etter en økning.
+
+---
+
 ## 2026-10-02 — v1.0.6: Prisøkning på som standard og ryddigere varsler
 
 Prisøkning er nå slått på som standard (gjelder nye brukere; lagrede innstillinger beholdes). Klokkeskifter vises som to punktlister, sommertid og vintertid, med datoer. Norsk orddeling (hyphens) er slått på. Visningsknappene i «Billettene dine» bryter til egen linje når det er trangt. «Billettsammenligning» heter nå «Sammensetning av billetter». Teksten «lagres i nettleseren» er fjernet fra menyen.

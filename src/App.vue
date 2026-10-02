@@ -3,6 +3,8 @@ import { computed, ref } from "vue";
 import { useModell } from "./composables/useModell.js";
 import { useTema } from "./composables/useTema.js";
 import { MONSTER } from "./lib/dagmonster.js";
+import Estimat from "./components/Estimat.vue";
+import PrefBryter from "./components/PrefBryter.vue";
 import MenyKnapp from "./components/MenyKnapp.vue";
 import AppMeny from "./components/AppMeny.vue";
 import Oppsett from "./components/Oppsett.vue";
@@ -120,18 +122,24 @@ const settDager = (n) => (modell.jobbUkedager = [...MONSTER[n]]);
             </ul>
           </div>
         </section>
-        <p
+        <section
           v-if="utfall.aarskort?.besparelse != null"
           class="kort text-sm text-[var(--color-ink-2)]"
         >
-          <template v-if="utfall.aarskort.lonnerSeg"
-            >Årskort sparer deg {{ kr(utfall.aarskort.besparelse) }} i
-            perioden.</template
-          >
-          <template v-else
-            >Årskort lønner seg ikke for denne perioden.</template
-          >
-        </p>
+          <p v-if="utfall.aarskort.lonnerSeg">
+            Årskort sparer deg {{ kr(utfall.aarskort.besparelse) }}<Estimat v-if="utfall.aarskort.estimert" /> i perioden.
+          </p>
+          <p v-else>Årskort lønner seg ikke for denne perioden.</p>
+          <p v-if="utfall.aarskort.estimert" class="mt-1 text-xs">
+            * Estimat: regner med {{ utfall.prisokningProsent }} % prisøkning hver 1. februar.
+          </p>
+          <PrefBryter
+            v-if="utfall.aarskort.lonnerSeg || modell.inkluderAarskort"
+            v-model="modell.inkluderAarskort"
+            tittel="Vurder årskort"
+            tekst="Binder deg i 12 måneder."
+          />
+        </section>
         <p
           v-if="modell.jobbUkedager.length < 5"
           class="kort text-sm text-[var(--color-ink-2)]"
