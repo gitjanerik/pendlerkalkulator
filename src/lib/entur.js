@@ -1,5 +1,7 @@
 // Entur: stedsøk (geocoder) og reiseforslag (Journey Planner v3). Ren logikk; nettkallet
 // tas imot som parameter slik at det kan testes uten nett.
+import { leggTilDager, ukedag } from './dato.js'
+
 export const ENTUR_KLIENT = 'gitjanerik-pendlerkalkulator'
 const GEOCODER = 'https://api.entur.io/geocoder/v1/autocomplete'
 const PLANLEGGER = 'https://api.entur.io/journey-planner/v3/graphql'
@@ -65,4 +67,62 @@ export async function hentAvganger(fraId, tilId, { hent = fetch, n = 4, signal }
     signal,
   })
   return tolkAvganger(svar)
+}
+
+// Forslag til faste avganger: første tog som er fremme før kontortid, og første tog hjem etter fri.
+export const FORSLAG = { ankomstSenest: '08:55', hjemEtter: '15:00' }
+
+export const TUR_FORSLAG = `query ($fra: String!, $til: String!, $n: Int!, $tid: DateTime!, $ankomst: Boolean!) {
+  trip(from: { place: $fra }, to: { place: $til }, numTripPatterns: $n, dateTime: $tid, arriveBy: $ankomst,
+       modes: { transportModes: [{ transportMode: rail }] }) {
+    tripPatterns {
+      aimedStartTime expectedStartTime expectedEndTime
+      legs { mode realtime line { publicCode } fromEstimatedCall { cancellation } }
+    }
+  }
+}`
+
+// Neste hverdag etter idag (fredag og helg gir mandag).
+export function nesteArbeidsdag(idag) {
+  let d = leggTilDager(idag, 1)
+  while (ukedag(d) > 4) d = leggTilDager(d, 1)
+  return d
+}
+
+// «2026-10-05» + «08:55» → «2026-10-05T08:55:00+02:00» med riktig norsk forskyvning.
+export function osloTid(dato, hhmm) {
+  const del = new Intl.DateTimeFormat('en', { timeZone: 'Europe/Oslo', timeZoneName: 'longOffset' })
+    .formatToParts(new Date(`${dato}T${hhmm}:00Z`))
+    .find((x) => x.type === 'timeZoneName')?.value
+  const forskyvning = del && del !== 'GMT' ? del.slice(3) : '+00:00'
+  return `${dato}T${hhmm}:00${forskyvning}`
+}
+
+// ankomst: siste tog som er fremme senest på grensen. Ellers: første tog som går fra grensen.
+export function velgForslag(avganger, { ankomst, grense }) {
+  const g = new Date(grense).getTime()
+  const mulige = avganger.filter((a) => !a.innstilt)
+  const treff = ankomst
+    ? mulige.filter((a) => new Date(a.slutt).getTime() <= g).sort((a, b) => new Date(b.start) - new Date(a.start))
+    : mulige.filter((a) => new Date(a.start).getTime() >= g).sort((a, b) => new Date(a.start) - new Date(b.start))
+  return treff[0] ? klokke(treff[0].start) : null
+}
+
+async function forslag(fraId, tilId, grense, ankomst, hent, signal) {
+  const svar = await json(hent, PLANLEGGER, {
+    method: 'POST',
+    headers: { ...HODER, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ query: TUR_FORSLAG, variables: { fra: fraId, til: tilId, n: 5, tid: grense, ankomst } }),
+    signal,
+  })
+  return velgForslag(tolkAvganger(svar), { ankomst, grense })
+}
+
+export async function foreslaaAvganger(hjemId, osloId, idag, { hent = fetch, signal } = {}) {
+  const dato = nesteArbeidsdag(idag)
+  const [morgen, ettermiddag] = await Promise.all([
+    forslag(hjemId, osloId, osloTid(dato, FORSLAG.ankomstSenest), true, hent, signal),
+    forslag(osloId, hjemId, osloTid(dato, FORSLAG.hjemEtter), false, hent, signal),
+  ])
+  return { morgen, ettermiddag }
 }

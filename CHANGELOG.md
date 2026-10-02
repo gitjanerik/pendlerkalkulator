@@ -1,3 +1,9 @@
+## 2026-10-02 — v0.14.0: Foreslå avganger fra Entur
+
+Ny knapp «Foreslå fra Entur» under avgangstidene (oppsett og meny). Den fyller inn første tog fra hjemstasjonen som er fremme på Oslo S før 09:00, og første tog fra Oslo S hjemover etter 15:00, for neste arbeidsdag. Det er kun et forslag: feltene kan rettes som før, og innstilte avganger hoppes over.
+
+---
+
 ## 2026-10-02 — v0.13.2: Avgangstider direkte, uten kjernetid
 
 Kjernetid og reisetid er fjernet. Du skriver inn avgangene du faktisk tar fra stasjonen og fra Oslo S (standard 07:00 og 16:00). Ny billett starter ved første avgang etter at den gamle utløper, så en avgang 15:11 i dag blir med når du velger «Bruk nå» etter 15:00.
