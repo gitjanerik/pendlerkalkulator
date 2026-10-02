@@ -10,9 +10,9 @@ const tittel = computed(() => (tilOslo.value ? `${props.stasjon} → Oslo S` : `
 const apen = ref(false)
 const foerste = computed(() => avganger.value.find((a) => !a.innstilt) ?? avganger.value[0])
 const status = (a) => {
-  if (a.innstilt) return { tekst: 'innstilt', varsel: true }
-  if (a.forsinkelseMin >= 2) return { tekst: `+${a.forsinkelseMin} min`, varsel: true }
-  return { tekst: 'i rute', varsel: false }
+  if (a.innstilt) return { tekst: 'innstilt', varsel: true, pille: 'pille-bad' }
+  if (a.forsinkelseMin >= 2) return { tekst: `+${a.forsinkelseMin} min`, varsel: true, pille: 'pille-warn' }
+  return { tekst: 'i rute', varsel: false, pille: '' }
 }
 </script>
 
@@ -25,7 +25,7 @@ const status = (a) => {
         <span class="block truncate tabular-nums" aria-live="polite">
           <template v-if="foerste">
             <span class="font-semibold">{{ foerste.linjer[0] ?? 'Tog' }} {{ klokke(foerste.start) }}</span>
-            <span class="ml-1 text-sm font-medium" :class="status(foerste).varsel ? 'text-[var(--color-warn)]' : 'text-[var(--color-ink-2)]'">{{ status(foerste).tekst }}</span>
+            <span class="pille" :class="status(foerste).pille">{{ status(foerste).tekst }}</span>
           </template>
           <span v-else class="text-sm text-[var(--color-ink-2)]">{{ laster ? 'Henter …' : feil ? 'Ingen data' : '' }}</span>
         </span>

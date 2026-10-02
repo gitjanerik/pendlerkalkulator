@@ -16,6 +16,7 @@
   --color-warn: #b45309;
   --color-bad: #b91c1c;
   --color-bar: #a8a29e;
+  --color-on-status: #ffffff;
   color-scheme: light;
 }
 
@@ -32,6 +33,7 @@
   --color-warn: #fbbf24;
   --color-bad: #fca5a5;
   --color-bar: #71717a;
+  --color-on-status: #1c1917;
   color-scheme: dark;
 }
 
@@ -49,6 +51,7 @@
     --color-warn: #fbbf24;
     --color-bad: #fca5a5;
     --color-bar: #71717a;
+    --color-on-status: #1c1917;
     color-scheme: dark;
   }
 }
@@ -115,6 +118,20 @@ input[type='range'] {
 }
 
 @layer components {
+  /* Statuspille: farge + tekst, aldri farge alene */
+  .pille {
+    @apply ml-2 inline-block rounded-full px-2.5 py-0.5 align-middle text-sm font-semibold;
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+  .pille-warn {
+    background: var(--color-warn);
+    color: var(--color-on-status);
+  }
+  .pille-bad {
+    background: var(--color-bad);
+    color: var(--color-on-status);
+  }
   .kort {
     @apply rounded-2xl border border-[var(--color-line)] bg-[var(--color-surface)] p-4 sm:p-5;
   }
