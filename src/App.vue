@@ -23,6 +23,7 @@ const strekning = computed(() => modell.strekninger[0]?.navn.replace("–", " �
 const stasjon = computed(() => modell.strekninger[0]?.navn.split("–")[0] ?? "");
 const ferdig = () => {
   modell.oppsettFerdig = true;
+  modell.infoLukket = false;
   window.scrollTo({ top: 0 });
 };
 const settDager = (n) => (modell.jobbUkedager = [...MONSTER[n]]);
@@ -47,6 +48,20 @@ const settDager = (n) => (modell.jobbUkedager = [...MONSTER[n]]);
   <main class="mx-auto flex max-w-xl flex-col gap-4 px-4 py-4 pb-12">
     <Oppsett v-if="!modell.oppsettFerdig" v-model="modell" @klar="ferdig" />
     <div v-else class="flex flex-col gap-4">
+      <aside v-if="!modell.infoLukket" class="kort relative pr-12 text-sm" aria-labelledby="info-tittel">
+        <h2 id="info-tittel" class="font-semibold">Tilpass i Innstillinger</h2>
+        <p class="mt-1 text-[var(--color-ink-2)]">
+          Ferie, fritidsreiser, hjemstasjon, priser og mer kan justeres i Innstillinger (menyen øverst til venstre).
+        </p>
+        <button
+          type="button"
+          class="knapp absolute right-1 top-1 !w-11 !border-transparent !p-0"
+          aria-label="Lukk infoboksen"
+          @click="modell.infoLukket = true"
+        >
+          <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+        </button>
+      </aside>
       <AvgangerKort v-if="modell.oppsettFerdig" :stasjon="stasjon" />
       <PeriodeValg v-model="modell" :start-klokke="startKlokke" :utdatert="utdatert" @oppdater-na="oppdaterNa" />
       <DagerPerUke v-model="modell" />
