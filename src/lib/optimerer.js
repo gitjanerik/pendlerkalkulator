@@ -196,5 +196,6 @@ export function aarskortAnalyse(turer, strekninger, opsjoner = {}) {
     utenAarskort: uten,
     lonnerSeg: brukerAarskort,
     besparelse: med.mulig && uten.mulig ? uten.kostnad - med.kostnad : null,
+    estimert: med.estimert || uten.estimert,
   }
 }
