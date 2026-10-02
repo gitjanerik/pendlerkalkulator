@@ -1,9 +1,14 @@
 <script setup>
 import PrefBryter from './PrefBryter.vue'
+import IcsImport from './IcsImport.vue'
+import { slaaSammenFerie } from '../lib/ics.js'
 
 const m = defineModel({ type: Object })
 
 const leggFerie = () => m.value.ferie.push({ fra: '', til: '' })
+const importerFerie = (intervaller) => {
+  m.value.ferie = slaaSammenFerie([...m.value.ferie, ...intervaller])
+}
 const fjernFerie = (i) => m.value.ferie.splice(i, 1)
 </script>
 
@@ -54,6 +59,9 @@ const fjernFerie = (i) => m.value.ferie.splice(i, 1)
         <button type="button" class="knapp px-3" :aria-label="`Fjern ferie ${i + 1}`" @click="fjernFerie(i)">✕</button>
       </li>
     </ul>
-    <button type="button" class="knapp self-start" @click="leggFerie">+ Legg til ferie</button>
+    <div class="flex flex-wrap gap-2">
+      <button type="button" class="knapp" @click="leggFerie">+ Legg til ferie</button>
+      <IcsImport @importer="importerFerie" />
+    </div>
   </section>
 </template>

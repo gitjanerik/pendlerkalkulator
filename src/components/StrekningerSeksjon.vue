@@ -1,4 +1,7 @@
 <script setup>
+import { PRESETS, PRESET_DATO, strekningFraPreset } from '../lib/presets.js'
+import { norskDato } from '../lib/format.js'
+
 const strekninger = defineModel({ type: Array })
 
 const id = () => globalThis.crypto?.randomUUID?.() ?? String(Date.now() + Math.random())
@@ -14,6 +17,10 @@ const legg = () =>
       { dager: 30, pris: '' },
     ],
   })
+const fyllFraPreset = (i, presetId) => {
+  const preset = PRESETS.find((p) => p.id === presetId)
+  if (preset) strekninger.value[i] = strekningFraPreset(preset, strekninger.value[i].id)
+}
 const fjern = (i) => strekninger.value.splice(i, 1)
 const leggPeriode = (s) => s.perioder.push({ dager: '', pris: '' })
 const fjernPeriode = (s, i) => s.perioder.splice(i, 1)
@@ -29,6 +36,17 @@ const fjernPeriode = (s, i) => s.perioder.splice(i, 1)
 
     <fieldset v-for="(s, i) in strekninger" :key="s.id" class="kort flex flex-col gap-4">
       <legend class="sr-only">Strekning {{ i + 1 }}</legend>
+      <div>
+        <label class="etikett" :for="`forslag-${s.id}`">Fyll inn fra forslag</label>
+        <select :id="`forslag-${s.id}`" class="felt" @change="fyllFraPreset(i, $event.target.value); $event.target.value = ''">
+          <option value="">Velg strekning …</option>
+          <option v-for="p in PRESETS" :key="p.id" :value="p.id">{{ p.navn }}</option>
+        </select>
+        <p class="mt-1 text-xs text-[var(--color-ink-2)]">
+          Vys voksenpriser {{ norskDato(PRESET_DATO, true) }}. Sjekk mot appen og legg inn enkeltpris selv.
+        </p>
+      </div>
+
       <div class="flex items-end gap-2">
         <div class="flex-1">
           <label class="etikett" :for="`navn-${s.id}`">Navn</label>
