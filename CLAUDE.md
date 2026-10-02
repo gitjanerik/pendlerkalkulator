@@ -36,7 +36,7 @@ npm run build   # produksjonsbygg
 - **Helligdager beregnes lokalt** (påskealgoritme + faste datoer), slik at
   appen virker offline for alle år. Eksterne datasett er valgfritt tillegg.
 - **Arbeidsdag-regler er innstillinger:** «Jobber mandag–onsdag i påskeuka»
-  (default PÅ), «Jobber i romjul». Palmesøndag, skjærtorsdag, langfredag og
+  og «Jobber i romjul» (begge default AV). Palmesøndag, skjærtorsdag, langfredag og
   1./2. påskedag er alltid fri.
 - **Live togavganger** (Entur Journey Planner v3, åpent, krever headeren
   `ET-Client-Name`) er valgfritt og aldri en avhengighet for optimereren.

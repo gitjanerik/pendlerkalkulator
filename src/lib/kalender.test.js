@@ -15,13 +15,18 @@ describe('byggKalender', () => {
     })
   })
 
-  it('påskeuka: man–ons er arbeid som standard, skjærtorsdag og langfredag er fri', () => {
-    const t = typer(byggKalender({ fra: '2026-03-30', til: '2026-04-06' }))
+  it('påskeuka: man–ons er arbeid når bryteren er på, skjærtorsdag og langfredag er fri', () => {
+    const t = typer(byggKalender({ fra: '2026-03-30', til: '2026-04-06', innstillinger: { jobberPaaskeMandagOnsdag: true } }))
     expect(t['2026-03-30']).toBe('arbeid')
     expect(t['2026-04-01']).toBe('arbeid')
     expect(t['2026-04-02']).toBe('helligdag')
     expect(t['2026-04-03']).toBe('helligdag')
     expect(t['2026-04-06']).toBe('helligdag')
+  })
+
+  it('påske og romjul er fri som standard', () => {
+    expect(Object.values(typer(byggKalender({ fra: '2026-03-30', til: '2026-04-01' })))).toEqual(['fri', 'fri', 'fri'])
+    expect(Object.values(typer(byggKalender({ fra: '2026-12-28', til: '2026-12-30' })))).toEqual(['fri', 'fri', 'fri'])
   })
 
   it('påskebryteren av gjør man–ons fri', () => {
@@ -36,7 +41,7 @@ describe('byggKalender', () => {
   })
 
   it('romjul 27.–30.12 følger bryteren, julaften og nyttårsaften er alltid fri', () => {
-    const paa = typer(byggKalender({ fra: '2026-12-24', til: '2026-12-31' }))
+    const paa = typer(byggKalender({ fra: '2026-12-24', til: '2026-12-31', innstillinger: { jobberRomjul: true } }))
     expect(paa['2026-12-24']).toBe('fri')
     expect(paa['2026-12-25']).toBe('helligdag')
     expect(paa['2026-12-28']).toBe('arbeid')

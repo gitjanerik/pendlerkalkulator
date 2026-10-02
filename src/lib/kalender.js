@@ -2,8 +2,8 @@ import { datoerMellom, ukedag } from './dato.js'
 import { norskeHelligdager, paaskeukeMandagOnsdag } from './helligdager.js'
 
 export const STANDARD_INNSTILLINGER = {
-  jobberPaaskeMandagOnsdag: true,
-  jobberRomjul: true,
+  jobberPaaskeMandagOnsdag: false,
+  jobberRomjul: false,
 }
 
 const aarAv = (iso) => Number(iso.slice(0, 4))

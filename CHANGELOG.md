@@ -1,3 +1,9 @@
+## 2026-10-02 — v1.0.8: Påske og romjul av som standard
+
+«Jobber i påske mandag–onsdag» og «Jobber i romjul» er nå av som standard (gjelder nye brukere; lagrede innstillinger beholdes).
+
+---
+
 ## 2026-10-02 — v1.0.7: «Vurder årskort» i infoboksen
 
 Infoboksen om årskort har fått en bryter «Vurder årskort», som en snarvei til samme innstilling som i menyen (standard er fortsatt på). Bryteren vises når årskort lønner seg, eller når det allerede er slått på. Besparelsen får stjerne og fotnote om prisøkning når årskort- eller sammenligningsprisene er satt etter en økning.
