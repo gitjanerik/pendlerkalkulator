@@ -60,7 +60,8 @@ const tom = (feil) => ({ feil, resultat: null })
 
 // Ren funksjon fra skjemaets tilstand til alt UI-et viser.
 export function beregn(modell) {
-  const { fra, til, fraKlokke } = modell
+  const { fra, til } = modell
+  const fraKlokke = modell.fraKlokke || '00:00'
   if (!ISO.test(fra ?? '') || !ISO.test(til ?? '')) return tom('Velg start- og sluttdato.')
   if (til < fra) return tom('Sluttdatoen er før startdatoen.')
   if (!KLOKKE.test(fraKlokke ?? '')) return tom('Startklokkeslettet er ugyldig.')
