@@ -48,15 +48,20 @@ const settDager = (n) => (modell.jobbUkedager = [...MONSTER[n]]);
   <main class="mx-auto flex max-w-xl flex-col gap-4 px-4 py-4 pb-12">
     <Oppsett v-if="!modell.oppsettFerdig" v-model="modell" @klar="ferdig" />
     <div v-else class="flex flex-col gap-4">
-      <aside v-if="!modell.infoLukket" class="kort relative pr-12 text-sm" aria-labelledby="info-tittel">
-        <h2 id="info-tittel" class="font-semibold">Tilpass i Innstillinger</h2>
-        <p class="mt-1 text-[var(--color-ink-2)]">
-          Ferie, fritidsreiser, hjemstasjon, priser og mer kan justeres i Innstillinger (menyen øverst til venstre).
+      <!-- Snakkeboble: pila peker opp på tannhjulet (midt i 44 px-knappen, 30 px fra kanten) -->
+      <aside
+        v-if="!modell.infoLukket"
+        class="relative -mt-1 rounded-2xl rounded-tl-sm bg-[var(--color-accent)] py-3 pl-4 pr-12 text-sm text-[var(--color-on-accent)] shadow-[0_4px_10px_-2px_rgb(0_0_0/0.3)]"
+        aria-label="Tips"
+      >
+        <span class="absolute -top-2.5 left-1 h-0 w-0 border-x-[10px] border-b-[10px] border-x-transparent border-b-[var(--color-accent)]" aria-hidden="true"></span>
+        <p class="relative">
+          Ferie, fritid, hjemstasjon og priser tilpasser du i Innstillinger.
         </p>
         <button
           type="button"
-          class="knapp absolute right-1 top-1 !w-11 !border-transparent !p-0"
-          aria-label="Lukk infoboksen"
+          class="absolute right-0.5 top-0.5 grid h-11 w-11 place-items-center rounded-full transition-colors hover:bg-black/10"
+          aria-label="Lukk tipset"
           @click="modell.infoLukket = true"
         >
           <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
