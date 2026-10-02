@@ -5,7 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#efeae0" />
     <meta name="description" content="Finn billigste kjede av periodebilletter for arbeidsreisen din." />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Pendler" />
     <title>Pendlerkalkulator</title>
+    <script>
+      /* Installeringsforespørselen kommer én gang, ofte før Vue er lastet. */
+      window.addEventListener('beforeinstallprompt', function (e) {
+        e.preventDefault()
+        window.__deferredInstallPrompt = e
+      })
+      window.addEventListener('appinstalled', function () {
+        window.__deferredInstallPrompt = null
+        window.__appInstalled = true
+      })
+    </script>
     <script>
       /* Tema og tekststørrelse settes før første bilde, så det ikke blinker. */
       try {
