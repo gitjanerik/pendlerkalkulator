@@ -1,3 +1,9 @@
+## 2026-10-02 — v0.8.0: Live avganger og helligdagsjekk
+
+Nytt kort «Neste tog» under stasjonsvalget: de neste fire togene mellom valgt stasjon og Oslo S fra Entur Journey Planner, med klokkeslett, linje, bytter og forsinkelse eller innstilling i tekst. Retning velges med to knapper (til Oslo S før kl. 12, ellers fra). Stasjons-id slås opp via Enturs geocoder og huskes i nettleseren; kortet oppdaterer seg hvert minutt mens siden er synlig, og feiler stille med en vennlig melding. Logikken ligger i `src/lib/entur.js` med tester mot fiksturer (Entur er utilgjengelig herfra, så live-oppførsel er ikke prøvd). Ny `scripts/sjekk-helligdager.mjs` sammenlikner våre utregnede helligdager med date.nager.at, kjørt månedlig og på forespørsel i workflowen «Helligdagsjekk».
+
+---
+
 ## 2026-10-02 — v0.7.0: Ruter Reis
 
 Ny bryter i menyen: «Ruter Reis på enkeltbilletter». Reglene (5 % fra reise nr. 5, opp til 40 % fra reise nr. 40 de siste 30 dagene) ligger i `src/lib/reis.js` som en tabell og en ren funksjon med tester, så de kan endres uten å røre resten. Optimeringen prøver planer med ulike forutsatte rabattnivåer og priser hver plan eksakt med glidende 30-dagersvindu; bare enkeltbilletter teller og får rabatt, periodebilletter berøres ikke. Hovedtallet viser hva Reis sparer. Den flate rabattprosenten per strekning fra v0.6.0 er erstattet av dette. Vy Smartpris er en egen ordning og er ikke med. Reglene er lagt inn slik de ble oppgitt og er ikke sjekket mot Ruters og Vys sider (utilgjengelige herfra).
