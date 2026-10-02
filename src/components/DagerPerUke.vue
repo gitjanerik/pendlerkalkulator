@@ -54,6 +54,5 @@ const tekst = computed(() =>
         {{ d }}
       </button>
     </div>
-    <p class="mt-2 text-sm text-[var(--color-ink-2)]">Resten regnes som hjemmekontor.</p>
   </section>
 </template>
