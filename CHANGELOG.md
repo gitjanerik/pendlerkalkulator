@@ -1,3 +1,9 @@
+## 2026-10-02 — v0.15.8: Hodebry-tekst i Innstillinger
+
+Under infoteksten øverst i Innstillinger ligger nå en sammenleggbar «Litt mindre hodebry» (details) om at utregningen er tung før sommer- og juleferie, og at appen passer best for litt lengre perioder enn måned til måned.
+
+---
+
 ## 2026-10-02 — v0.15.7: Nyttårsaften er alltid fri
 
 Nyttårsaften (31. desember) regnes nå som fridag for alle, på lik linje med julaften. «Jobber i romjul» gjelder dermed 27.–30. desember.

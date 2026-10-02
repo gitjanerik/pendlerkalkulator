@@ -59,9 +59,13 @@ const klikkBakgrunn = (e) => {
         </button>
       </div>
 
-      <p class="-mt-4 text-sm text-[var(--color-ink-2)]">
-        Lønner det seg å fornye månedskortet? Sammenlign periodebilletter og finn billigste kombinasjon for din arbeidsuke.
-      </p>
+      <div class="-mt-4 text-sm text-[var(--color-ink-2)]">
+        <p>Lønner det seg å fornye månedskortet? Sammenlign periodebilletter og finn billigste kombinasjon for din arbeidsuke.</p>
+        <details class="mt-2">
+          <summary class="cursor-pointer font-medium text-[var(--color-ink)]">Litt mindre hodebry</summary>
+          <p class="mt-1">Å regne ut billigste billett er ofte tungt før sommer- og juleferie. Appen passer best for litt lengre perioder enn måned til måned.</p>
+        </details>
+      </div>
 
       <template v-if="!wizard">
         <section aria-labelledby="m-dager" class="flex flex-col">
