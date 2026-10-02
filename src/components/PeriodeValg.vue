@@ -19,7 +19,7 @@ const brukNa = () => {
   m.value.fraKlokke = ''
   redigerer.value = false
 }
-const LENGDER = [1, 3, 6, 12]
+const LENGDER = [1, 3, 6, 12, 24, 36]
 const apen = ref(false)
 const maaneder = computed(() => LENGDER.find((n) => tilEtterMaaneder(m.value.fra, n) === m.value.til) ?? null)
 const velgLengde = (n) => (m.value.til = tilEtterMaaneder(m.value.fra, n))

@@ -13,7 +13,7 @@ server.registerTool(
   'beregn_billetter',
   {
     description:
-      'Finner billigste kjede av enkelt-, 7-, 30- og 365-dagersbilletter for en man–fre-pendling, med aktivering/utløp, alternativer og årskort-vurdering.',
+      'Finner billigste kombinasjon av enkelt-, 7-, 30- og 365-dagersbilletter for en man–fre-pendling, med aktivering/utløp, alternativer og årskort-vurdering.',
     inputSchema: beregnSkjema,
   },
   async (inn) => svar(beregnBilletter(inn)),
