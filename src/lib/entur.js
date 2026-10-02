@@ -70,6 +70,9 @@ export async function hentAvganger(fraId, tilId, { hent = fetch, n = 4, signal }
 }
 
 // Forslag til faste avganger: første tog som er fremme før kontortid, og første tog hjem etter fri.
+// Hjemreisen kan tidligst gå ARBEIDSDAG_MIN etter at morgentoget er fremme (8 t inkl. 30 min pause).
+// hjemEtter brukes bare når vi ikke fant noe morgentog.
+export const ARBEIDSDAG_MIN = 8 * 60
 export const FORSLAG = { ankomstSenest: '08:55', hjemEtter: '15:00' }
 
 export const TUR_FORSLAG = `query ($fra: String!, $til: String!, $n: Int!, $tid: DateTime!, $ankomst: Boolean!) {
@@ -99,13 +102,18 @@ export function osloTid(dato, hhmm) {
 }
 
 // ankomst: siste tog som er fremme senest på grensen. Ellers: første tog som går fra grensen.
-export function velgForslag(avganger, { ankomst, grense }) {
+export function velgAvgang(avganger, { ankomst, grense }) {
   const g = new Date(grense).getTime()
   const mulige = avganger.filter((a) => !a.innstilt)
   const treff = ankomst
     ? mulige.filter((a) => new Date(a.slutt).getTime() <= g).sort((a, b) => new Date(b.start) - new Date(a.start))
     : mulige.filter((a) => new Date(a.start).getTime() >= g).sort((a, b) => new Date(a.start) - new Date(b.start))
-  return treff[0] ? klokke(treff[0].start) : null
+  return treff[0] ?? null
+}
+
+export function velgForslag(avganger, valg) {
+  const a = velgAvgang(avganger, valg)
+  return a ? klokke(a.start) : null
 }
 
 async function forslag(fraId, tilId, grense, ankomst, hent, signal) {
@@ -115,14 +123,15 @@ async function forslag(fraId, tilId, grense, ankomst, hent, signal) {
     body: JSON.stringify({ query: TUR_FORSLAG, variables: { fra: fraId, til: tilId, n: 5, tid: grense, ankomst } }),
     signal,
   })
-  return velgForslag(tolkAvganger(svar), { ankomst, grense })
+  return velgAvgang(tolkAvganger(svar), { ankomst, grense })
 }
 
 export async function foreslaaAvganger(hjemId, osloId, idag, { hent = fetch, signal } = {}) {
   const dato = nesteArbeidsdag(idag)
-  const [morgen, ettermiddag] = await Promise.all([
-    forslag(hjemId, osloId, osloTid(dato, FORSLAG.ankomstSenest), true, hent, signal),
-    forslag(osloId, hjemId, osloTid(dato, FORSLAG.hjemEtter), false, hent, signal),
-  ])
-  return { morgen, ettermiddag }
+  const morgen = await forslag(hjemId, osloId, osloTid(dato, FORSLAG.ankomstSenest), true, hent, signal)
+  const hjemGrense = morgen
+    ? new Date(new Date(morgen.slutt).getTime() + ARBEIDSDAG_MIN * 60000).toISOString()
+    : osloTid(dato, FORSLAG.hjemEtter)
+  const hjem = await forslag(osloId, hjemId, hjemGrense, false, hent, signal)
+  return { morgen: morgen ? klokke(morgen.start) : null, ettermiddag: hjem ? klokke(hjem.start) : null }
 }
