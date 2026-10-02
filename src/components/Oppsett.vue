@@ -2,7 +2,6 @@
 import { computed, ref } from 'vue'
 import { PRESETS, PRESET_DATO, strekningFraPreset } from '../lib/presets.js'
 import { UKEDAGER_KORT, UKEDAGER_LANG } from '../lib/dagmonster.js'
-import { avreiseFraKjernetid } from '../lib/kjernetid.js'
 import Beloep from './Beloep.vue'
 import PrefBryter from './PrefBryter.vue'
 import EksisterendeBillett from './EksisterendeBillett.vue'
@@ -35,12 +34,8 @@ const gaa = (n) => {
   i.value = ny
 }
 
-const settAvreise = () => Object.assign(m.value, avreiseFraKjernetid(m.value.kjernetid, m.value.reisetid))
-settAvreise()
 const velgStasjon = (p) => {
   m.value.strekninger = [strekningFraPreset(p, p.id)]
-  m.value.reisetid = p.reisetid
-  settAvreise()
 }
 const veksleDag = (d) => {
   const s = new Set(m.value.jobbUkedager)
@@ -100,24 +95,9 @@ const taster = (e) => {
           </template>
 
           <template v-else-if="STEG[i] === 'tider'">
-            <h3 class="steg-tittel">Når må du være på jobb?</h3>
-            <p class="steg-tekst">Kjernetiden er tidene du må være på kontoret. Vi regner ut avreise fra reisetiden.</p>
+            <h3 class="steg-tittel">Når tar du toget?</h3>
+            <p class="steg-tekst">Skriv inn avgangene du faktisk tar. Ny billett starter ved neste avgang etter at den gamle utløper.</p>
             <div class="mt-4 felt-par">
-              <div>
-                <label class="etikett" for="op-kjerne-fra">Kjernetid fra</label>
-                <input id="op-kjerne-fra" v-model="m.kjernetid.fra" class="felt" type="time" @change="settAvreise" />
-              </div>
-              <div>
-                <label class="etikett" for="op-kjerne-til">Kjernetid til</label>
-                <input id="op-kjerne-til" v-model="m.kjernetid.til" class="felt" type="time" @change="settAvreise" />
-              </div>
-              <div class="col-span-2">
-                <label class="etikett" for="op-reisetid">Reisetid fra {{ stasjon }} (minutter, ca.)</label>
-                <input id="op-reisetid" v-model.number="m.reisetid" class="felt" type="number" inputmode="numeric" min="0" step="1" @change="settAvreise" />
-              </div>
-            </div>
-            <h4 class="mt-4 font-semibold">Avreisetid</h4>
-            <div class="mt-2 felt-par">
               <div>
                 <label class="etikett" for="op-morgen">Fra {{ stasjon }}</label>
                 <input id="op-morgen" v-model="m.morgen" class="felt" type="time" />
