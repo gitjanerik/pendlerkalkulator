@@ -1,3 +1,9 @@
+## 2026-10-02 — v0.10.1: Finpuss av veiviseren
+
+Tilbake og Neste er nå piler uten tekst (og passer i boksen på smale skjermer). Avreisetid har egen overskrift med «Fra <stasjon>» og «Fra Oslo S». Steget om eksisterende billett forklarer at ny billett starter ved neste arbeidsreise, ikke rett etter utløp. Beløpsfelt har prefikset «kr» og tusenskille i veiviseren og i menyen. Veiviseren fyller skjermen med lik høyde i alle steg, og resten av siden skjules til den er ferdig. Avreisetidene regnes ut fra kjernetid når veiviseren åpnes.
+
+---
+
 ## 2026-10-02 — v0.10.0: Kjernetid, reisetid og påske/romjul i veiviseren
 
 Veiviseren har fått to nye steg. «Når må du være på jobb?» spør etter kjernetid (standard 09–15) og kjenner omtrentlig reisetid fra valgt stasjon (Gulskogen ca. 40 min, Drammen ca. 35, Lier ca. 30; Brakerøya og Asker er anslag). Avreise om morgenen regnes ut fra kjernetidens start minus reisetid, rundet ned til 5 minutter, og avreise hjem er kjernetidens slutt; begge kan finjusteres. «Påske og romjul» spør om du jobber i påskeuka mandag–onsdag og i romjul. Veiviseren har nå 8 steg. Logikken ligger i `src/lib/kjernetid.js` med tester.

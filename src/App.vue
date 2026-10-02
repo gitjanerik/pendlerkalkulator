@@ -43,12 +43,7 @@ const settDager = (n) => (modell.jobbUkedager = [...MONSTER[n]]);
 
   <main class="mx-auto flex max-w-xl flex-col gap-4 px-4 py-4 pb-12">
     <Oppsett v-if="!modell.oppsettFerdig" v-model="modell" @klar="ferdig" />
-    <!-- Før oppsettet er kjørt er resten bare et forhåndsvisning, ikke noe man kan trykke på. -->
-    <div
-      class="flex flex-col gap-4"
-      :inert="!modell.oppsettFerdig"
-      :class="{ 'opacity-40': !modell.oppsettFerdig }"
-    >
+    <div v-else class="flex flex-col gap-4">
       <StasjonsValg v-model="modell" />
       <AvgangerKort v-if="modell.oppsettFerdig" :stasjon="stasjon" />
       <PeriodeValg v-model="modell" />
