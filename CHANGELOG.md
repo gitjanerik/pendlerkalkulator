@@ -1,3 +1,9 @@
+## 2026-10-02 — v1.0.1: Ny kolonnerekkefølge i tabellvisningen
+
+Utnyttelse er flyttet til kolonne 2, antall turer til kolonne 3, pris står sist, og all tekst er venstrejustert. Uka der et årskort starter har et lite ∞ hevet ved ukenummeret. Utnyttelse under 90 % vises i advarselsfarge.
+
+---
+
 ## 2026-10-02 — v1.0.0: Første stabile versjon
 
 «Nullstill» i menyen og «Ja, nullstill» i bekreftelsesdialogen har nå rød bakgrunn og hvit tekst (kontrast 6,5:1, også i mørk modus).
