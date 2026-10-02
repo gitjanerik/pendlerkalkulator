@@ -97,7 +97,7 @@ const taster = (e) => {
 
           <template v-else-if="STEG[i] === 'tider'">
             <h3 class="steg-tittel">Når tar du toget?</h3>
-            <p class="steg-tekst">Skriv inn avgangene du faktisk tar. Ny billett starter ved neste avgang etter at den gamle utløper.</p>
+            <p class="steg-tekst">Skriv inn avgangene du faktisk tar. Ny billett starter på første avgang etter at den gamle utløper. Det kan være ettermiddagsturen samme dag, hvis din avgang fra Oslo S er etter klokkeslettet billetten utløper.</p>
             <div class="mt-4 felt-par">
               <div>
                 <label class="etikett" for="op-morgen">Fra {{ stasjon }}</label>

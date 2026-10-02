@@ -1,3 +1,9 @@
+## 2026-10-02 — v0.14.1: Tydeligere tekst om start av ny billett
+
+Veiviseren sier nå at ny billett starter på første avgang etter at den gamle utløper, og at det kan være ettermiddagsturen samme dag.
+
+---
+
 ## 2026-10-02 — v0.14.0: Foreslå avganger fra Entur
 
 Ny knapp «Foreslå fra Entur» under avgangstidene (oppsett og meny). Den fyller inn første tog fra hjemstasjonen som er fremme på Oslo S før 09:00, og første tog fra Oslo S hjemover etter 15:00, for neste arbeidsdag. Det er kun et forslag: feltene kan rettes som før, og innstilte avganger hoppes over.
