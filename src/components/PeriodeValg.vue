@@ -17,7 +17,7 @@ const hjelp = computed(() =>
       ? 'Følger klokka nå, så reiser som allerede har gått regnes ikke med. Endre klokkeslettet hvis du for eksempel først skal fornye billetten i ettermiddag.'
       : 'Starter ved midnatt på startdatoen. Velg et klokkeslett for å begynne senere den dagen.',
 )
-const LENGDER = [1, 3, 6, 12, 24, 36]
+const LENGDER = [1, 3, 6, 12, 24]
 const apen = ref(false)
 const maaneder = computed(() => LENGDER.find((n) => tilEtterMaaneder(m.value.fra, n) === m.value.til) ?? null)
 const velgLengde = (n) => (m.value.til = tilEtterMaaneder(m.value.fra, n))
