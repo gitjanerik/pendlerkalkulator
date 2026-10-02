@@ -16,5 +16,8 @@ defineProps({ utfall: Object })
       {{ utfall.resultat.billetter.length }} periodebilletter
       <template v-if="utfall.resultat.udekteDager.length"> + {{ utfall.resultat.udekteDager.length }} dager med enkeltbillett</template>
     </p>
+    <p v-if="utfall.resultat.reis" class="mt-2 text-sm text-[var(--color-ink-2)]">
+      Ruter Reis sparer {{ kr(utfall.resultat.reis.besparelse) }} på {{ utfall.resultat.reis.enkeltreiser }} enkeltreiser (opptil {{ utfall.resultat.reis.maksProsent }} %).
+    </p>
   </section>
 </template>

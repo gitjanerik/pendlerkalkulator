@@ -11,7 +11,6 @@ const klokke = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'Bruk TT:MM')
 const strekning = z.object({
   navn: z.string(),
   bil: z.boolean().default(false).describe('Bare brukbar på bildager'),
-  reisRabattProsent: z.number().min(0).max(100).optional().describe('Rabatt på enkeltbilletter, f.eks. Vy Reis'),
   enkelt: z.number().positive().nullish().describe('Enkeltbillett, kr'),
   perioder: z
     .array(z.object({ dager: z.number().int().positive(), pris: z.number().positive() }))
@@ -33,6 +32,7 @@ export const beregnSkjema = {
   jobberPaaskeMandagOnsdag: z.boolean().optional(),
   jobberRomjul: z.boolean().optional(),
   inkluderAarskort: z.boolean().optional(),
+  reis: z.boolean().optional().describe('Ruter Reis: rabatt på enkeltbilletter etter antall reiser siste 30 dager'),
   prisDato: dato.optional().describe('Dato prisene gjelder fra, standard = fra'),
 }
 
@@ -45,9 +45,8 @@ export function beregnBilletter(inn) {
     bil: s.bil,
     enkelt: s.enkelt ?? '',
     perioder: s.perioder,
-    reisRabattProsent: s.reisRabattProsent,
   }))
-  for (const k of ['fraKlokke', 'morgen', 'ettermiddag', 'retninger', 'ferie', 'bilUkedager', 'jobbUkedager', 'inkluderAarskort', 'prisDato']) {
+  for (const k of ['fraKlokke', 'morgen', 'ettermiddag', 'retninger', 'ferie', 'bilUkedager', 'jobbUkedager', 'reis', 'inkluderAarskort', 'prisDato']) {
     if (inn[k] !== undefined) m[k] = inn[k]
   }
   if (inn.jobberPaaskeMandagOnsdag !== undefined) m.innstillinger.jobberPaaskeMandagOnsdag = inn.jobberPaaskeMandagOnsdag

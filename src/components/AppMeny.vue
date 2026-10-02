@@ -87,6 +87,7 @@ const importerFerie = (i) => (m.value.ferie = slaaSammenFerie([...m.value.ferie,
       <section aria-labelledby="m-pris" class="flex flex-col">
         <h3 id="m-pris" class="seksjonstittel mb-1">Priser og beregning</h3>
         <PrefBryter v-model="m.inkluderAarskort" tittel="Vurder årskort" tekst="Binder deg i 12 måneder." />
+        <PrefBryter v-model="m.reis" tittel="Ruter Reis på enkeltbilletter" tekst="Rabatt fra 5 % på reise nr. 5 til 40 % fra reise nr. 40 de siste 30 dagene. Gjelder bare der Reis er tilgjengelig, og er ikke Vy Smartpris." />
         <PrefBryter v-model="m.prisokning.paa" tittel="Prisøkning hver 1. februar" tekst="Regn med at prisene stiger." />
         <div v-if="m.prisokning.paa" class="mt-2 grid grid-cols-2 gap-3">
           <div>
@@ -109,11 +110,6 @@ const importerFerie = (i) => (m.value.ferie = slaaSammenFerie([...m.value.ferie,
             <div v-for="p in s.perioder" :key="p.dager">
               <label class="etikett" :for="`p-${s.id}-${p.dager}`">{{ p.dager }} dager (kr)</label>
               <input :id="`p-${s.id}-${p.dager}`" v-model.number="p.pris" class="felt" type="number" inputmode="decimal" min="0" />
-            </div>
-            <div class="col-span-2">
-              <label class="etikett" :for="`rabatt-${s.id}`">Rabatt på enkeltbilletter (%)</label>
-              <input :id="`rabatt-${s.id}`" v-model.number="s.reisRabattProsent" class="felt" type="number" inputmode="decimal" min="0" max="100" placeholder="0" />
-              <p class="mt-1 text-sm text-[var(--color-ink-3)]">Vy Reis og Ruter-rabatter kommer som egne valg senere; til da kan du legge inn prosenten selv.</p>
             </div>
             <p class="col-span-2 text-sm text-[var(--color-ink-3)]">Forslagsprisene er Vys voksenpriser {{ PRESET_DATO }}. Sjekk dem mot appen.</p>
           </div>
