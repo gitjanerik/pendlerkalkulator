@@ -67,7 +67,7 @@ const klikkBakgrunn = (e) => {
 
       <section aria-labelledby="m-tider" class="flex flex-col gap-3">
         <h3 id="m-tider" class="seksjonstittel">Avreisetid</h3>
-        <div class="grid grid-cols-2 gap-3">
+        <div class="felt-par">
           <div>
             <label class="etikett" for="morgen">Fra {{ stasjon }}</label>
             <input id="morgen" v-model="m.morgen" class="felt" type="time" />
@@ -85,7 +85,7 @@ const klikkBakgrunn = (e) => {
         <PrefBryter v-model="m.inkluderAarskort" tittel="Vurder årskort" tekst="Binder deg i 12 måneder." />
         <PrefBryter v-model="m.reis" tittel="Ruter Reis på enkeltbilletter" tekst="Rabatt fra 5 % på reise nr. 5 til 40 % fra reise nr. 40 de siste 30 dagene. Gjelder bare der Reis er tilgjengelig, og er ikke Vy Smartpris." />
         <PrefBryter v-model="m.prisokning.paa" tittel="Prisøkning hver 1. februar" tekst="Regn med at prisene stiger." />
-        <div v-if="m.prisokning.paa" class="mt-2 grid grid-cols-2 gap-3">
+        <div v-if="m.prisokning.paa" class="mt-2 felt-par">
           <div>
             <label class="etikett" for="prosent">Økning (%)</label>
             <input id="prosent" v-model.number="m.prisokning.prosent" class="felt" type="number" inputmode="decimal" min="0" step="0.1" />

@@ -1,6 +1,6 @@
 ## 2026-10-02 — v0.11.3: Infotekst om ny billett som sammenleggbar blokk
 
-Infoteksten om når den nye billetten starter ligger nå i en lukket details-blokk, og nevner at valgte arbeidsdager tas med i beregningen.
+Infoteksten om når den nye billetten starter ligger nå i en lukket details-blokk, og nevner at valgte arbeidsdager tas med i beregningen. Tidsfeltene (og datofeltene) står i to kolonner, men stables på to linjer når tekstzoom gjør dem for trange.
 
 ---
 

@@ -24,7 +24,7 @@ const sett = (paa) => {
         <button v-for="[id, navn] in TYPER" :key="id" type="button" class="chip" :aria-pressed="m.eksisterende.type === id" @click="m.eksisterende.type = id">{{ navn }}</button>
       </div>
       <p class="etikett !mb-0">Når utløper billetten?</p>
-      <div class="grid grid-cols-2 gap-3">
+      <div class="felt-par">
         <input v-model="m.eksisterende.til" class="felt" type="date" aria-label="Utløpsdato" />
         <input v-model="m.eksisterende.klokke" class="felt" type="time" aria-label="Utløpsklokkeslett" />
       </div>

@@ -118,6 +118,12 @@ input[type='range'] {
   .kort {
     @apply rounded-2xl border border-[var(--color-line)] bg-[var(--color-surface)] p-4 sm:p-5;
   }
+  /* To kolonner, men stables når tekstzoom gjør dem for trange */
+  .felt-par {
+    display: grid;
+    gap: 0.75rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr));
+  }
   .felt {
     @apply min-h-11 w-full rounded-xl border border-[var(--color-line)] bg-[var(--color-app)] px-3 text-base text-[var(--color-ink)];
   }
