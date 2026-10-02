@@ -1,3 +1,15 @@
+## 2026-10-02 — v1.0.6: Prisøkning på som standard og ryddigere varsler
+
+Prisøkning er nå slått på som standard (gjelder nye brukere; lagrede innstillinger beholdes). Klokkeskifter vises som to punktlister, sommertid og vintertid, med datoer. Norsk orddeling (hyphens) er slått på. Visningsknappene i «Billettene dine» bryter til egen linje når det er trangt. «Billettsammenligning» heter nå «Sammensetning av billetter». Teksten «lagres i nettleseren» er fjernet fra menyen.
+
+---
+
+## 2026-10-02 — v1.0.5: Stjerne også på «Spart med hjemmekontor»
+
+Beløpene under søylene (valgt mønster og «Full uke ville kostet …») merkes med stjerne når de er satt etter en prisøkning, med samme fotnote som ellers.
+
+---
+
 ## 2026-10-02 — v1.0.4: Stjerne på estimerte priser
 
 Når prisøkning er på, merkes priser satt etter en økning med en liten stjerne: totalen, per måned, sammenligningen og hver billett i tidslinje, kalender og tabell. En fotnote forklarer at det er et estimat med valgt prosent hver 1. februar. Priser før første økning merkes ikke. Prisøkningen regnes som rente på rente (1,04² etter andre februar).

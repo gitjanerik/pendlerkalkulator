@@ -20,6 +20,25 @@ useTema();
 const { modell, utfall, monster, nullstill, startKlokke, utdatert, oppdaterNa } = useModell();
 const menyApen = ref(false);
 const strekning = computed(() => modell.strekninger[0]?.navn.replace("–", " – ") ?? "");
+const MAANEDER = ["januar", "februar", "mars", "april", "mai", "juni", "juli", "august", "september", "oktober", "november", "desember"];
+const langDato = (iso) => `${Number(iso.slice(8))}. ${MAANEDER[Number(iso.slice(5, 7)) - 1]} ${iso.slice(0, 4)}`;
+const klokkeskifter = computed(() => {
+  const grupper = [
+    { retning: "sommertid", tittel: "Overgang til sommertid", dato: new Map() },
+    { retning: "vintertid", tittel: "Overgang til vintertid", dato: new Map() },
+  ];
+  for (const v of utfall.value.varsler) {
+    if (!v.retning) continue
+    const g = grupper.find((x) => x.retning === v.retning)
+    g.dato.set(v.dato, [...(g.dato.get(v.dato) ?? []), v.billett.dager])
+  }
+  return grupper
+    .filter((g) => g.dato.size)
+    .map((g) => ({
+      ...g,
+      rader: [...g.dato].sort().map(([dato, dager]) => `${langDato(dato)} (${[...new Set(dager)].join(" og ")}-dagersbillett)`),
+    }))
+});
 const stasjon = computed(() => modell.strekninger[0]?.navn.split("–")[0] ?? "");
 const ferdig = () => {
   modell.oppsettFerdig = true;
@@ -82,21 +101,25 @@ const settDager = (n) => (modell.jobbUkedager = [...MONSTER[n]]);
         <MonsterGraf
           :monster="monster"
           :antall="modell.jobbUkedager.length"
+          :prosent="utfall.prisokningProsent"
           @velg="settDager"
         />
 
-        <ul
-          v-if="utfall.varsler.length"
-          class="kort flex flex-col gap-2 text-sm"
+        <section
+          v-if="klokkeskifter.length"
+          class="kort flex flex-col gap-3 text-sm text-[var(--color-warn)]"
+          aria-labelledby="ks-tittel"
         >
-          <li
-            v-for="v in utfall.varsler"
-            :key="v.tekst ?? v"
-            class="text-[var(--color-warn)]"
-          >
-            ⚠ {{ v.tekst ?? v }}
-          </li>
-        </ul>
+          <p id="ks-tittel">
+            ⚠ Klokkeskifte kan flytte utløpet av billetter med én time:
+          </p>
+          <div v-for="g in klokkeskifter" :key="g.retning">
+            <h3 class="font-semibold">{{ g.tittel }}</h3>
+            <ul class="mt-1 list-disc pl-5">
+              <li v-for="r in g.rader" :key="r">{{ r }}</li>
+            </ul>
+          </div>
+        </section>
         <p
           v-if="utfall.aarskort?.besparelse != null"
           class="kort text-sm text-[var(--color-ink-2)]"
