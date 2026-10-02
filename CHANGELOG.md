@@ -1,3 +1,9 @@
+## 2026-10-02 — v0.12.1: Nytt appikon
+
+Appikonet er tegnet om som et enkelt tog sett fra siden, med pantograf, kjøreledning og skinne, hvitt på grønn flate. Samme motiv brukes som favicon.
+
+---
+
 ## 2026-10-02 — v0.12.0: Installer som app
 
 Pendlerkalkulator kan nå installeres som app (PWA). Siste steg i veiviseren har en avkrysning «Installer som app» som må huskes før den store knappen trykkes; på iOS vises en veiledning om Del → «Legg til på Hjem-skjerm». Valget ligger også nederst i innstillingene, og skjules når appen allerede er installert. Ny manifest, ikoner og service worker som lagrer appskallet for rask oppstart og oppstart uten dekning.
