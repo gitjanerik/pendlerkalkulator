@@ -1,3 +1,9 @@
+## 2026-10-02 — v0.16.7: Bredere tabell med fast første kolonne
+
+Tabellvisningen av billettene scroller nå sideveis i stedet for å presse kolonnene sammen. Ukekolonnen står fast mens du scroller, og «Fra» og «Til» har egne kolonner (dato med klokkeslett under) uten «kl.» i overskriftene.
+
+---
+
 ## 2026-10-02 — v0.16.6: Antall billetter per type
 
 Når du trykker på «Billigst» står det nå hvor mange billetter av hver type løsningen består av (for eksempel «2 × 7 dager, 1 × 30 dager, 3 enkeltbilletter») i stedet for den generelle forklaringen.

@@ -72,7 +72,8 @@ const rader = computed(() =>
       uker: isoUke(fra) === isoUke(til) ? `${isoUke(fra)}` : `${isoUke(fra)}–${isoUke(til)}${fra.slice(0, 4) === til.slice(0, 4) ? '' : ` ’${til.slice(2, 4)}`}`,
       fra,
       til,
-      klokke: tidTekst(b.aktivering) === tidTekst(b.utloper) ? tidTekst(b.aktivering) : `${tidTekst(b.aktivering)}–${tidTekst(b.utloper)}`,
+      klokkeFra: tidTekst(b.aktivering),
+      klokkeTil: tidTekst(b.utloper),
       prosent: Math.round(utnyttelse(b, p.utfall.tidsramme) * 100),
     }
   }),
@@ -273,26 +274,27 @@ const uker = computed(() => {
 
     <template v-else>
       <div class="mt-4 overflow-x-auto" role="region" aria-labelledby="bt-tittel" tabindex="0">
-        <table class="w-full border-collapse text-left text-sm tabular-nums">
+        <table class="w-full min-w-[40rem] border-collapse text-left text-sm whitespace-nowrap tabular-nums">
           <thead class="text-xs text-[var(--color-ink-3)]">
             <tr>
-              <th scope="col" class="py-2 pr-2 font-medium">Uke</th>
-              <th scope="col" class="py-2 pr-2 font-medium">Fra – til, kl.</th>
-              <th scope="col" class="py-2 pr-2 text-right font-medium">Pris</th>
-              <th scope="col" class="py-2 pr-2 text-right font-medium">Turer</th>
-              <th scope="col" class="py-2 text-right font-medium">Utn.</th>
+              <th scope="col" class="sticky left-0 z-10 bg-[var(--color-surface)] shadow-[1px_0_0_var(--color-line)] py-2 pr-3 font-medium">Uke</th>
+              <th scope="col" class="px-3 py-2 font-medium">Fra</th>
+              <th scope="col" class="px-3 py-2 font-medium">Til</th>
+              <th scope="col" class="px-3 py-2 font-medium">Billett</th>
+              <th scope="col" class="px-3 py-2 text-right font-medium">Pris</th>
+              <th scope="col" class="px-3 py-2 text-right font-medium">Turer</th>
+              <th scope="col" class="py-2 pl-3 text-right font-medium">Utn.</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="r in rader" :key="r.i" class="border-t border-[var(--color-line)] align-top">
-              <td class="py-2 pr-2 whitespace-nowrap">{{ r.uker }}</td>
-              <td class="py-2 pr-2">
-                {{ dagTekst(r.fra) }}<span class="block">– {{ dagTekst(r.til) }}</span>
-                <span class="block text-xs text-[var(--color-ink-3)]">kl. {{ r.klokke }} · {{ r.dager >= 365 ? `${r.dager} d (årskort)` : `${r.dager} d` }}</span>
-              </td>
-              <td class="py-2 pr-2 text-right whitespace-nowrap">{{ kr(r.pris) }}</td>
-              <td class="py-2 pr-2 text-right">{{ r.antallTurer }}</td>
-              <td class="py-2 text-right whitespace-nowrap" :class="r.prosent < 70 ? 'text-[var(--color-warn)]' : ''">
+              <th scope="row" class="sticky left-0 z-10 bg-[var(--color-surface)] shadow-[1px_0_0_var(--color-line)] py-2 pr-3 text-left font-normal">{{ r.uker }}</th>
+              <td class="px-3 py-2">{{ dagTekst(r.fra) }}<span class="block text-xs text-[var(--color-ink-3)]">{{ r.klokkeFra }}</span></td>
+              <td class="px-3 py-2">{{ dagTekst(r.til) }}<span class="block text-xs text-[var(--color-ink-3)]">{{ r.klokkeTil }}</span></td>
+              <td class="px-3 py-2">{{ r.dager >= 365 ? `${r.dager} d (årskort)` : `${r.dager} d` }}</td>
+              <td class="px-3 py-2 text-right">{{ kr(r.pris) }}</td>
+              <td class="px-3 py-2 text-right">{{ r.antallTurer }}</td>
+              <td class="py-2 pl-3 text-right" :class="r.prosent < 70 ? 'text-[var(--color-warn)]' : ''">
                 {{ r.prosent }} %
                 <span class="mt-1 ml-auto block h-1 w-9 overflow-hidden rounded-full bg-[var(--color-line)]" aria-hidden="true"><span class="block h-full rounded-full" :class="r.prosent < 70 ? 'bg-[var(--color-warn)]' : 'bg-[var(--color-accent)]'" :style="{ width: r.prosent + '%' }"></span></span>
               </td>
@@ -300,9 +302,10 @@ const uker = computed(() => {
           </tbody>
           <tfoot>
             <tr class="border-t border-[var(--color-ink-3)] font-semibold">
-              <th scope="row" colspan="2" class="py-2 pr-2 text-left">Sum billetter</th>
-              <td class="py-2 pr-2 text-right whitespace-nowrap">{{ kr(sum.pris) }}</td>
-              <td class="py-2 pr-2 text-right">{{ sum.turer }}</td>
+              <th scope="row" class="sticky left-0 z-10 bg-[var(--color-surface)] shadow-[1px_0_0_var(--color-line)] py-2 pr-3 text-left">Sum</th>
+              <td colspan="3"></td>
+              <td class="px-3 py-2 text-right">{{ kr(sum.pris) }}</td>
+              <td class="px-3 py-2 text-right">{{ sum.turer }}</td>
               <td></td>
             </tr>
           </tfoot>
