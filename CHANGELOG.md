@@ -1,3 +1,9 @@
+## 2026-10-02 — v0.14.3: Entur-forslaget tar hensyn til arbeidsdagen
+
+«Foreslå fra Entur» velger nå første hjemtog som går minst 8 timer (inkl. 30 min pause) etter at morgentoget er fremme, i stedet for en fast grense kl. 15. Finnes det ikke noe morgentog, brukes kl. 15 som før.
+
+---
+
 ## 2026-10-02 — v0.14.2: Fjernet slider for dager på jobb
 
 «Dager på jobb i uka» har nå bare ukedagsknappene. Slideren var overflødig og ga to kontroller for samme valg.
