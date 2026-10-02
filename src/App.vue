@@ -89,6 +89,13 @@ const settDager = (n) => (modell.jobbUkedager = [...MONSTER[n]]);
           >
         </p>
         <p
+          v-if="modell.jobbUkedager.length < 5"
+          class="kort text-sm text-[var(--color-ink-2)]"
+        >
+          Reiser du under 5 dager i uka, kan Vy Smartpris bli billigere enn
+          månedskort. Sjekk i Vy-appen.
+        </p>
+        <p
           v-if="modell.eksisterende.paa && modell.eksisterende.til"
           class="kort text-sm text-[var(--color-ink-2)]"
         >
