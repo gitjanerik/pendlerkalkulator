@@ -30,6 +30,9 @@ export function standardModell(idag) {
     prisDato: idag,
     inkluderAarskort: true,
     reis: false,
+    // Periodebillett brukeren allerede har: beregningen starter når den utløper.
+    eksisterende: { paa: false, type: 'maaned', til: '', klokke: '07:00' },
+    oppsettFerdig: false,
     strekninger: [strekningFraPreset(PRESETS[0], PRESETS[0].id)],
   }
 }
@@ -76,16 +79,21 @@ export function beregn(modell) {
   if (kalender.length > MAKS_DAGER) return tom(`Velg en periode på høyst ${MAKS_DAGER} dager.`)
 
   const dager = reisedager(kalender)
+  const eks = modell.eksisterende
+  const eksUtloep =
+    eks?.paa && ISO.test(eks.til ?? '') && KLOKKE.test(eks.klokke ?? '') ? tidspunkt(eks.til, eks.klokke) : null
   const bilUkedager = new Set(modell.bilUkedager)
   const bilDager = new Set(dager.filter((d) => bilUkedager.has(ukedag(d.dato))).map((d) => d.dato))
   const turer = byggTurer(dager, {
     morgen: modell.morgen,
     ettermiddag: modell.ettermiddag,
     retninger: modell.retninger,
-    fraTidspunkt: tidspunkt(fra, fraKlokke),
+    fraTidspunkt: Math.max(tidspunkt(fra, fraKlokke), eksUtloep ?? -Infinity),
     bilDager,
   })
-  if (!turer.length) return tom('Ingen reisedager i perioden.')
+  if (!turer.length) {
+    return tom(eksUtloep === null ? 'Ingen reisedager i perioden.' : 'Periodebilletten din dekker hele perioden.')
+  }
 
   const opsjoner = {
     prisDato: ISO.test(modell.prisDato ?? '') ? modell.prisDato : fra,

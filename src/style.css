@@ -90,6 +90,15 @@ dialog.meny {
 dialog.meny[open] {
   animation: meny-inn 0.22s ease-out;
 }
+dialog.bekreft {
+  margin: auto;
+  width: min(24rem, 92vw);
+  border: 1px solid var(--color-line);
+  border-radius: 1rem;
+  background: var(--color-surface);
+  color: var(--color-ink);
+}
+dialog.bekreft::backdrop,
 dialog.meny::backdrop {
   background: rgb(0 0 0 / 0.5);
 }
@@ -120,6 +129,9 @@ input[type='range'] {
   }
   .knapp {
     @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[var(--color-line)] px-4 text-sm font-medium text-[var(--color-ink)] transition-colors hover:bg-[var(--color-app)];
+  }
+  .knapp-primaer {
+    @apply border-transparent bg-[var(--color-accent)] text-[var(--color-on-accent)] hover:bg-[var(--color-accent)] hover:brightness-110 disabled:opacity-50;
   }
   .chip {
     @apply inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border border-[var(--color-line)] bg-[var(--color-surface)] px-4 text-sm font-medium transition-colors;

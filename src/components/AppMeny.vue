@@ -2,17 +2,26 @@
 import { ref, watch } from 'vue'
 import { APP_VERSION } from '../version.js'
 import { PRESET_DATO } from '../lib/presets.js'
-import { slaaSammenFerie } from '../lib/ics.js'
 import { useTema } from '../composables/useTema.js'
 import PrefBryter from './PrefBryter.vue'
-import IcsImport from './IcsImport.vue'
+import FerieListe from './FerieListe.vue'
+import EksisterendeBillett from './EksisterendeBillett.vue'
 
 const m = defineModel('modell', { type: Object })
 const apen = defineModel('apen', { type: Boolean })
-defineEmits(['nullstill'])
+const emit = defineEmits(['nullstill'])
 
 const { tema, skala } = useTema()
 const dlg = ref(null)
+const bekreft = ref(null)
+// Tekststørrelsen settes ved slipp, så ikke menyen flytter seg under fingeren.
+const skalaVis = ref(skala.value)
+const settSkala = () => (skala.value = skalaVis.value)
+const nullstillNaa = () => {
+  bekreft.value.close()
+  apen.value = false
+  emit('nullstill')
+}
 
 watch(apen, (v) => {
   if (v && !dlg.value.open) dlg.value.showModal()
@@ -27,7 +36,6 @@ const TEMAER = [
 const klikkBakgrunn = (e) => {
   if (e.target === dlg.value) apen.value = false
 }
-const importerFerie = (i) => (m.value.ferie = slaaSammenFerie([...m.value.ferie, ...i]))
 </script>
 
 <template>
@@ -40,33 +48,16 @@ const importerFerie = (i) => (m.value.ferie = slaaSammenFerie([...m.value.ferie,
         </button>
       </div>
 
-      <section aria-labelledby="m-utseende" class="flex flex-col gap-3">
-        <h3 id="m-utseende" class="seksjonstittel">Utseende</h3>
-        <div class="flex gap-2" role="group" aria-label="Tema">
-          <button v-for="[id, navn] in TEMAER" :key="id" type="button" class="chip flex-1" :aria-pressed="tema === id" @click="tema = id">{{ navn }}</button>
-        </div>
-        <div>
-          <label class="etikett" for="skala">Tekststørrelse: {{ skala }} %</label>
-          <input id="skala" v-model.number="skala" type="range" min="100" max="200" step="5" />
-        </div>
-      </section>
-
       <section aria-labelledby="m-dager" class="flex flex-col">
         <h3 id="m-dager" class="seksjonstittel mb-1">Fri og ferie</h3>
         <PrefBryter v-model="m.innstillinger.jobberPaaskeMandagOnsdag" tittel="Jobber i påske mandag–onsdag" tekst="Skjærtorsdag til 2. påskedag er alltid fri." />
         <PrefBryter v-model="m.innstillinger.jobberRomjul" tittel="Jobber i romjul" tekst="27.–31. desember. Julaften er alltid fri." />
-        <ul class="mt-2 flex flex-col gap-2">
-          <li v-for="(f, i) in m.ferie" :key="i" class="flex items-center gap-2">
-            <input v-model="f.fra" class="felt" type="date" :aria-label="`Ferie ${i + 1}, fra`" />
-            <span aria-hidden="true">–</span>
-            <input v-model="f.til" class="felt" type="date" :aria-label="`Ferie ${i + 1}, til`" />
-            <button type="button" class="knapp px-3" :aria-label="`Fjern ferie ${i + 1}`" @click="m.ferie.splice(i, 1)">✕</button>
-          </li>
-        </ul>
-        <div class="mt-3 flex flex-wrap gap-2">
-          <button type="button" class="knapp" @click="m.ferie.push({ fra: '', til: '' })">+ Legg til ferie</button>
-          <IcsImport @importer="importerFerie" />
-        </div>
+        <div class="mt-3"><FerieListe v-model="m" /></div>
+      </section>
+
+      <section aria-labelledby="m-billett" class="flex flex-col gap-3">
+        <h3 id="m-billett" class="seksjonstittel">Periodebillett du har nå</h3>
+        <EksisterendeBillett v-model="m" />
       </section>
 
       <section aria-labelledby="m-tider" class="flex flex-col gap-3">
@@ -116,10 +107,34 @@ const importerFerie = (i) => (m.value.ferie = slaaSammenFerie([...m.value.ferie,
         </details>
       </section>
 
+      <section aria-labelledby="m-utseende" class="flex flex-col gap-3">
+        <h3 id="m-utseende" class="seksjonstittel">Utseende</h3>
+        <div class="flex gap-2" role="group" aria-label="Tema">
+          <button v-for="[id, navn] in TEMAER" :key="id" type="button" class="chip flex-1" :aria-pressed="tema === id" @click="tema = id">{{ navn }}</button>
+        </div>
+        <div>
+          <label class="etikett" for="skala">Tekststørrelse: {{ skalaVis }} %</label>
+          <input id="skala" v-model.number="skalaVis" type="range" min="100" max="200" step="5" @change="settSkala" />
+        </div>
+      </section>
+
       <footer class="flex items-center justify-between gap-3 border-t border-[var(--color-line)] pt-4 text-sm text-[var(--color-ink-3)]">
         <span>v{{ APP_VERSION }} · lagres i nettleseren</span>
-        <button type="button" class="knapp" @click="$emit('nullstill')">Nullstill</button>
+        <button type="button" class="knapp" @click="bekreft.showModal()">Nullstill</button>
       </footer>
+    </div>
+  </dialog>
+
+  <dialog ref="bekreft" class="bekreft" aria-labelledby="bk-tittel" aria-describedby="bk-tekst">
+    <div class="flex flex-col gap-3 p-5">
+      <h2 id="bk-tittel" class="text-lg font-semibold">Er du sikker?</h2>
+      <p id="bk-tekst" class="text-[var(--color-ink-2)]">
+        Alt du har lagt inn fjernes: ferie, billetten du har nå, egne priser og andre innstillinger. Du starter oppsettet på nytt.
+      </p>
+      <div class="flex justify-end gap-2">
+        <button type="button" class="knapp" autofocus @click="bekreft.close()">Avbryt</button>
+        <button type="button" class="knapp knapp-primaer" @click="nullstillNaa">Ja, nullstill</button>
+      </div>
     </div>
   </dialog>
 </template>

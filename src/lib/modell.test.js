@@ -83,3 +83,26 @@ describe('jobbdager og rabatt', () => {
     expect(a[4].kostnad).toBe(beregn(base()).resultat.kostnad)
   })
 })
+
+describe('eksisterende periodebillett', () => {
+  const base = { ...standardModell('2026-10-05'), til: '2026-12-31' }
+
+  it('starter beregningen når billetten utløper', () => {
+    const uten = beregn(base)
+    const med = beregn({ ...base, eksisterende: { paa: true, type: 'maaned', til: '2026-11-02', klokke: '07:00' } })
+    expect(med.feil).toBeNull()
+    expect(med.resultat.kostnad).toBeLessThan(uten.resultat.kostnad)
+    expect(med.oppsummering.turer).toBeLessThan(uten.oppsummering.turer)
+  })
+
+  it('sier fra når billetten dekker hele perioden', () => {
+    const r = beregn({ ...base, eksisterende: { paa: true, type: 'aar', til: '2027-06-01', klokke: '07:00' } })
+    expect(r.feil).toMatch(/dekker hele perioden/)
+  })
+
+  it('ignoreres når den er av eller ufullstendig', () => {
+    const a = beregn(base).resultat.kostnad
+    expect(beregn({ ...base, eksisterende: { paa: false, til: '2026-11-02', klokke: '07:00' } }).resultat.kostnad).toBe(a)
+    expect(beregn({ ...base, eksisterende: { paa: true, til: '', klokke: '07:00' } }).resultat.kostnad).toBe(a)
+  })
+})
