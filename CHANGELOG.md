@@ -1,3 +1,9 @@
+## 2026-10-02 — v0.11.4: Årskort uten klokkeskifte-varsel
+
+Varselet om overgang til sommer- og vintertid vises ikke lenger for årskort, som gjelder i hele dager. Steder som sa «365 dager» sier nå «365 dager (årskort)». Hjemmekontor-setningen i veiviseren er fjernet. Statusen på «Neste tog» (i rute, forsinket, innstilt) vises som en farget pille. «Neste tog» bytter til hjemreisen ved klokka 12, også om appen står åpen.
+
+---
+
 ## 2026-10-02 — v0.11.3: Infotekst om ny billett som sammenleggbar blokk
 
 Infoteksten om når den nye billetten starter ligger nå i en lukket details-blokk, og nevner at valgte arbeidsdager tas med i beregningen. Tidsfeltene (og datofeltene) står i to kolonner, men stables på to linjer når tekstzoom gjør dem for trange.

@@ -8,6 +8,9 @@ export const UKEDAG_NAVN = UKEDAGER
 // Tusenskille er hardt mellomrom, så beløp aldri brytes midt i.
 export const kr = (n) => `${String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} kr`
 
+// «365 dager (årskort)», ellers «30 dager»
+export const dagerTekst = (n) => (n >= 365 ? `${n} dager (årskort)` : `${n} dager`)
+
 export function norskDato(iso, medAar = false) {
   const [aar, maaned, dag] = iso.split('-').map(Number)
   const tekst = `${UKEDAGER[ukedag(iso)]} ${dag}. ${MAANEDER[maaned - 1]}`

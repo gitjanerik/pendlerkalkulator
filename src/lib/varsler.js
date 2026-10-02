@@ -5,6 +5,8 @@ import { parseTidspunkt, sisteSondag, tidspunkt } from './dato.js'
 export function sommertidVarsler(billetter) {
   const varsler = []
   for (const b of billetter) {
+    // Årskort gjelder i hele dager, så klokkeskiftet er uten betydning der
+    if (b.dager >= 365) continue
     const fra = parseTidspunkt(b.aktivering)
     const til = parseTidspunkt(b.utloper)
     const aarFra = Number(b.aktivering.slice(0, 4))

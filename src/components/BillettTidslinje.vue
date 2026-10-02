@@ -1,7 +1,7 @@
 <script setup>
 import { computed, ref } from 'vue'
 import { dagNr, isoFraDagNr } from '../lib/dato.js'
-import { kr, norskTidspunkt, norskDato } from '../lib/format.js'
+import { kr, norskTidspunkt, norskDato, dagerTekst } from '../lib/format.js'
 
 const p = defineProps({ utfall: Object })
 const valgt = ref(null)
@@ -62,7 +62,7 @@ const velg = (i) => (valgt.value = valgt.value === i ? null : i)
         class="absolute top-0 h-5 rounded-sm bg-[var(--color-accent)] outline-offset-2"
         :class="valgt === s.i ? 'outline-2 outline-[var(--color-ink)]' : ''"
         :style="{ left: s.left + '%', width: s.width + '%', opacity: skygge(s.dager) / 100 }"
-        :aria-label="`${s.dager}-dagersbillett, ${kr(s.pris)}`"
+        :aria-label="`${dagerTekst(s.dager)}, ${kr(s.pris)}`"
         :aria-pressed="valgt === s.i"
         @click="velg(s.i)"
       ></button>
@@ -84,12 +84,12 @@ const velg = (i) => (valgt.value = valgt.value === i ? null : i)
       >
     </div>
     <p class="mt-2 flex flex-wrap gap-x-4 text-xs text-[var(--color-ink-2)]">
-      <span v-for="d in brukte" :key="d"><i class="mr-1 inline-block h-2 w-3 rounded-sm bg-[var(--color-accent)]" :style="{ opacity: skygge(d) / 100 }"></i>{{ d }} dager</span>
+      <span v-for="d in brukte" :key="d"><i class="mr-1 inline-block h-2 w-3 rounded-sm bg-[var(--color-accent)]" :style="{ opacity: skygge(d) / 100 }"></i>{{ dagerTekst(d) }}</span>
       <span v-if="enkelt.length"><i class="mr-1 inline-block h-2 w-0.5 bg-[var(--color-warn)]"></i>enkeltbillett</span>
     </p>
 
     <div v-if="detalj" class="mt-4 rounded-xl bg-[var(--color-app)] p-3 text-sm" aria-live="polite">
-      <p class="font-semibold">{{ detalj.dager }}-dagersbillett · {{ kr(detalj.pris) }}</p>
+      <p class="font-semibold">{{ dagerTekst(detalj.dager) }} · {{ kr(detalj.pris) }}</p>
       <dl class="mt-1 grid grid-cols-[auto_1fr] gap-x-3 text-[var(--color-ink-2)]">
         <dt>Aktiver</dt><dd>{{ norskTidspunkt(detalj.aktivering) }}</dd>
         <dt>Utløper</dt><dd>{{ norskTidspunkt(detalj.utloper) }}</dd>

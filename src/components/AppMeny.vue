@@ -2,6 +2,7 @@
 import { computed, ref, watch } from 'vue'
 import { APP_VERSION } from '../version.js'
 import { PRESET_DATO } from '../lib/presets.js'
+import { dagerTekst } from '../lib/format.js'
 import { useTema } from '../composables/useTema.js'
 import StasjonsValg from './StasjonsValg.vue'
 import Beloep from './Beloep.vue'
@@ -104,7 +105,7 @@ const klikkBakgrunn = (e) => {
               <Beloep :id="`enkelt-${s.id}`" v-model="s.enkelt" placeholder="Ukjent" />
             </div>
             <div v-for="p in s.perioder" :key="p.dager">
-              <label class="etikett" :for="`p-${s.id}-${p.dager}`">{{ p.dager }} dager</label>
+              <label class="etikett" :for="`p-${s.id}-${p.dager}`">{{ dagerTekst(p.dager) }}</label>
               <Beloep :id="`p-${s.id}-${p.dager}`" v-model="p.pris" />
             </div>
             <p class="col-span-2 text-sm text-[var(--color-ink-3)]">Forslagsprisene er Vys voksenpriser {{ PRESET_DATO }}. Sjekk dem mot appen.</p>

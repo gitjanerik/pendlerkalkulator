@@ -32,7 +32,10 @@ async function stasjonsId(navn, signal) {
 
 // stasjon: getter som gir «Asker» osv. Retning: true = til Oslo S, false = fra.
 export function useAvganger(stasjon) {
-  const tilOslo = ref(new Date().getHours() < 12)
+  // Morgen: til Oslo S. Fra kl. 12: hjemreisen. Manuelt valg står til neste skifte.
+  const standardRetning = () => new Date().getHours() < 12
+  let sisteStandard = standardRetning()
+  const tilOslo = ref(sisteStandard)
   const avganger = ref([])
   const laster = ref(false)
   const feil = ref('')
@@ -63,12 +66,24 @@ export function useAvganger(stasjon) {
     }
   }
 
+  const oppdater = () => {
+    if (document.visibilityState !== 'visible') return
+    const standard = standardRetning()
+    if (standard !== sisteStandard) {
+      sisteStandard = standard
+      if (tilOslo.value !== standard) {
+        tilOslo.value = standard // watch laster på nytt
+        return
+      }
+    }
+    last()
+  }
   const start = () => {
     stopp()
-    tikk = setInterval(() => document.visibilityState === 'visible' && last(), OPPDATER_MS)
+    tikk = setInterval(oppdater, OPPDATER_MS)
   }
   const stopp = () => clearInterval(tikk)
-  const synlig = () => document.visibilityState === 'visible' && last()
+  const synlig = oppdater
 
   watch([stasjon, tilOslo], last)
   onMounted(() => {

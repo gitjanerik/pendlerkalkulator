@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { kr, norskDato, norskTidspunkt } from './format.js'
+import { kr, norskDato, norskTidspunkt, dagerTekst } from './format.js'
 
 describe('format', () => {
   it('beløp med hardt mellomrom som tusenskille', () => {
@@ -15,5 +15,12 @@ describe('format', () => {
 
   it('tidspunkt med klokkeslett', () => {
     expect(norskTidspunkt('2026-10-02T16:00')).toBe('fre 2. okt kl. 16:00')
+  })
+})
+
+describe('dagerTekst', () => {
+  it('merker årskort', () => {
+    expect(dagerTekst(30)).toBe('30 dager')
+    expect(dagerTekst(365)).toBe('365 dager (årskort)')
   })
 })

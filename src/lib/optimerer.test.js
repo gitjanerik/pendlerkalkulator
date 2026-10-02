@@ -120,6 +120,11 @@ describe('sommertidVarsler', () => {
     const varsler = sommertidVarsler(res.billetter)
     expect(varsler.map((v) => [v.dato, v.billett.dager])).toEqual([['2026-10-25', 30]])
   })
+
+  it('hopper over årskort', () => {
+    const b = { dager: 365, aktivering: '2026-10-01T07:00', utloper: '2027-10-01T07:00' }
+    expect(sommertidVarsler([b])).toEqual([])
+  })
 })
 
 describe('Reis', () => {
