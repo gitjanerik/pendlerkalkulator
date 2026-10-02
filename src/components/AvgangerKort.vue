@@ -8,6 +8,7 @@ const { tilOslo, avganger, laster, feil, oppdatert, last } = useAvganger(() => p
 
 const tittel = computed(() => (tilOslo.value ? `${props.stasjon} → Oslo S` : `Oslo S → ${props.stasjon}`))
 const apen = ref(false)
+const nesteTre = computed(() => avganger.value.slice(0, 3))
 const foerste = computed(() => avganger.value.find((a) => !a.innstilt) ?? avganger.value[0])
 const status = (a) => {
   if (a.innstilt) return { tekst: 'innstilt', varsel: true, pille: 'pille-bad' }
@@ -47,7 +48,7 @@ const status = (a) => {
       <p v-if="feil" class="text-sm text-[var(--color-warn)]">{{ feil }}</p>
       <p v-else-if="!laster && !avganger.length && oppdatert" class="text-sm text-[var(--color-ink-2)]">Ingen tog funnet akkurat nå.</p>
       <ul v-else class="flex flex-col divide-y divide-[var(--color-line)]">
-        <li v-for="a in avganger" :key="a.start + a.linjer.join()" class="flex flex-wrap items-baseline gap-x-3 gap-y-1 py-2">
+        <li v-for="a in nesteTre" :key="a.start + a.linjer.join()" class="flex flex-wrap items-baseline gap-x-3 gap-y-1 py-2">
           <span class="text-lg font-semibold tabular-nums" :class="{ 'line-through opacity-60': a.innstilt }">
             {{ klokke(a.start) }} → {{ klokke(a.slutt) }}
           </span>

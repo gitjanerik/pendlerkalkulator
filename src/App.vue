@@ -16,7 +16,7 @@ import MonsterGraf from "./components/MonsterGraf.vue";
 import { kr, norskTidspunkt } from "./lib/format.js";
 
 useTema();
-const { modell, utfall, monster, nullstill } = useModell();
+const { modell, utfall, monster, nullstill, startKlokke } = useModell();
 const menyApen = ref(false);
 const strekning = computed(() => modell.strekninger[0]?.navn.replace("–", " – ") ?? "");
 const stasjon = computed(() => modell.strekninger[0]?.navn.split("–")[0] ?? "");
@@ -48,7 +48,7 @@ const settDager = (n) => (modell.jobbUkedager = [...MONSTER[n]]);
     <Oppsett v-if="!modell.oppsettFerdig" v-model="modell" @klar="ferdig" />
     <div v-else class="flex flex-col gap-4">
       <AvgangerKort v-if="modell.oppsettFerdig" :stasjon="stasjon" />
-      <PeriodeValg v-model="modell" />
+      <PeriodeValg v-model="modell" :start-klokke="startKlokke" />
       <DagerPerUke v-model="modell" />
 
       <p v-if="utfall.feil" class="kort text-[var(--color-bad)]" role="alert">

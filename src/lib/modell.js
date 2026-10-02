@@ -18,7 +18,8 @@ export function standardModell(idag) {
   return {
     versjon: 2,
     fra: idag,
-    fraKlokke: '00:00',
+    // Tom streng betyr «nå» (første dag) – appen setter klokkeslettet selv.
+    fraKlokke: '',
     til: tilEtterMaaneder(idag, 3),
     // Kjernetid og reisetid gir avreise; avreisetidene kan finjusteres for hånd.
     kjernetid: { ...STANDARD_KJERNETID },
