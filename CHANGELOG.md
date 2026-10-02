@@ -1,3 +1,9 @@
+## 2026-10-02 — v0.15.3: Infoboks etter veiviseren
+
+Når veiviseren er fullført vises en infoboks øverst som forteller at ferie, fritidsreiser, hjemstasjon m.m. kan tilpasses i Innstillinger. Boksen lukkes med X og kommer først tilbake etter Nullstill og ny veiviser.
+
+---
+
 ## 2026-10-02 — v0.15.2: Veiviserknappene på egen rad
 
 Tilbake og Neste ligger igjen på en rad midtstilt over de ni prikkene i veiviseren.

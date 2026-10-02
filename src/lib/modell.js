@@ -38,6 +38,8 @@ export function standardModell(idag) {
     // Periodebillett brukeren allerede har: beregningen starter når den utløper.
     eksisterende: { paa: false, type: 'maaned', til: '', klokke: '07:00' },
     oppsettFerdig: false,
+    // Infoboksen etter veiviseren: vises først når veiviseren fullføres, og bare til den lukkes.
+    infoLukket: true,
     strekninger: [strekningFraPreset(PRESETS[0], PRESETS[0].id)],
   }
 }
