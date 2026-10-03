@@ -21,6 +21,7 @@ function optimaliserKjerne(turer, strekninger, opsjoner = {}) {
     inkluderAarskort = true,
     kunDager = null,
     fritidTillegg = 0,
+    vinduSlutt = Infinity,
   } = opsjoner
   const n = turer.length
   const f = new Array(n + 1).fill(Infinity)
@@ -57,10 +58,13 @@ function optimaliserKjerne(turer, strekninger, opsjoner = {}) {
       let j = i + 1
       while (j < n && turer[j].tid <= utloper && tillatt(turer[j], s)) j++
       const billettpris = pris(p.pris, tur)
-      const kost = billettpris + f[j]
+      // Den delen av billetten som går forbi vindusslutten tilhører neste periode, så sluttdatoen
+      // gir ingen grunn til å tilpasse siste billett. Uten vindu er andelen 1.
+      const andelPris = billettpris * Math.min(1, (vinduSlutt - tur.tid) / (p.dager * MIN_DOEGN))
+      const kost = andelPris + f[j]
       if (kost < f[i]) {
         f[i] = kost
-        valg[i] = { type: 'periode', strekning: s, dager: p.dager, pris: billettpris, utloper, neste: j }
+        valg[i] = { type: 'periode', strekning: s, dager: p.dager, pris: billettpris, andelPris, utloper, neste: j }
       }
     }
   }
@@ -91,6 +95,7 @@ function optimaliserKjerne(turer, strekninger, opsjoner = {}) {
       strekningNavn: v.strekning.navn,
       dager: v.dager,
       pris: v.pris,
+      andelPris: v.andelPris,
       aktivering: formaterTidspunkt(turer[i].tid),
       utloper: formaterTidspunkt(v.utloper),
       foersteTur: { dato: turer[i].dato, retning: turer[i].retning },
@@ -110,7 +115,7 @@ function optimaliserKjerne(turer, strekninger, opsjoner = {}) {
     mulig: true,
     estimert: billetter.some((b) => b.estimert) || enkeltReiser.some((r) => r.estimert),
     // Tillegget er likt for alle planer, så det påvirker ikke hva som er billigst.
-    kostnad: billetter.reduce((sum, b) => sum + b.pris, 0) + enkeltReiser.reduce((sum, r) => sum + r.pris, 0) + fritidTillegg,
+    kostnad: billetter.reduce((sum, b) => sum + b.andelPris, 0) + enkeltReiser.reduce((sum, r) => sum + r.pris, 0) + fritidTillegg,
     billetter,
     udekteDager: [...enkeltPerDag.values()],
     enkeltReiser,

@@ -1,6 +1,6 @@
 import { byggKalender, reisedager, STANDARD_INNSTILLINGER } from './kalender.js'
 import { byggTurer } from './turer.js'
-import { datoerMellom, tidspunkt, ukedag } from './dato.js'
+import { datoerMellom, leggTilDager, tidspunkt, ukedag } from './dato.js'
 import { tilEtterMaaneder } from './periode.js'
 import { MONSTER } from './dagmonster.js'
 import { PRESETS, strekningFraPreset } from './presets.js'
@@ -12,6 +12,8 @@ import { OSL_TILLEGG, byggFritidsturer } from './fritid.js'
 const ISO = /^\d{4}-\d{2}-\d{2}$/
 const KLOKKE = /^([01]\d|2[0-3]):[0-5]\d$/
 const MAKS_DAGER = 365 * 3
+// Ett år som standard, så en lang sommerferie alltid er med.
+const STANDARD_MND = 12
 
 // Startverdiene er Gulskogen–Oslo S med Vys priser høsten 2026.
 export function standardModell(idag) {
@@ -20,7 +22,7 @@ export function standardModell(idag) {
     fra: idag,
     // Tom streng betyr «nå» (første dag) – appen setter klokkeslettet selv.
     fraKlokke: '',
-    til: tilEtterMaaneder(idag, 3),
+    til: tilEtterMaaneder(idag, STANDARD_MND),
     // Faktiske avgangstider fra stasjonen og fra Oslo S.
     morgen: '07:00',
     ettermiddag: '16:00',
@@ -88,6 +90,7 @@ export function beregn(modell) {
   if (kalender.length > MAKS_DAGER) return tom(`Velg en periode på høyst ${MAKS_DAGER} dager.`)
 
   const dager = reisedager(kalender)
+  const vinduSlutt = tidspunkt(leggTilDager(til, 1), '00:00')
   const eks = modell.eksisterende
   const eksUtloep =
     eks?.paa && ISO.test(eks.til ?? '') && KLOKKE.test(eks.klokke ?? '') ? tidspunkt(eks.til, eks.klokke) : null
@@ -116,6 +119,7 @@ export function beregn(modell) {
     inkluderAarskort: modell.inkluderAarskort,
     reis: Boolean(modell.reis),
     fritidTillegg: fritidsturer.length * OSL_TILLEGG,
+    vinduSlutt,
   }
   const { beste, alternativer } = sammenlignAlternativer(turer, strekninger, opsjoner)
   if (!beste.mulig) {

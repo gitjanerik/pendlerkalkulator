@@ -12,8 +12,8 @@ describe('beregn', () => {
   it('reproduserer handoff-eksempelet fra skjematilstand', () => {
     const r = beregn(handoff())
     expect(r.feil).toBeNull()
-    expect(r.resultat.kostnad).toBe(5730)
-    expect(r.alternativer.find((a) => a.navn === 'Bare 30-dagersbilletter').differanse).toBe(384)
+    expect(r.resultat.kostnad).toBeCloseTo(5027.39, 1)
+    expect(r.alternativer.find((a) => a.navn === 'Bare 30-dagersbilletter').differanse).toBeCloseTo(158.19, 1)
     expect(r.varsler).toHaveLength(1)
   })
 
@@ -104,5 +104,28 @@ describe('eksisterende periodebillett', () => {
     const a = beregn(base).resultat.kostnad
     expect(beregn({ ...base, eksisterende: { paa: false, til: '2026-11-02', klokke: '07:00' } }).resultat.kostnad).toBe(a)
     expect(beregn({ ...base, eksisterende: { paa: true, til: '', klokke: '07:00' } }).resultat.kostnad).toBe(a)
+  })
+})
+
+describe('tidshorisont uten kunstig slutt', () => {
+  const aar = (fra, til) => ({ ...standardModell(fra), til, inkluderAarskort: false })
+
+  it('et år fra 5. oktober er bare månedskort, uten 7-dagers og enkeltbilletter', () => {
+    const r = beregn(aar('2026-10-05', '2027-10-04'))
+    expect(r.resultat.billetter.map((b) => b.dager)).toEqual(Array(12).fill(30))
+    expect(r.resultat.enkeltReiser).toHaveLength(0)
+  })
+
+  it('siste billett tilpasses ikke sluttdatoen', () => {
+    for (const til of ['2027-03-10', '2027-06-21', '2028-10-04']) {
+      const r = beregn(aar('2026-10-05', til))
+      expect(r.resultat.billetter.at(-1).dager).toBe(30)
+    }
+  })
+
+  it('årskort bruker hele prisen i et år, ikke et tilfeldig utsnitt', () => {
+    const r = beregn({ ...standardModell('2026-10-05'), til: '2027-10-04' })
+    expect(r.resultat.billetter.map((b) => b.dager)).toEqual([365])
+    expect(r.resultat.kostnad).toBeCloseTo(20380 * 1.0, -3)
   })
 })

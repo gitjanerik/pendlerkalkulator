@@ -1,3 +1,9 @@
+## 2026-10-03 — v1.1.0: Billetter prises forholdsmessig, pris per måned
+
+Perioden har fortsatt start og slutt (standard er nå 12 måneder), men sluttdatoen gir ikke lenger en kunstig tilpasning: hver billett prises forholdsmessig etter hvor mye av den som ligger innenfor perioden. Tidligere kunne 7-dagersbilletter og enkeltbilletter dukke opp mot slutten bare fordi perioden sluttet. Hovedtallet er nå pris per måned, med totalen for perioden under. Årskort sammenlignes mot et helt år. «Sammensetning av billetter» sier nå hva det lønner seg å tilpasse billettene fremfor månedskort hele veien, og at månedskort nesten alltid holder med 4–5 reisedager i uka. Veiviseren har fått et nytt steg 1 som forklarer det samme: hvor mye det er å vinne, og hvem appen gjør størst forskjell for.
+
+---
+
 ## 2026-10-02 — v1.0.8: Påske og romjul av som standard
 
 «Jobber i påske mandag–onsdag» og «Jobber i romjul» er nå av som standard (gjelder nye brukere; lagrede innstillinger beholdes).

@@ -54,10 +54,10 @@ export function beregnBilletter(inn) {
   const r = beregn(m)
   if (r.feil) return { feil: r.feil }
   return {
-    kostnad: r.resultat.kostnad,
+    kostnad: Math.round(r.resultat.kostnad),
     billetter: r.resultat.billetter,
     enkeltbilletter: r.resultat.udekteDager,
-    alternativer: r.alternativer.map((a) => ({ navn: a.navn, kostnad: a.resultat.kostnad, merkostnad: a.differanse })),
+    alternativer: r.alternativer.map((a) => ({ navn: a.navn, kostnad: Math.round(a.resultat.kostnad), merkostnad: Math.round(a.differanse) })),
     aarskort: r.aarskort && {
       lonnerSeg: r.aarskort.lonnerSeg,
       besparelse: r.aarskort.besparelse,
