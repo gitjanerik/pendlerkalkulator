@@ -5,11 +5,12 @@ import { norskDato } from '../lib/format.js'
 
 const emit = defineEmits(['importer'])
 
+// Native <dialog>: nettleseren gir fokusfelle, Esc og inert bakgrunn.
+const dlg = ref(null)
 const hendelser = ref([])
 const valgt = ref(new Set())
 const melding = ref('')
 const gjentakende = ref(0)
-const aapen = ref(false)
 
 const antallValgt = computed(() => valgt.value.size)
 
@@ -23,7 +24,7 @@ async function lesFil(e) {
   // Heldagshendelser er oftest ferie og fri; møter og lignende krysses av for hånd.
   valgt.value = new Set(liste.flatMap((h, i) => (h.heldag ? [i] : [])))
   melding.value = liste.length ? '' : 'Fant ingen hendelser i filen.'
-  aapen.value = true
+  dlg.value.showModal()
 }
 
 function veksle(i) {
@@ -34,8 +35,11 @@ function veksle(i) {
 
 function legTil() {
   emit('importer', [...valgt.value].map((i) => hendelser.value[i]))
-  aapen.value = false
-  hendelser.value = []
+  dlg.value.close()
+}
+
+const klikkBakgrunn = (e) => {
+  if (e.target === dlg.value) dlg.value.close()
 }
 
 const periode = (h) => (h.fra === h.til ? norskDato(h.fra, true) : `${norskDato(h.fra)} – ${norskDato(h.til, true)}`)
@@ -48,9 +52,9 @@ const periode = (h) => (h.fra === h.til ? norskDato(h.fra, true) : `${norskDato(
       <input type="file" accept=".ics,text/calendar" class="sr-only" @change="lesFil" />
     </label>
 
-    <div v-if="aapen" class="fixed inset-0 z-10 grid place-items-end bg-black/50 sm:place-items-center" role="dialog" aria-modal="true" aria-labelledby="ics-tittel">
-      <div class="kort flex max-h-[85dvh] w-full max-w-xl flex-col gap-3 rounded-b-none sm:rounded-b-2xl">
-        <h3 id="ics-tittel" class="text-lg font-semibold">Velg ferie å legge til</h3>
+    <dialog ref="dlg" class="bekreft bred" aria-labelledby="ics-tittel" @close="hendelser = []" @click="klikkBakgrunn">
+      <div class="flex max-h-[85dvh] flex-col gap-3 p-5">
+        <h2 id="ics-tittel" class="text-lg font-semibold">Velg ferie å legge til</h2>
         <p v-if="melding" class="text-sm text-[var(--color-ink-2)]">{{ melding }}</p>
         <p v-if="gjentakende" class="text-sm text-[var(--color-warn)]">
           {{ gjentakende }} gjentakende hendelser vises bare med første forekomst.
@@ -58,21 +62,21 @@ const periode = (h) => (h.fra === h.til ? norskDato(h.fra, true) : `${norskDato(
         <ul class="-mx-1 flex-1 divide-y divide-[var(--color-line)] overflow-y-auto px-1">
           <li v-for="(h, i) in hendelser" :key="i">
             <label class="flex min-h-11 cursor-pointer items-start gap-3 py-2">
-              <input type="checkbox" class="mt-1 h-5 w-5 accent-[var(--color-accent)]" :checked="valgt.has(i)" @change="veksle(i)" />
-              <span>
-                <span class="block font-medium">{{ h.navn }}</span>
+              <input type="checkbox" class="mt-1 h-5 w-5 shrink-0 accent-[var(--color-accent)]" :checked="valgt.has(i)" @change="veksle(i)" />
+              <span class="min-w-0">
+                <span class="block font-medium break-words">{{ h.navn }}</span>
                 <span class="block text-sm text-[var(--color-ink-2)]">{{ periode(h) }}{{ h.heldag ? '' : ' · tidsfestet' }}</span>
               </span>
             </label>
           </li>
         </ul>
         <div class="flex justify-end gap-2">
-          <button type="button" class="knapp" @click="aapen = false">Avbryt</button>
+          <button type="button" class="knapp" @click="dlg.close()">Avbryt</button>
           <button type="button" class="knapp knapp-primaer" :disabled="!antallValgt" @click="legTil">
             Legg til {{ antallValgt }}
           </button>
         </div>
       </div>
-    </div>
+    </dialog>
   </div>
 </template>

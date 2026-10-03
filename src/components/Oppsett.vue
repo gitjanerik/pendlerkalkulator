@@ -23,8 +23,22 @@ const settIGang = async () => {
 }
 
 const STEG = ['intro', 'stasjon', 'uke', 'tider', 'billett', 'fri', 'ferie', 'fritid', 'priser', 'klar']
+const TITLER = {
+  intro: 'Hvor mye har du å vinne?',
+  stasjon: 'Hvor reiser du fra?',
+  uke: 'Hvilke dager drar du på jobb?',
+  tider: 'Når tar du toget?',
+  billett: 'Har du en periodebillett nå?',
+  fri: 'Påske og romjul',
+  ferie: 'Ferie og fri',
+  fritid: 'Fritidsreiser',
+  priser: 'Stemmer prisene?',
+  klar: 'Alt klart!',
+}
 const i = ref(0)
 const retning = ref('frem')
+const nesteKnapp = ref(null)
+const klarKnapp = ref(null)
 const strekning = computed(() => m.value.strekninger[0])
 const stasjon = computed(() => strekning.value?.navn.split('–')[0] ?? '')
 
@@ -33,6 +47,13 @@ const gaa = (n) => {
   if (ny === i.value) return
   retning.value = n > 0 ? 'frem' : 'tilbake'
   i.value = ny
+}
+
+// Knappen som ble trykt skjules i endene; fokus må videre til noe som finnes.
+const etterSteg = () => {
+  if (document.activeElement && document.activeElement !== document.body) return
+  if (i.value === STEG.length - 1) klarKnapp.value?.focus()
+  else if (i.value === 0) nesteKnapp.value?.focus()
 }
 
 const velgStasjon = (p) => {
@@ -57,7 +78,7 @@ const PRISFELT = [
 // Sveip mot venstre = neste, mot høyre = tilbake. Felt og knapper sveipes ikke, så glidere virker.
 let start = null
 const ned = (e) => {
-  start = e.pointerType === 'mouse' || e.target.closest('input, textarea, select') ? null : { x: e.clientX, y: e.clientY }
+  start = e.pointerType === 'mouse' || e.target.closest('input, textarea, select, dialog') ? null : { x: e.clientX, y: e.clientY }
 }
 const opp = (e) => {
   if (!start) return
@@ -67,7 +88,7 @@ const opp = (e) => {
   if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) gaa(dx < 0 ? 1 : -1)
 }
 const taster = (e) => {
-  if (e.target.closest('input, textarea, select')) return
+  if (e.defaultPrevented || e.target.closest('input, textarea, select, dialog, [data-kalender]')) return
   if (e.key === 'ArrowRight') gaa(1)
   if (e.key === 'ArrowLeft') gaa(-1)
 }
@@ -75,17 +96,18 @@ const taster = (e) => {
 
 <template>
   <section class="kort oppsett flex min-h-[calc(100dvh-6.5rem)] flex-col" aria-labelledby="op-tittel" @keydown="taster">
-    <h2 id="op-tittel" class="seksjonstittel">Steg {{ i + 1 }} av {{ STEG.length }}</h2>
+    <h2 id="op-tittel" class="seksjonstittel" aria-live="polite" aria-atomic="true">Steg {{ i + 1 }} av {{ STEG.length }}<span class="sr-only">: {{ TITLER[STEG[i]] }}</span></h2>
 
-    <div class="mt-3 flex-1 overflow-hidden" style="touch-action: pan-y" @pointerdown="ned" @pointerup="opp" @pointercancel="start = null">
-      <Transition :name="`gli-${retning}`" mode="out-in">
+    <!-- Polstring og negativ marg gir fokusringen plass innenfor overflow-hidden. -->
+    <div class="mt-1 -mx-2 -mb-2 flex-1 overflow-hidden p-2" style="touch-action: pan-y" @pointerdown="ned" @pointerup="opp" @pointercancel="start = null">
+      <Transition :name="`gli-${retning}`" mode="out-in" @after-enter="etterSteg">
         <div :key="STEG[i]">
+          <h3 class="steg-tittel">{{ TITLER[STEG[i]] }}</h3>
           <template v-if="STEG[i] === 'intro'">
-            <h3 class="steg-tittel">Hvor mye har du å vinne?</h3>
             <p class="steg-tekst">
               Pendler du 4–5 dager i uka, er månedskort eller årskort nesten alltid svaret. Å tilpasse billettene sparer da bare 100–600 kr i året, under 2 %.
             </p>
-            <p class="mt-5 text-sm font-semibold uppercase tracking-wide text-[var(--color-ink-2)]">Her gjør appen størst forskjell</p>
+            <h4 class="mt-5 text-sm font-semibold uppercase tracking-wide text-[var(--color-ink-2)]">Her gjør appen størst forskjell</h4>
             <ul class="mt-1 divide-y divide-[var(--color-line)]">
               <li class="py-3">
                 <strong class="block">Færre enn 4 dager i uka</strong>
@@ -104,7 +126,6 @@ const taster = (e) => {
           </template>
 
           <template v-else-if="STEG[i] === 'stasjon'">
-            <h3 class="steg-tittel">Hvor reiser du fra?</h3>
             <p class="steg-tekst">Oslo S er målet.</p>
             <div class="mt-4 flex flex-wrap gap-2" role="group" aria-label="Fra-stasjon">
               <button v-for="p in PRESETS" :key="p.id" type="button" class="chip" :aria-pressed="strekning?.id === p.id" @click="velgStasjon(p)">{{ p.navn.split('–')[0] }}</button>
@@ -112,14 +133,12 @@ const taster = (e) => {
           </template>
 
           <template v-else-if="STEG[i] === 'uke'">
-            <h3 class="steg-tittel">Hvilke dager drar du på jobb?</h3>
             <div class="mt-4 flex flex-wrap gap-2" role="group" aria-label="Jobbdager">
               <button v-for="(d, n) in UKEDAGER_KORT" :key="d" type="button" class="chip" :aria-pressed="m.jobbUkedager.includes(n)" :aria-label="UKEDAGER_LANG[n]" @click="veksleDag(n)">{{ d }}</button>
             </div>
           </template>
 
           <template v-else-if="STEG[i] === 'tider'">
-            <h3 class="steg-tittel">Når tar du toget?</h3>
             <p class="steg-tekst">Appen tar hensyn til at ny periodebillett ikke aktiveres før avreise (samme dag eller etter en helg).</p>
             <div class="mt-4 felt-par">
               <div>
@@ -135,13 +154,11 @@ const taster = (e) => {
           </template>
 
           <template v-else-if="STEG[i] === 'billett'">
-            <h3 class="steg-tittel">Har du en periodebillett nå?</h3>
             <p class="steg-tekst">Da starter beregningen når den utløper.</p>
             <div class="mt-4"><EksisterendeBillett v-model="m" /></div>
           </template>
 
           <template v-else-if="STEG[i] === 'fri'">
-            <h3 class="steg-tittel">Påske og romjul</h3>
             <p class="steg-tekst">Jobber du disse dagene? Helligdagene er alltid fri.</p>
             <div class="mt-3 flex flex-col">
               <PrefBryter v-model="m.innstillinger.jobberPaaskeMandagOnsdag" tittel="Jobber i påske mandag–onsdag" tekst="Skjærtorsdag til 2. påskedag er alltid fri." />
@@ -150,19 +167,16 @@ const taster = (e) => {
           </template>
 
           <template v-else-if="STEG[i] === 'ferie'">
-            <h3 class="steg-tittel">Ferie og fri</h3>
             <p class="steg-tekst">Valgfritt. Legg inn eller importer fra kalenderen, så stemmer beregningen fra start.</p>
             <div class="mt-4"><FerieListe v-model="m" /></div>
           </template>
 
           <template v-else-if="STEG[i] === 'fritid'">
-            <h3 class="steg-tittel">Fritidsreiser</h3>
             <p class="steg-tekst">Valgfritt. Skal du til Oslo lufthavn en bestemt dag? Da regner vi med tilleggsbilletten, og at periodebilletten dekker resten.</p>
             <div class="mt-4"><FritidListe v-model="m" /></div>
           </template>
 
           <template v-else-if="STEG[i] === 'priser'">
-            <h3 class="steg-tittel">Stemmer prisene?</h3>
             <p class="steg-tekst">{{ stasjon }} – Oslo S, voksen. Rett dem hvis de er feil.</p>
             <div class="mt-4 grid grid-cols-2 items-end gap-3">
               <div v-for="[n, navn] in PRISFELT" :key="n">
@@ -177,7 +191,6 @@ const taster = (e) => {
           </template>
 
           <template v-else>
-            <h3 class="steg-tittel">Alt klart!</h3>
             <p class="steg-tekst">Vi har nok til å finne billettene som holder deg på skinnene til lavest mulig pris.</p>
             <label v-if="tilbyInstall && !isIOS" class="mt-6 flex min-h-11 cursor-pointer items-start gap-3 rounded-xl border border-[var(--color-line)] bg-[var(--color-surface-2)] p-3">
               <input v-model="installerValgt" type="checkbox" class="mt-1 h-5 w-5 shrink-0 accent-[var(--color-accent)]" />
@@ -189,7 +202,7 @@ const taster = (e) => {
             <p v-else-if="tilbyInstall" class="mt-6 rounded-xl border border-[var(--color-line)] bg-[var(--color-surface-2)] p-3 text-sm text-[var(--color-ink-2)]">
               <strong class="text-[var(--color-ink)]">Legg til som app:</strong> trykk Del-ikonet i Safari og velg «Legg til på Hjem-skjerm».
             </p>
-            <button type="button" class="klar" :class="{ 'mt-4!': tilbyInstall }" @click="settIGang">
+            <button ref="klarKnapp" type="button" class="klar" :class="{ 'mt-4!': tilbyInstall }" @click="settIGang">
               <span aria-hidden="true">🚂</span> Sett i gang! <span aria-hidden="true">💨</span>
             </button>
           </template>
@@ -197,12 +210,15 @@ const taster = (e) => {
       </Transition>
     </div>
 
-    <div class="mt-3 flex justify-center gap-3">
-      <button type="button" class="knapp ikon" aria-label="Tilbake" :disabled="i === 0" @click="gaa(-1)">
-        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
+    <!-- Skjult (ikke deaktivert) i endene, så ingen knapp står igjen som ikke gjør noe. -->
+    <div class="mt-3 grid grid-cols-2 gap-3">
+      <button type="button" class="knapp min-h-12" :class="{ invisible: i === 0 }" @click="gaa(-1)">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
+        Tilbake
       </button>
-      <button type="button" class="knapp knapp-primaer ikon" aria-label="Neste" :disabled="i === STEG.length - 1" @click="gaa(1)">
-        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg>
+      <button ref="nesteKnapp" type="button" class="knapp knapp-primaer min-h-12" :class="{ invisible: i === STEG.length - 1 }" @click="gaa(1)">
+        Neste
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg>
       </button>
     </div>
     <ol class="mt-3 flex items-center justify-center gap-2" aria-hidden="true">
@@ -212,10 +228,6 @@ const taster = (e) => {
 </template>
 
 <style scoped>
-.ikon {
-  width: 3.5rem;
-  padding: 0;
-}
 .steg-tittel {
   font-size: 1.5rem;
   line-height: 1.2;
@@ -239,6 +251,11 @@ const taster = (e) => {
 @keyframes puls {
   50% {
     transform: scale(1.03);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .klar {
+    animation: none;
   }
 }
 .gli-frem-enter-active,

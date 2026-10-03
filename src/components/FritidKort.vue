@@ -23,7 +23,7 @@ const status = (r) => {
       <li v-for="r in fritid.reiser" :key="r.tid + r.retning" class="py-2 text-sm">
         <p class="font-semibold">{{ RETNING[r.retning] }} {{ norskDato(r.dato) }}</p>
         <p class="text-[var(--color-ink-2)]">
-          <span :class="r.dekning === 'enkelt' ? 'text-[var(--color-warn)]' : ''">{{ r.dekning === 'enkelt' ? '⚠ ' : '✓ ' }}</span>{{ status(r) }}
+          <span aria-hidden="true" :class="r.dekning === 'enkelt' ? 'text-[var(--color-warn)]' : ''">{{ r.dekning === 'enkelt' ? '⚠ ' : '✓ ' }}</span>{{ status(r) }}
         </p>
       </li>
     </ul>

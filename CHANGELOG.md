@@ -1,3 +1,15 @@
+## 2026-10-03 — v1.2.0: Universell utforming og bedre brukeropplevelse
+
+Gjennomgang med fokus på universell utforming (WCAG 2.2 AA) og brukeropplevelse.
+
+**Tastatur og skjermleser.** Kalenderen er et rutenett: piltaster flytter mellom dager, Page Up og Page Down bytter måned (med Shift et år), Home og End går til ukens start og slutt, Esc lukker, og bare én dato står i tabrekkefølgen. Billettkalenderen er en tabell med uker og ukedager, og dager uten billett (ferie, helligdag, hjemmekontor) leses opp. Import fra kalenderfil er en ekte dialog med fokusfelle og Esc. Fokus havner et fornuftig sted når noe forsvinner: lukket tips, fjernet ferie eller fritidsreise, lukket kalender, første og siste steg i veiviseren, etter veiviseren og etter nullstilling. Veiviseren melder «Steg N av 10» med tittel ved hvert steg, og «Tilbake» og «Neste» har tekst og skjules (ikke deaktiveres) i endene. Det nye resultatet leses opp stille når det endrer seg. «Neste tog» har en ekte overskrift, og knapper som laster bruker `aria-disabled`, så fokus blir stående. Brytere har tittelen som navn og forklaringen som beskrivelse. Datoer leses med hele navn («mandag 12. oktober 2026»).
+
+**Kontrast og utseende.** Kanten på felt, knapper og brytere holder 3:1 mot alle flater (ny `--color-edge`). Advarselsfargen er mørkere i lyst tema (4,5:1 også mot bakgrunnen), bryterne er tydelige i av-stilling, billettsegmentene har full kant uansett fyll og er 44 px høye å treffe, og stolpene i «Spart med hjemmekontor» er mørkere, med valgt antall dager i fet skrift. Dagene i billettkalenderen har full tekstfarge på farget flate, også i mørkt tema. Valg av visning (Tidslinje, Kalender, Tabell) er en segmentert kontroll med tekst og 44 px høyde. Menyen viser piler på sammenleggbare avsnitt igjen. Fokusringen vises på «i dag» i kalenderen og i tipsboblen, og skjules ikke av den klebrige toppen. Windows høykontrast har egne regler for valgte knapper, brytere og kalender. Siden bak en åpen dialog ruller ikke, og innholdet unngår hakk i liggende retning.
+
+**Fikser.** Sammenligningsradene sprengte siden ved stor skrift. Den pulserende «Sett i gang»-knappen flimret med redusert bevegelse. «I dag» i kalenderen gikk feil mellom midnatt og kl. 02. Ny `<noscript>`-melding.
+
+---
+
 ## 2026-10-03 — v1.1.0: Billetter prises forholdsmessig, pris per måned
 
 Perioden har fortsatt start og slutt (standard er nå 12 måneder), men sluttdatoen gir ikke lenger en kunstig tilpasning: hver billett prises forholdsmessig etter hvor mye av den som ligger innenfor perioden. Tidligere kunne 7-dagersbilletter og enkeltbilletter dukke opp mot slutten bare fordi perioden sluttet. Hovedtallet er nå pris per måned, med totalen for perioden under. Årskort sammenlignes mot et helt år. «Sammensetning av billetter» sier nå hva det lønner seg å tilpasse billettene fremfor månedskort hele veien, og at månedskort nesten alltid holder med 4–5 reisedager i uka. Veiviseren har fått et nytt steg 1 som forklarer det samme: hvor mye det er å vinne, og hvem appen gjør størst forskjell for.

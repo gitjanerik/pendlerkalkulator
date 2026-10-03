@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from "vue";
+import { computed, nextTick, ref } from "vue";
 import { useModell } from "./composables/useModell.js";
 import { useTema } from "./composables/useTema.js";
 import { MONSTER } from "./lib/dagmonster.js";
@@ -42,10 +42,22 @@ const klokkeskifter = computed(() => {
     }))
 });
 const stasjon = computed(() => modell.strekninger[0]?.navn.split("–")[0] ?? "");
+// Knappen brukeren trykket på forsvinner når visningen skifter; fokus går til innholdet, ikke til <body>.
+const fokuserInnhold = () => nextTick(() => document.getElementById("hovedinnhold")?.focus({ preventScroll: true }));
 const ferdig = () => {
   modell.oppsettFerdig = true;
   modell.infoLukket = false;
   window.scrollTo({ top: 0 });
+  fokuserInnhold();
+};
+const nullstillOgFokuser = () => {
+  nullstill();
+  window.scrollTo({ top: 0 });
+  fokuserInnhold();
+};
+const lukkTips = () => {
+  modell.infoLukket = true;
+  fokuserInnhold();
 };
 const settDager = (n) => (modell.jobbUkedager = [...MONSTER[n]]);
 </script>
@@ -66,7 +78,7 @@ const settDager = (n) => (modell.jobbUkedager = [...MONSTER[n]]);
     </div>
   </header>
 
-  <main class="mx-auto flex max-w-xl flex-col gap-4 px-4 py-4 pb-12">
+  <main id="hovedinnhold" tabindex="-1" class="mx-auto flex max-w-xl flex-col gap-4 px-4 py-4 pb-12">
     <Oppsett v-if="!modell.oppsettFerdig" v-model="modell" @klar="ferdig" />
     <div v-else class="flex flex-col gap-4">
       <!-- Snakkeboble: pila peker opp på tannhjulet (midt i 44 px-knappen, 30 px fra kanten) -->
@@ -81,9 +93,9 @@ const settDager = (n) => (modell.jobbUkedager = [...MONSTER[n]]);
         </p>
         <button
           type="button"
-          class="absolute right-0.5 top-0.5 grid h-11 w-11 place-items-center rounded-full transition-colors hover:bg-black/10"
+          class="paa-aksent absolute right-0.5 top-0.5 grid h-11 w-11 place-items-center rounded-full transition-colors hover:bg-black/10"
           aria-label="Lukk tipset"
-          @click="modell.infoLukket = true"
+          @click="lukkTips"
         >
           <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
         </button>
@@ -112,9 +124,9 @@ const settDager = (n) => (modell.jobbUkedager = [...MONSTER[n]]);
           class="kort flex flex-col gap-3 text-sm text-[var(--color-warn)]"
           aria-labelledby="ks-tittel"
         >
-          <p id="ks-tittel">
-            ⚠ Klokkeskifte kan flytte utløpet av billetter med én time:
-          </p>
+          <h2 id="ks-tittel">
+            <span aria-hidden="true">⚠ </span>Klokkeskifte kan flytte utløpet av billetter med én time:
+          </h2>
           <div v-for="g in klokkeskifter" :key="g.retning">
             <h3 class="font-semibold">{{ g.tittel }}</h3>
             <ul class="mt-1 list-disc pl-5">
@@ -125,7 +137,9 @@ const settDager = (n) => (modell.jobbUkedager = [...MONSTER[n]]);
         <section
           v-if="utfall.aarskort?.besparelse != null"
           class="kort text-sm text-[var(--color-ink-2)]"
+          aria-labelledby="aar-tittel"
         >
+          <h2 id="aar-tittel" class="sr-only">Årskort</h2>
           <p v-if="utfall.aarskort.lonnerSeg">
             Årskort sparer deg {{ kr(utfall.aarskort.besparelse) }}<Estimat v-if="utfall.aarskort.estimert" /> i perioden.
           </p>
@@ -168,6 +182,6 @@ const settDager = (n) => (modell.jobbUkedager = [...MONSTER[n]]);
     :wizard="!modell.oppsettFerdig"
     v-model:apen="menyApen"
     v-model:modell="modell"
-    @nullstill="nullstill"
+    @nullstill="nullstillOgFokuser"
   />
 </template>

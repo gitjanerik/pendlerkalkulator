@@ -1,8 +1,20 @@
 <script setup>
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { flertall, kr } from '../lib/format.js'
 import Estimat from './Estimat.vue'
 
-defineProps({ utfall: Object })
+const p = defineProps({ utfall: Object })
+
+// Tallet står langt unna det brukeren endrer. Etter en kort pause sier en stille
+// statusmelding fra om det nye resultatet, så skjermlesere ikke går glipp av det.
+const kunngjoring = ref('')
+const sammendrag = computed(() => `Billigste løsning: ${kr(p.utfall.perMaaned)} i måneden, ca. ${kr(p.utfall.resultat.kostnad)} i perioden.`)
+let tidtaker
+watch(sammendrag, (tekst) => {
+  clearTimeout(tidtaker)
+  tidtaker = setTimeout(() => (kunngjoring.value = tekst), 800)
+})
+onBeforeUnmount(() => clearTimeout(tidtaker))
 </script>
 
 <template>
@@ -12,6 +24,7 @@ defineProps({ utfall: Object })
     <p class="mt-2 text-[var(--color-ink-2)]">
       ca. <strong class="text-[var(--color-ink)]">{{ kr(utfall.resultat.kostnad) }}</strong><Estimat v-if="utfall.resultat.estimert" /> i perioden
     </p>
+    <p class="sr-only" role="status">{{ kunngjoring }}</p>
     <p class="mt-3 text-sm text-[var(--color-ink-2)]">
       {{ flertall(utfall.oppsummering.turer, 'reise', 'reiser') }} på {{ flertall(utfall.oppsummering.reisedager, 'dag', 'dager') }} ·
       {{ flertall(utfall.resultat.billetter.length, 'periodebillett', 'periodebilletter') }}

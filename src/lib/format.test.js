@@ -1,7 +1,13 @@
 import { describe, it, expect } from 'vitest'
-import { kr, norskDato, norskTidspunkt, dagerTekst, flertall } from './format.js'
+import { kr, norskDato, norskDatoLang, norskTidspunkt, dagerTekst, flertall } from './format.js'
 
 describe('format', () => {
+  it('hele dato- og månedsnavn for skjermlesere', () => {
+    expect(norskDatoLang('2026-10-12')).toBe('mandag 12. oktober 2026')
+    expect(norskDatoLang('2026-12-24')).toBe('torsdag 24. desember 2026')
+    expect(norskDatoLang('2027-03-07')).toBe('søndag 7. mars 2027')
+  })
+
   it('beløp med hardt mellomrom som tusenskille', () => {
     expect(kr(5730)).toBe('5 730 kr')
     expect(kr(156)).toBe('156 kr')

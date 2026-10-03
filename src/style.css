@@ -2,7 +2,9 @@
 
 /* Tokens følger Lende: varm papirtone i lyst tema, dyp blå-svart i mørkt.
    Auto følger systemet; data-theme overstyrer. Tekstnivåene er faste farger
-   (ikke opasitet) så kontrasten er den samme uansett flate. */
+   (ikke opasitet) så kontrasten er den samme uansett flate.
+   --color-line er til skillelinjer og kort. --color-edge er kanten på felt, knapper
+   og brytere og holder 3:1 mot alle flater (WCAG 1.4.11). */
 :root {
   --color-app: #efeae0;
   --color-surface: #faf8f3;
@@ -11,11 +13,12 @@
   --color-ink-2: #44403c;
   --color-ink-3: #57534e;
   --color-line: #d8d1c2;
+  --color-edge: #857f75;
   --color-accent: #15803d;
   --color-on-accent: #ffffff;
-  --color-warn: #b45309;
+  --color-warn: #a04708;
   --color-bad: #b91c1c;
-  --color-bar: #a8a29e;
+  --color-bar: #8f897f;
   --color-on-status: #ffffff;
   color-scheme: light;
 }
@@ -28,6 +31,7 @@
   --color-ink-2: #d4d4d8;
   --color-ink-3: #a1a1aa;
   --color-line: #3f3f46;
+  --color-edge: #75757e;
   --color-accent: #4ade80;
   --color-on-accent: #052e16;
   --color-warn: #fbbf24;
@@ -46,6 +50,7 @@
     --color-ink-2: #d4d4d8;
     --color-ink-3: #a1a1aa;
     --color-line: #3f3f46;
+    --color-edge: #75757e;
     --color-accent: #4ade80;
     --color-on-accent: #052e16;
     --color-warn: #fbbf24;
@@ -54,6 +59,16 @@
     --color-on-status: #1c1917;
     color-scheme: dark;
   }
+}
+
+/* Den klebrige toppen skal aldri skjule elementet som får fokus (WCAG 2.4.11).
+   Med en dialog åpen skal ikke siden bak rulle; scrollbar-gutter hindrer at innholdet hopper. */
+html {
+  scroll-padding-top: 4.5rem;
+  scrollbar-gutter: stable;
+}
+html:has(dialog[open]) {
+  overflow: hidden;
 }
 
 html,
@@ -66,22 +81,40 @@ body {
   overflow-wrap: break-word;
 }
 
+/* viewport-fit=cover: i liggende retning må innholdet unna hakk og avrundede hjørner. */
+body {
+  padding-inline: env(safe-area-inset-left) env(safe-area-inset-right);
+}
+
 :focus-visible {
   outline: 3px solid var(--color-accent);
   outline-offset: 2px;
 }
+/* <main> får fokus fra skript (tabindex -1) når visningen skifter. Det er ikke en kontroll, så ingen ring. */
+main[tabindex='-1']:focus-visible {
+  outline: none;
+}
+/* På aksentflater (tipsboblen) ville en aksentfarget ring forsvunnet. */
+.paa-aksent:focus-visible {
+  outline-color: var(--color-on-accent);
+}
 
+/* Uendelige animasjoner med 0,01 ms varighet flimrer, så antall gjentakelser settes til 1. */
 @media (prefers-reduced-motion: reduce) {
-  * {
+  *,
+  ::before,
+  ::after {
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 
 /* Menyen er en <dialog>: nettleseren gir fokusfelle og Esc. */
 dialog.meny {
   margin: 0;
-  padding: 0;
+  padding: 0 0 0 env(safe-area-inset-left);
   inset: 0 auto 0 0;
   height: 100dvh;
   max-height: 100dvh;
@@ -102,6 +135,9 @@ dialog.bekreft {
   border-radius: 1rem;
   background: var(--color-surface);
   color: var(--color-ink);
+}
+dialog.bekreft.bred {
+  width: min(36rem, 92vw);
 }
 dialog.bekreft::backdrop,
 dialog.meny::backdrop {
@@ -144,7 +180,7 @@ input[type='range'] {
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr));
   }
   .felt {
-    @apply min-h-11 w-full rounded-xl border border-[var(--color-line)] bg-[var(--color-app)] px-3 text-base text-[var(--color-ink)];
+    @apply min-h-11 w-full rounded-xl border border-[var(--color-edge)] bg-[var(--color-app)] px-3 text-base text-[var(--color-ink)];
   }
   .etikett {
     @apply mb-1 block text-sm font-medium text-[var(--color-ink-2)];
@@ -153,7 +189,7 @@ input[type='range'] {
     @apply text-sm font-semibold tracking-wide text-[var(--color-ink-2)] uppercase;
   }
   .knapp {
-    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[var(--color-line)] px-4 text-sm font-medium text-[var(--color-ink)] transition-colors hover:bg-[var(--color-app)];
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[var(--color-edge)] px-4 text-sm font-medium text-[var(--color-ink)] transition-colors hover:bg-[var(--color-app)];
   }
   .knapp-primaer {
     @apply border-transparent bg-[var(--color-accent)] text-[var(--color-on-accent)] hover:bg-[var(--color-accent)] hover:brightness-110 disabled:opacity-50;
@@ -162,9 +198,134 @@ input[type='range'] {
     @apply border-transparent bg-[#b91c1c] text-white hover:bg-[#b91c1c] hover:brightness-110;
   }
   .chip {
-    @apply inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border border-[var(--color-line)] bg-[var(--color-surface)] px-4 text-sm font-medium transition-colors;
+    @apply inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border border-[var(--color-edge)] bg-[var(--color-surface)] px-4 text-sm font-medium transition-colors;
   }
   .chip[aria-pressed='true'] {
     @apply border-transparent bg-[var(--color-accent)] text-[var(--color-on-accent)];
+  }
+  /* aria-disabled i stedet for disabled holder fokus på knappen. */
+  .chip[aria-disabled='true'],
+  .knapp[aria-disabled='true'] {
+    @apply cursor-default opacity-50;
+  }
+
+  /* Valg av visning: tekst + valgfritt ikon, aldri bare ikon */
+  .visning {
+    @apply flex min-h-11 flex-1 items-center justify-center gap-1.5 rounded-[0.625rem] px-3 text-sm font-medium text-[var(--color-ink-2)] transition-colors hover:bg-[var(--color-app)];
+  }
+  .visning[aria-pressed='true'] {
+    @apply bg-[var(--color-accent)] text-[var(--color-on-accent)] hover:bg-[var(--color-accent)];
+  }
+
+  /* Billettsegment på tidslinjen: treffflaten er 44 px høy selv om streken er lavere. */
+  .segment::before {
+    content: '';
+    position: absolute;
+    inset: -0.625rem -0.125rem;
+  }
+  .segment.valgt {
+    box-shadow:
+      0 0 0 2px var(--color-surface),
+      0 0 0 4px var(--color-ink);
+  }
+
+  /* Bryter: kant og skyvehode i kantfargen (av), fylt aksent (på). Tilstanden vises også med posisjon. */
+  .bryter {
+    position: relative;
+    margin-top: 0.125rem;
+    height: 1.75rem;
+    width: 3rem;
+    flex-shrink: 0;
+    border: 2px solid var(--color-edge);
+    border-radius: 9999px;
+    transition:
+      background-color 0.15s,
+      border-color 0.15s;
+  }
+  .bryter::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0.25rem;
+    width: 1.125rem;
+    height: 1.125rem;
+    border-radius: 9999px;
+    background: var(--color-edge);
+    transform: translateY(-50%);
+    transition:
+      transform 0.15s,
+      background-color 0.15s;
+  }
+  input:checked + .bryter {
+    border-color: var(--color-accent);
+    background: var(--color-accent);
+  }
+  input:checked + .bryter::after {
+    background: var(--color-on-accent);
+    transform: translate(1.125rem, -50%);
+  }
+  input:focus-visible + .bryter {
+    outline: 3px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  /* <summary> med egen pil: display:flex fjerner nettleserens trekant, så den tegnes her. */
+  summary.vis-pil {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    cursor: pointer;
+    list-style: none;
+  }
+  summary.vis-pil::-webkit-details-marker {
+    display: none;
+  }
+  summary.vis-pil::after {
+    content: '';
+    flex: none;
+    width: 0.55rem;
+    height: 0.55rem;
+    margin-inline: 0.35rem;
+    border: solid currentColor;
+    border-width: 0 2.5px 2.5px 0;
+    transform: translateY(-25%) rotate(45deg);
+    transition: transform 0.15s;
+  }
+  details[open] > summary.vis-pil::after {
+    transform: translateY(25%) rotate(-135deg);
+  }
+}
+
+/* Windows høykontrast: bakgrunnsfarger fjernes, så valgt tilstand må tegnes med systemfarger. */
+@media (forced-colors: active) {
+  .chip[aria-pressed='true'],
+  .visning[aria-pressed='true'] {
+    forced-color-adjust: none;
+    border-color: Highlight;
+    background: Highlight;
+    color: HighlightText;
+  }
+  .bryter {
+    forced-color-adjust: none;
+    border-color: ButtonText;
+    background: Canvas;
+  }
+  .bryter::after {
+    background: ButtonText;
+  }
+  input:checked + .bryter {
+    border-color: Highlight;
+    background: Highlight;
+  }
+  input:checked + .bryter::after {
+    background: HighlightText;
+  }
+  .segment.valgt {
+    outline: 3px solid Highlight;
+    outline-offset: 2px;
+  }
+  [role='cell'] > button {
+    border: 1px solid ButtonText;
   }
 }

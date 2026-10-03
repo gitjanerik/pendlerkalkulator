@@ -8,6 +8,7 @@ const { tilOslo, avganger, laster, feil, oppdatert, last } = useAvganger(() => p
 
 const tittel = computed(() => (tilOslo.value ? `${props.stasjon} → Oslo S` : `Oslo S → ${props.stasjon}`))
 const apen = ref(false)
+const melding = ref('')
 const nesteTre = computed(() => avganger.value.slice(0, 3))
 const foerste = computed(() => avganger.value.find((a) => !a.innstilt) ?? avganger.value[0])
 const status = (a) => {
@@ -15,28 +16,40 @@ const status = (a) => {
   if (a.forsinkelseMin >= 2) return { tekst: `+${a.forsinkelseMin} min`, varsel: true, pille: 'pille-warn' }
   return { tekst: 'i rute', varsel: false, pille: '' }
 }
+
+// Den automatiske oppdateringen hvert minutt er stille; bare et trykk får svar til skjermlesere.
+async function oppdaterNaa() {
+  if (laster.value) return
+  melding.value = ''
+  await last()
+  melding.value = feil.value || (foerste.value ? `Oppdatert. Neste tog ${klokke(foerste.value.start)}, ${status(foerste.value).tekst}.` : 'Ingen tog funnet akkurat nå.')
+}
 </script>
 
 <template>
   <section v-if="stasjon" class="kort" aria-labelledby="av-tittel">
     <div class="flex items-center gap-2">
-      <button type="button" class="flex min-h-11 min-w-0 flex-1 items-center gap-2 py-1 text-left" :aria-expanded="apen" aria-controls="av-innhold" @click="apen = !apen">
-        <span class="min-w-0 flex-1">
-        <h2 id="av-tittel" class="seksjonstittel">Neste tog</h2>
-        <span class="block tabular-nums" aria-live="polite">
-          <template v-if="foerste">
-            <span class="font-semibold">{{ foerste.linjer[0] ?? 'Tog' }} {{ klokke(foerste.start) }}</span>
-            <span class="pille ml-1 inline-block" :class="status(foerste).pille">{{ status(foerste).tekst }}</span>
-          </template>
-          <span v-else class="text-sm text-[var(--color-ink-2)]">{{ laster ? 'Henter …' : feil ? 'Ingen data' : '' }}</span>
-        </span>
-        </span>
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="ml-auto shrink-0 transition-transform" :class="{ 'rotate-180': apen }"><path d="M6 9l6 6 6-6" /></svg>
-      </button>
-      <button type="button" class="grid h-11 w-11 shrink-0 place-items-center rounded-full hover:bg-[var(--color-app)] disabled:opacity-50" aria-label="Oppdater avganger" :disabled="laster" @click="last">
+      <h2 id="av-tittel" class="min-w-0 flex-1">
+        <button type="button" class="flex min-h-11 w-full items-center gap-2 py-1 text-left" :aria-expanded="apen" aria-controls="av-innhold" @click="apen = !apen">
+          <span class="min-w-0 flex-1">
+            <span class="seksjonstittel block">Neste tog</span>
+            <span class="block tabular-nums">
+              <template v-if="foerste">
+                <span class="font-semibold">{{ foerste.linjer[0] ?? 'Tog' }} {{ klokke(foerste.start) }}</span>
+                <span class="pille ml-1 inline-block" :class="status(foerste).pille">{{ status(foerste).tekst }}</span>
+              </template>
+              <span v-else class="text-sm text-[var(--color-ink-2)]">{{ laster ? 'Henter …' : feil ? 'Ingen data' : '' }}</span>
+            </span>
+          </span>
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="ml-auto shrink-0 transition-transform" :class="{ 'rotate-180': apen }"><path d="M6 9l6 6 6-6" /></svg>
+        </button>
+      </h2>
+      <!-- aria-disabled i stedet for disabled, så fokus blir stående mens det lastes. -->
+      <button type="button" class="grid h-11 w-11 shrink-0 place-items-center rounded-full hover:bg-[var(--color-app)] aria-disabled:opacity-50" aria-label="Oppdater avganger" :aria-disabled="laster" @click="oppdaterNaa">
         <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" :class="{ 'animate-spin': laster }"><path d="M20 12a8 8 0 1 1-2.5-5.8" /><path d="M20 4v5h-5" /></svg>
       </button>
     </div>
+    <p class="sr-only" role="status">{{ melding }}</p>
     <div v-show="apen" id="av-innhold">
     <div class="mt-3 flex gap-2" role="group" aria-label="Retning">
       <button type="button" class="chip" :aria-pressed="tilOslo" @click="tilOslo = true">Til Oslo S</button>
@@ -49,7 +62,7 @@ const status = (a) => {
       <p v-else-if="!laster && !avganger.length && oppdatert" class="text-sm text-[var(--color-ink-2)]">Ingen tog funnet akkurat nå.</p>
       <ul v-else class="flex flex-col divide-y divide-[var(--color-line)]">
         <li v-for="a in nesteTre" :key="a.start + a.linjer.join()" class="flex flex-wrap items-baseline gap-x-3 gap-y-1 py-2">
-          <span class="text-lg font-semibold tabular-nums" :class="{ 'line-through opacity-60': a.innstilt }">
+          <span class="text-lg font-semibold tabular-nums" :class="{ 'line-through': a.innstilt }">
             {{ klokke(a.start) }} → {{ klokke(a.slutt) }}
           </span>
           <span class="text-sm text-[var(--color-ink-2)]">
