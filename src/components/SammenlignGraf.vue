@@ -17,6 +17,16 @@ const sammensetning = computed(() => {
   return deler.join(', ')
 })
 
+// Gevinsten ved å tilpasse billettene, målt mot månedskort hele veien.
+const tips = computed(() => {
+  const maaned = p.utfall.alternativer.find((a) => a.navn === 'Bare 30-dagersbilletter')
+  if (!maaned) return ''
+  const pst = (maaned.differanse / p.utfall.resultat.kostnad) * 100
+  if (maaned.differanse < 1) return 'Månedskort hele veien er billigst for deg.'
+  const sparer = `Å tilpasse billettene sparer ${kr(maaned.differanse)} (${pst < 1 ? 'under 1' : Math.round(pst)} %) mot månedskort hele veien.`
+  return pst < 3 ? `${sparer} Med 4–5 reisedager i uka er månedskort nesten alltid nok. Gevinsten kommer av ferie på tre uker eller mer, fridager og hjemmekontor.` : sparer
+})
+
 const rader = computed(() => {
   const beste = p.utfall.resultat.kostnad
   const typer = new Set(p.utfall.resultat.billetter.map((b) => b.dager))
@@ -37,6 +47,7 @@ const rader = computed(() => {
 <template>
   <section class="kort" aria-labelledby="sg-tittel">
     <h2 id="sg-tittel" class="seksjonstittel">Sammensetning av billetter</h2>
+    <p v-if="tips" class="mt-1 text-sm text-[var(--color-ink-2)]">{{ tips }}</p>
     <p class="mt-1 text-sm text-[var(--color-ink-2)]">Trykk på en rad for detaljer.</p>
     <ul class="mt-3 flex flex-col gap-1">
       <li v-for="r in rader" :key="r.navn">

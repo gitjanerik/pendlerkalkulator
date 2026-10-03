@@ -22,7 +22,7 @@ const settIGang = async () => {
   emit('klar')
 }
 
-const STEG = ['stasjon', 'uke', 'tider', 'billett', 'fri', 'ferie', 'fritid', 'priser', 'klar']
+const STEG = ['intro', 'stasjon', 'uke', 'tider', 'billett', 'fri', 'ferie', 'fritid', 'priser', 'klar']
 const i = ref(0)
 const retning = ref('frem')
 const strekning = computed(() => m.value.strekninger[0])
@@ -80,7 +80,30 @@ const taster = (e) => {
     <div class="mt-3 flex-1 overflow-hidden" style="touch-action: pan-y" @pointerdown="ned" @pointerup="opp" @pointercancel="start = null">
       <Transition :name="`gli-${retning}`" mode="out-in">
         <div :key="STEG[i]">
-          <template v-if="STEG[i] === 'stasjon'">
+          <template v-if="STEG[i] === 'intro'">
+            <h3 class="steg-tittel">Hvor mye har du å vinne?</h3>
+            <p class="steg-tekst">
+              Pendler du 4–5 dager i uka, er månedskort eller årskort nesten alltid svaret. Å tilpasse billettene sparer da bare 100–600 kr i året, under 2 %.
+            </p>
+            <p class="mt-5 text-sm font-semibold uppercase tracking-wide text-[var(--color-ink-2)]">Her gjør appen størst forskjell</p>
+            <ul class="mt-1 divide-y divide-[var(--color-line)]">
+              <li class="py-3">
+                <strong class="block">Færre enn 4 dager i uka</strong>
+                <span class="block text-sm text-[var(--color-ink-2)]">Enkelt- og ukebilletter sparer 300–1 300 kr i året ved 2–3 dager, og ca. 27 % ved én dag.</span>
+              </li>
+              <li class="py-3">
+                <strong class="block">Årskort</strong>
+                <span class="block text-sm text-[var(--color-ink-2)]">Koster ti til elleve månedskort. Det er den største gevinsten, men binder deg i 12 måneder.</span>
+              </li>
+              <li class="py-3">
+                <strong class="block">Ferie på tre uker eller mer</strong>
+                <span class="block text-sm text-[var(--color-ink-2)]">Treffer ferien rett etter en fornyelse, sparer du opptil ett månedskort. Treffer den feil, sparer du ingenting.</span>
+              </li>
+            </ul>
+            <p class="mt-3 text-xs text-[var(--color-ink-3)]">Tallene er regnet ut av appen for Vys priser høsten 2026 (Gulskogen–Oslo S).</p>
+          </template>
+
+          <template v-else-if="STEG[i] === 'stasjon'">
             <h3 class="steg-tittel">Hvor reiser du fra?</h3>
             <p class="steg-tekst">Oslo S er målet.</p>
             <div class="mt-4 flex flex-wrap gap-2" role="group" aria-label="Fra-stasjon">

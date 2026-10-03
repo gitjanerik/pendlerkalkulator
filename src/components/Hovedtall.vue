@@ -8,9 +8,9 @@ defineProps({ utfall: Object })
 <template>
   <section class="kort" aria-labelledby="ht-tittel">
     <h2 id="ht-tittel" class="seksjonstittel">Billigste løsning</h2>
-    <p class="mt-2 text-[clamp(1.75rem,11vw,3rem)] leading-tight font-semibold tabular-nums break-words">{{ kr(utfall.resultat.kostnad) }}<Estimat v-if="utfall.resultat.estimert" /></p>
+    <p class="mt-2 text-[clamp(1.75rem,11vw,3rem)] leading-tight font-semibold tabular-nums break-words">{{ kr(utfall.perMaaned) }}<Estimat v-if="utfall.resultat.estimert" /><span class="text-base font-normal text-[var(--color-ink-2)]"> i måneden</span></p>
     <p class="mt-2 text-[var(--color-ink-2)]">
-      ca. <strong class="text-[var(--color-ink)]">{{ kr(utfall.perMaaned) }}</strong><Estimat v-if="utfall.resultat.estimert" /> i måneden
+      ca. <strong class="text-[var(--color-ink)]">{{ kr(utfall.resultat.kostnad) }}</strong><Estimat v-if="utfall.resultat.estimert" /> i perioden
     </p>
     <p class="mt-3 text-sm text-[var(--color-ink-2)]">
       {{ flertall(utfall.oppsummering.turer, 'reise', 'reiser') }} på {{ flertall(utfall.oppsummering.reisedager, 'dag', 'dager') }} ·
