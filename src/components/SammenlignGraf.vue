@@ -78,7 +78,7 @@ const rader = computed(() => {
         </button>
       </li>
     </ul>
-    <p v-if="rader.some((r) => r.estimert)" class="mt-3 text-xs text-[var(--color-ink-3)]">
+    <p v-if="rader.some((r) => r.estimert)" class="mt-3 text-sm text-[var(--color-ink-3)]">
       * Estimat: regner med {{ p.utfall.prisokningProsent }} % prisøkning hver 1. februar.
     </p>
   </section>

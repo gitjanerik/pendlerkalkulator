@@ -59,12 +59,17 @@ const etterSteg = () => {
 const velgStasjon = (p) => {
   m.value.strekninger = [strekningFraPreset(p, p.id)]
 }
+const dagMelding = ref('')
 const veksleDag = (d) => {
   const s = new Set(m.value.jobbUkedager)
   if (s.has(d)) {
-    if (s.size === 1) return // minst én jobbdag
+    if (s.size === 1) {
+      dagMelding.value = 'Minst én dag må være valgt.'
+      return
+    }
     s.delete(d)
   } else s.add(d)
+  dagMelding.value = ''
   m.value.jobbUkedager = [...s].sort()
 }
 const pris = (dager) => strekning.value.perioder.find((p) => p.dager === dager)
@@ -87,27 +92,28 @@ const opp = (e) => {
   start = null
   if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) gaa(dx < 0 ? 1 : -1)
 }
+// Piltastene bytter steg bare med fokus på Tilbake/Neste. På kontrollene i et steg ville fokus forsvunnet når innholdet byttes.
 const taster = (e) => {
-  if (e.defaultPrevented || e.target.closest('input, textarea, select, dialog, [data-kalender]')) return
+  if (e.defaultPrevented || !e.target.closest('[data-steg-nav]')) return
   if (e.key === 'ArrowRight') gaa(1)
   if (e.key === 'ArrowLeft') gaa(-1)
 }
 </script>
 
 <template>
-  <section class="kort oppsett flex min-h-[calc(100dvh-6.5rem)] flex-col" aria-labelledby="op-tittel" @keydown="taster">
-    <h2 id="op-tittel" class="seksjonstittel" aria-live="polite" aria-atomic="true">Steg {{ i + 1 }} av {{ STEG.length }}<span class="sr-only">: {{ TITLER[STEG[i]] }}</span></h2>
+  <section class="kort oppsett flex min-h-[calc(100dvh-7.5rem)] flex-col" aria-labelledby="op-steg" @keydown="taster">
+    <p id="op-steg" class="seksjonstittel" aria-live="polite" aria-atomic="true">Steg {{ i + 1 }} av {{ STEG.length }}<span class="sr-only">: {{ TITLER[STEG[i]] }}</span></p>
 
     <!-- Polstring og negativ marg gir fokusringen plass innenfor overflow-hidden. -->
     <div class="mt-1 -mx-2 -mb-2 flex-1 overflow-hidden p-2" style="touch-action: pan-y" @pointerdown="ned" @pointerup="opp" @pointercancel="start = null">
       <Transition :name="`gli-${retning}`" mode="out-in" @after-enter="etterSteg">
         <div :key="STEG[i]">
-          <h3 class="steg-tittel">{{ TITLER[STEG[i]] }}</h3>
+          <h2 class="steg-tittel">{{ TITLER[STEG[i]] }}</h2>
           <template v-if="STEG[i] === 'intro'">
             <p class="steg-tekst">
               Pendler du 4–5 dager i uka, er månedskort eller årskort nesten alltid svaret. Å tilpasse billettene sparer da bare 100–600 kr i året, under 2 %.
             </p>
-            <h4 class="mt-5 text-sm font-semibold uppercase tracking-wide text-[var(--color-ink-2)]">Her gjør appen størst forskjell</h4>
+            <h3 class="seksjonstittel mt-5">Her gjør appen størst forskjell</h3>
             <ul class="mt-1 divide-y divide-[var(--color-line)]">
               <li class="py-3">
                 <strong class="block">Færre enn 4 dager i uka</strong>
@@ -122,7 +128,7 @@ const taster = (e) => {
                 <span class="block text-sm text-[var(--color-ink-2)]">Treffer ferien rett etter en fornyelse, sparer du opptil ett månedskort. Treffer den feil, sparer du ingenting.</span>
               </li>
             </ul>
-            <p class="mt-3 text-xs text-[var(--color-ink-3)]">Tallene er regnet ut av appen for Vys priser høsten 2026 (Gulskogen–Oslo S).</p>
+            <p class="mt-3 text-sm text-[var(--color-ink-3)]">Tallene er regnet ut av appen for Vys priser høsten 2026 (Gulskogen–Oslo S).</p>
           </template>
 
           <template v-else-if="STEG[i] === 'stasjon'">
@@ -136,6 +142,7 @@ const taster = (e) => {
             <div class="mt-4 flex flex-wrap gap-2" role="group" aria-label="Jobbdager">
               <button v-for="(d, n) in UKEDAGER_KORT" :key="d" type="button" class="chip" :aria-pressed="m.jobbUkedager.includes(n)" :aria-label="UKEDAGER_LANG[n]" @click="veksleDag(n)">{{ d }}</button>
             </div>
+            <p class="mt-2 text-sm text-[var(--color-ink-2)]" role="status">{{ dagMelding }}</p>
           </template>
 
           <template v-else-if="STEG[i] === 'tider'">
@@ -211,7 +218,7 @@ const taster = (e) => {
     </div>
 
     <!-- Skjult (ikke deaktivert) i endene, så ingen knapp står igjen som ikke gjør noe. -->
-    <div class="mt-3 grid grid-cols-2 gap-3">
+    <div class="mt-3 grid grid-cols-2 gap-3" data-steg-nav>
       <button type="button" class="knapp min-h-12" :class="{ invisible: i === 0 }" @click="gaa(-1)">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
         Tilbake

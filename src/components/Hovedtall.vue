@@ -36,7 +36,7 @@ onBeforeUnmount(() => clearTimeout(tidtaker))
     <p v-if="utfall.resultat.reis" class="mt-2 text-sm text-[var(--color-ink-2)]">
       Ruter Reis sparer {{ kr(utfall.resultat.reis.besparelse) }} på {{ flertall(utfall.resultat.reis.enkeltreiser, 'enkeltreise', 'enkeltreiser') }} (opptil {{ utfall.resultat.reis.maksProsent }} %).
     </p>
-    <p v-if="utfall.resultat.estimert" class="mt-3 text-xs text-[var(--color-ink-3)]">
+    <p v-if="utfall.resultat.estimert" class="mt-3 text-sm text-[var(--color-ink-3)]">
       * Estimat: regner med {{ utfall.prisokningProsent }} % prisøkning hver 1. februar.
     </p>
   </section>

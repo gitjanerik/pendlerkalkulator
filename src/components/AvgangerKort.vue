@@ -32,7 +32,7 @@ async function oppdaterNaa() {
       <h2 id="av-tittel" class="min-w-0 flex-1">
         <button type="button" class="flex min-h-11 w-full items-center gap-2 py-1 text-left" :aria-expanded="apen" aria-controls="av-innhold" @click="apen = !apen">
           <span class="min-w-0 flex-1">
-            <span class="seksjonstittel block">Neste tog</span>
+            <span class="seksjonstittel block">Neste tog {{ tilOslo ? 'til' : 'fra' }} Oslo S</span>
             <span class="block tabular-nums">
               <template v-if="foerste">
                 <span class="font-semibold">{{ foerste.linjer[0] ?? 'Tog' }} {{ klokke(foerste.start) }}</span>
@@ -74,7 +74,7 @@ async function oppdaterNaa() {
         </li>
       </ul>
     </div>
-    <p v-if="oppdatert" class="mt-2 text-xs text-[var(--color-ink-2)]">Oppdatert {{ klokke(oppdatert) }} · Data fra Entur</p>
+    <p v-if="oppdatert" class="mt-2 text-sm text-[var(--color-ink-2)]">Oppdatert {{ klokke(oppdatert) }} · Data fra Entur</p>
     </div>
   </section>
 </template>

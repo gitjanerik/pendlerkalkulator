@@ -156,10 +156,10 @@ const klikkBakgrunn = (e) => {
         </template>
       </section>
 
-      <footer class="flex items-center justify-between gap-3 border-t border-[var(--color-line)] pt-4 text-sm text-[var(--color-ink-3)]">
+      <div class="flex items-center justify-between gap-3 border-t border-[var(--color-line)] pt-4 text-sm text-[var(--color-ink-3)]">
         <span>v{{ APP_VERSION }}</span>
         <button v-if="!wizard" type="button" class="knapp knapp-fare" @click="bekreft.showModal()">Nullstill</button>
-      </footer>
+      </div>
     </div>
   </dialog>
 

@@ -46,7 +46,7 @@ const fjern = async (r) => {
     <ul v-if="liste.length" ref="listeEl" class="flex flex-col divide-y divide-[var(--color-line)]">
       <li v-for="r in liste" :key="r.fra + r.til" class="flex items-center justify-between gap-2 py-1">
         <span class="min-w-0 break-words">{{ tekst(r) }}</span>
-        <button type="button" class="knapp shrink-0 px-3" :aria-label="`Fjern fritidsreise: ${tekst(r)}`" @click="fjern(r)">✕</button>
+        <button type="button" class="knapp min-w-11 shrink-0 px-3" :aria-label="`Fjern fritidsreise: ${tekst(r)}`" @click="fjern(r)">✕</button>
       </li>
     </ul>
     <p v-else class="text-sm text-[var(--color-ink-2)]">Ingen fritidsreiser registrert ennå.</p>

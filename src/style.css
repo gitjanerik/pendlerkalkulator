@@ -18,7 +18,7 @@
   --color-on-accent: #ffffff;
   --color-warn: #a04708;
   --color-bad: #b91c1c;
-  --color-bar: #8f897f;
+  --color-bar: #8a8379;
   --color-on-status: #ffffff;
   color-scheme: light;
 }
@@ -65,10 +65,10 @@
    Med en dialog åpen skal ikke siden bak rulle; scrollbar-gutter hindrer at innholdet hopper. */
 html {
   scroll-padding-top: 4.5rem;
-  scrollbar-gutter: stable;
 }
 html:has(dialog[open]) {
   overflow: hidden;
+  scrollbar-gutter: stable;
 }
 
 html,
@@ -123,6 +123,7 @@ dialog.meny {
   background: var(--color-surface);
   color: var(--color-ink);
   overflow-y: auto;
+  overscroll-behavior: contain;
   box-shadow: 0 0 40px rgb(0 0 0 / 0.35);
 }
 dialog.meny[open] {
@@ -182,11 +183,16 @@ input[type='range'] {
   .felt {
     @apply min-h-11 w-full rounded-xl border border-[var(--color-edge)] bg-[var(--color-app)] px-3 text-base text-[var(--color-ink)];
   }
+  /* Nettleserens plassholdergrå gir bare 3:1; ink-3 holder 4,5:1 på alle flater. */
+  .felt::placeholder {
+    color: var(--color-ink-3);
+    opacity: 1;
+  }
   .etikett {
     @apply mb-1 block text-sm font-medium text-[var(--color-ink-2)];
   }
   .seksjonstittel {
-    @apply text-sm font-semibold tracking-wide text-[var(--color-ink-2)] uppercase;
+    @apply text-base font-semibold text-[var(--color-ink)];
   }
   .knapp {
     @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[var(--color-edge)] px-4 text-sm font-medium text-[var(--color-ink)] transition-colors hover:bg-[var(--color-app)];
@@ -217,7 +223,8 @@ input[type='range'] {
     @apply bg-[var(--color-accent)] text-[var(--color-on-accent)] hover:bg-[var(--color-accent)];
   }
 
-  /* Billettsegment på tidslinjen: treffflaten er 44 px høy selv om streken er lavere. */
+  /* Billettsegment på tidslinjen: treffflaten er 44 px høy selv om streken er lavere.
+     Smale segment (mange billetter) er en visuell oversikt; Kalender og Tabell gir det samme med store treffflater. */
   .segment::before {
     content: '';
     position: absolute;
@@ -294,6 +301,25 @@ input[type='range'] {
   }
   details[open] > summary.vis-pil::after {
     transform: translateY(25%) rotate(-135deg);
+  }
+}
+
+/* Utskrift: mørkt tema ville gitt hvit tekst på hvitt papir. */
+@media print {
+  :root:root {
+    --color-app: #fff !important;
+    --color-surface: #fff !important;
+    --color-surface-2: #fff !important;
+    --color-ink: #000 !important;
+    --color-ink-2: #1c1917 !important;
+    --color-ink-3: #44403c !important;
+    --color-line: #a8a29e !important;
+    --color-edge: #57534e !important;
+    --color-accent: #15803d !important;
+    --color-on-accent: #fff !important;
+    --color-warn: #a04708 !important;
+    --color-bar: #8a8379 !important;
+    color-scheme: light;
   }
 }
 

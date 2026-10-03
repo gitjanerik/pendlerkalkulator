@@ -101,14 +101,15 @@ const settDager = (n) => (modell.jobbUkedager = [...MONSTER[n]]);
         </button>
       </aside>
       <AvgangerKort v-if="modell.oppsettFerdig" :stasjon="stasjon" />
-      <PeriodeValg v-model="modell" :start-klokke="startKlokke" :utdatert="utdatert" @oppdater-na="oppdaterNa" />
-      <DagerPerUke v-model="modell" />
-
+      <!-- Resultatet står rett over det som styrer det, så tallet er synlig uten å rulle. -->
       <p v-if="utfall.feil" class="kort text-[var(--color-bad)]" role="alert">
         {{ utfall.feil }}
       </p>
-      <template v-else>
-        <Hovedtall :utfall="utfall" />
+      <Hovedtall v-else :utfall="utfall" />
+      <PeriodeValg v-model="modell" :start-klokke="startKlokke" :utdatert="utdatert" @oppdater-na="oppdaterNa" />
+      <DagerPerUke v-model="modell" />
+
+      <template v-if="!utfall.feil">
         <SammenlignGraf :utfall="utfall" />
         <BillettTidslinje :utfall="utfall" />
         <FritidKort :utfall="utfall" :stasjon="stasjon" />
@@ -144,7 +145,7 @@ const settDager = (n) => (modell.jobbUkedager = [...MONSTER[n]]);
             Årskort sparer deg {{ kr(utfall.aarskort.besparelse) }}<Estimat v-if="utfall.aarskort.estimert" /> i perioden.
           </p>
           <p v-else>Årskort lønner seg ikke for denne perioden.</p>
-          <p v-if="utfall.aarskort.estimert" class="mt-1 text-xs">
+          <p v-if="utfall.aarskort.estimert" class="mt-1 text-sm">
             * Estimat: regner med {{ utfall.prisokningProsent }} % prisøkning hver 1. februar.
           </p>
           <PrefBryter

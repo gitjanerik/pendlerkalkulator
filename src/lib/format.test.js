@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { kr, norskDato, norskDatoLang, norskTidspunkt, dagerTekst, flertall } from './format.js'
+import { kr, kiloKr, norskDato, norskDatoLang, norskTidspunkt, dagerTekst, flertall } from './format.js'
 
 describe('format', () => {
   it('hele dato- og månedsnavn for skjermlesere', () => {
@@ -32,9 +32,18 @@ describe('dagerTekst', () => {
 })
 
 describe('flertall', () => {
-  it('bruker entall for 1 og flertall ellers', () => {
-    expect(flertall(1, 'periodebillett', 'periodebilletter')).toBe('1 periodebillett')
-    expect(flertall(0, 'dag', 'dager')).toBe('0 dager')
-    expect(flertall(3, 'dag', 'dager')).toBe('3 dager')
+  it('bruker entall for 1 og flertall ellers, med hardt mellomrom', () => {
+    expect(flertall(1, 'periodebillett', 'periodebilletter')).toBe('1\u00A0periodebillett')
+    expect(flertall(0, 'dag', 'dager')).toBe('0\u00A0dager')
+    expect(flertall(3, 'dag', 'dager')).toBe('3\u00A0dager')
+  })
+})
+
+describe('kiloKr', () => {
+  it('bruker desimalkomma og dropper null-desimal', () => {
+    expect(kiloKr(20600)).toBe('20,6k')
+    expect(kiloKr(5000)).toBe('5k')
+    expect(kiloKr(3740)).toBe('3,7k')
+    expect(kiloKr(950)).toBe('1k')
   })
 })

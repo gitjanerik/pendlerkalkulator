@@ -10,8 +10,12 @@ export const UKEDAG_LANGE = ['mandag', 'tirsdag', 'onsdag', 'torsdag', 'fredag',
 // Tusenskille er hardt mellomrom, så beløp aldri brytes midt i.
 export const kr = (n) => `${String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} kr`
 
-// flertall(1, 'billett', 'billetter') → «1 billett», ellers «N billetter»
-export const flertall = (n, entall, flere) => `${n} ${n === 1 ? entall : flere}`
+// flertall(1, 'billett', 'billetter') → «1 billett», ellers «N billetter». Hardt mellomrom, så tall og ord ikke deles.
+export const flertall = (n, entall, flere) => `${n}\u00A0${n === 1 ? entall : flere}`
+
+// 20600 → «20,6k» (norsk desimalkomma), til akser og små flater
+const KILO = new Intl.NumberFormat('nb-NO', { maximumFractionDigits: 1 })
+export const kiloKr = (n) => `${KILO.format(n / 1000)}k`
 
 // «365 dager (årskort)», ellers «30 dager»
 export const dagerTekst = (n) => (n >= 365 ? `${n} dager (årskort)` : `${n} dager`)

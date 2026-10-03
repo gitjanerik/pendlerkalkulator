@@ -191,7 +191,7 @@ const uker = computed(() => {
         <span
           v-for="mnd in maaneder"
           :key="mnd.left"
-          class="absolute bottom-0 -translate-x-1/2 text-xs text-[var(--color-ink-3)]"
+          class="absolute bottom-0 -translate-x-1/2 text-sm text-[var(--color-ink-3)]"
           :style="{ left: Math.min(Math.max(mnd.left, 3), 97) + '%' }"
           aria-hidden="true"
           >{{ mnd.tekst }}</span
@@ -213,21 +213,22 @@ const uker = computed(() => {
       <!-- Ved stor skrift får kalenderen rulle sideveis i kortet i stedet for å sprenge siden. -->
       <div class="overflow-x-auto">
       <div role="table" aria-labelledby="bt-mnd" class="min-w-[13rem]">
-        <div role="row" class="mt-3 grid grid-cols-[1.5rem_repeat(7,minmax(0,1fr))] gap-1 text-center text-xs text-[var(--color-ink-3)]">
+        <div role="row" class="mt-3 grid grid-cols-[1.75rem_repeat(7,minmax(0,1fr))] gap-1 text-center text-sm text-[var(--color-ink-3)]">
           <span role="columnheader" aria-label="uke">uke</span>
           <span v-for="(d, i) in UKEDAG_NAVN" :key="d" role="columnheader" :aria-label="UKEDAG_LANGE[i]">{{ d }}</span>
         </div>
-        <div v-for="u in uker" :key="u.uke" role="row" class="mt-1 grid grid-cols-[1.5rem_repeat(7,minmax(0,1fr))] gap-1">
-          <span role="rowheader" :aria-label="`uke ${u.uke}`" class="grid place-items-center text-xs text-[var(--color-ink-3)] tabular-nums">{{ u.uke }}</span>
+        <div v-for="u in uker" :key="u.uke" role="row" class="mt-1 grid grid-cols-[1.75rem_repeat(7,minmax(0,1fr))] gap-1">
+          <span role="rowheader" :aria-label="`uke ${u.uke}`" class="grid place-items-center text-sm text-[var(--color-ink-3)] tabular-nums">{{ u.uke }}</span>
           <div v-for="(c, k) in u.celler" :key="k" role="cell">
             <component
               :is="c.billett === null ? 'div' : 'button'"
               v-if="c"
               :type="c.billett === null ? undefined : 'button'"
-              class="relative grid aspect-square w-full place-items-center rounded-md text-sm tabular-nums"
+              class="relative grid min-h-11 w-full place-items-center rounded-md text-sm tabular-nums"
               :class="[
                 c.billett === null && (c.helg || c.merke) ? 'text-[var(--color-ink-3)]' : 'text-[var(--color-ink)]',
                 c.start ? 'border-l-[3px] border-[var(--color-accent)]' : '',
+                c.billett !== null ? 'shadow-[inset_0_-3px_0_0_var(--color-accent)]' : '',
                 c.billett !== null && valgt === c.billett ? 'inset-ring-2 inset-ring-[var(--color-ink)]' : '',
               ]"
               :style="c.billett === null ? null : { background: `color-mix(in srgb, var(--color-accent) ${c.flate}%, transparent)` }"
@@ -271,7 +272,7 @@ const uker = computed(() => {
       <div class="mt-4 overflow-x-auto" role="region" aria-label="Tabell over billettene" tabindex="0">
         <table class="w-full min-w-[40rem] border-collapse text-left text-sm whitespace-nowrap tabular-nums">
           <caption class="sr-only">Periodebillettene i billigste løsning</caption>
-          <thead class="text-xs text-[var(--color-ink-3)]">
+          <thead class="text-sm text-[var(--color-ink-3)]">
             <tr>
               <th scope="col" class="sticky left-0 z-10 bg-[var(--color-surface)] shadow-[1px_0_0_var(--color-line)] py-2 pr-3 font-medium">Uke</th>
               <th scope="col" class="px-3 py-2 font-medium">Utnyttelse</th>
@@ -279,7 +280,7 @@ const uker = computed(() => {
               <th scope="col" class="px-3 py-2 font-medium">Fra</th>
               <th scope="col" class="px-3 py-2 font-medium">Til</th>
               <th scope="col" class="px-3 py-2 font-medium">Billett</th>
-              <th scope="col" class="py-2 pl-3 font-medium">Pris</th>
+              <th scope="col" class="sticky right-0 z-10 bg-[var(--color-surface)] shadow-[-1px_0_0_var(--color-line)] py-2 pl-3 font-medium">Pris</th>
             </tr>
           </thead>
           <tbody>
@@ -290,10 +291,10 @@ const uker = computed(() => {
                 <span class="mt-1 block h-1 w-9 overflow-hidden rounded-full bg-[var(--color-line)]" aria-hidden="true"><span class="block h-full rounded-full" :class="r.prosent < ADVARSEL_PROSENT ? 'bg-[var(--color-warn)]' : 'bg-[var(--color-accent)]'" :style="{ width: r.prosent + '%' }"></span></span>
               </td>
               <td class="px-3 py-2">{{ r.antallTurer }}</td>
-              <td class="px-3 py-2">{{ dagTekst(r.fra) }}<span class="block text-xs text-[var(--color-ink-3)]">{{ r.klokkeFra }}</span></td>
-              <td class="px-3 py-2">{{ dagTekst(r.til) }}<span class="block text-xs text-[var(--color-ink-3)]">{{ r.klokkeTil }}</span></td>
-              <td class="px-3 py-2">{{ r.dager >= 365 ? `${r.dager} d (årskort)` : `${r.dager} d` }}</td>
-              <td class="py-2 pl-3">{{ kr(r.pris) }}<Estimat v-if="r.estimert" /></td>
+              <td class="px-3 py-2">{{ dagTekst(r.fra) }}<span class="block text-sm text-[var(--color-ink-3)]">{{ r.klokkeFra }}</span></td>
+              <td class="px-3 py-2">{{ dagTekst(r.til) }}<span class="block text-sm text-[var(--color-ink-3)]">{{ r.klokkeTil }}</span></td>
+              <td class="px-3 py-2">{{ dagerTekst(r.dager) }}</td>
+              <td class="sticky right-0 z-10 bg-[var(--color-surface)] shadow-[-1px_0_0_var(--color-line)] py-2 pl-3">{{ kr(r.pris) }}<Estimat v-if="r.estimert" /></td>
             </tr>
           </tbody>
           <tfoot>
@@ -302,12 +303,23 @@ const uker = computed(() => {
               <td></td>
               <td class="px-3 py-2">{{ sum.turer }}</td>
               <td colspan="3"></td>
-              <td class="py-2 pl-3">{{ kr(sum.pris) }}<Estimat v-if="sum.estimert" /></td>
+              <td class="sticky right-0 z-10 bg-[var(--color-surface)] shadow-[-1px_0_0_var(--color-line)] py-2 pl-3">{{ kr(sum.pris) }}<Estimat v-if="sum.estimert" /></td>
             </tr>
           </tfoot>
         </table>
       </div>
-      <p class="mt-2 text-xs text-[var(--color-ink-3)]">Utnyttelse = reiser billetten dekker ÷ reiser en full arbeidsuke (man–fre) ville gitt i gyldighetstiden. Hjemmekontor, ferie og fridager gir lavere tall.<template v-if="sum.estimert"> * Estimert pris med prisøkning.</template></p>
+      <p class="mt-2 text-sm text-[var(--color-ink-3)]">Utnyttelse = reiser billetten dekker ÷ reiser en full arbeidsuke (man–fre) ville gitt i gyldighetstiden. Hjemmekontor, ferie og fridager gir lavere tall.<template v-if="sum.estimert"> * Estimert pris med prisøkning.</template></p>
+      <p class="mt-2 text-sm text-[var(--color-ink-3)]">Summen er hele billettprisene. Hovedtallet regner siste billett forholdsmessig og tar også med enkeltbilletter og tillegg.</p>
     </template>
+
+    <details v-if="enkelt.length" class="mt-4">
+      <summary class="vis-pil min-h-11 text-sm font-medium">Dager med enkeltbillett ({{ enkelt.length }})</summary>
+      <ul class="mt-1 divide-y divide-[var(--color-line)] text-sm">
+        <li v-for="d in enkelt" :key="d.dato" class="flex justify-between gap-3 py-1.5">
+          <span>{{ norskDato(d.dato, true) }}</span>
+          <span class="tabular-nums">{{ kr(d.kostnad) }}</span>
+        </li>
+      </ul>
+    </details>
   </section>
 </template>

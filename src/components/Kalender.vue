@@ -105,7 +105,7 @@ defineExpose({ fokuser: () => rot.value?.querySelector('[role="grid"] [tabindex=
       <button type="button" class="knapp w-11 px-0" aria-label="Neste måned" @click="flytt(1)">›</button>
     </div>
     <div role="grid" :aria-labelledby="`${id}-tittel`" :aria-describedby="`${id}-hjelp ${id}-taster`" @keydown="taster">
-      <div role="row" class="mt-2 grid grid-cols-7 text-center text-xs text-[var(--color-ink-3)]">
+      <div role="row" class="mt-2 grid grid-cols-7 text-center text-sm text-[var(--color-ink-3)]">
         <span v-for="(d, i) in UKEDAG_NAVN" :key="d" role="columnheader" :aria-label="UKEDAG_LANGE[i]">{{ d }}</span>
       </div>
       <div v-for="(uke, u) in uker" :key="u" role="row" class="mt-1 grid grid-cols-7">
