@@ -1,7 +1,13 @@
 import { describe, it, expect } from 'vitest'
-import { kr, norskDato, norskTidspunkt, dagerTekst, flertall } from './format.js'
+import { kr, kiloKr, norskDato, norskDatoLang, norskTidspunkt, dagerTekst, flertall } from './format.js'
 
 describe('format', () => {
+  it('hele dato- og månedsnavn for skjermlesere', () => {
+    expect(norskDatoLang('2026-10-12')).toBe('mandag 12. oktober 2026')
+    expect(norskDatoLang('2026-12-24')).toBe('torsdag 24. desember 2026')
+    expect(norskDatoLang('2027-03-07')).toBe('søndag 7. mars 2027')
+  })
+
   it('beløp med hardt mellomrom som tusenskille', () => {
     expect(kr(5730)).toBe('5 730 kr')
     expect(kr(156)).toBe('156 kr')
@@ -26,9 +32,18 @@ describe('dagerTekst', () => {
 })
 
 describe('flertall', () => {
-  it('bruker entall for 1 og flertall ellers', () => {
-    expect(flertall(1, 'periodebillett', 'periodebilletter')).toBe('1 periodebillett')
-    expect(flertall(0, 'dag', 'dager')).toBe('0 dager')
-    expect(flertall(3, 'dag', 'dager')).toBe('3 dager')
+  it('bruker entall for 1 og flertall ellers, med hardt mellomrom', () => {
+    expect(flertall(1, 'periodebillett', 'periodebilletter')).toBe('1\u00A0periodebillett')
+    expect(flertall(0, 'dag', 'dager')).toBe('0\u00A0dager')
+    expect(flertall(3, 'dag', 'dager')).toBe('3\u00A0dager')
+  })
+})
+
+describe('kiloKr', () => {
+  it('bruker desimalkomma og dropper null-desimal', () => {
+    expect(kiloKr(20600)).toBe('20,6k')
+    expect(kiloKr(5000)).toBe('5k')
+    expect(kiloKr(3740)).toBe('3,7k')
+    expect(kiloKr(950)).toBe('1k')
   })
 })

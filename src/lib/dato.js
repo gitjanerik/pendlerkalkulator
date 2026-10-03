@@ -17,6 +17,16 @@ export function isoFraDagNr(n) {
 
 export const leggTilDager = (iso, n) => isoFraDagNr(dagNr(iso) + n)
 
+// Samme dag i måneden N måneder frem (negativt = tilbake). Har målmåneden ikke datoen, brukes siste dag.
+export function leggTilMaaneder(iso, n) {
+  const [y, m, d] = iso.split('-').map(Number)
+  const t = y * 12 + (m - 1) + n
+  const aar = Math.floor(t / 12)
+  const mnd = (t % 12) + 1
+  const siste = new Date(Date.UTC(aar, mnd, 0)).getUTCDate()
+  return `${aar}-${pad(mnd)}-${pad(Math.min(d, siste))}`
+}
+
 // 0 = mandag … 6 = søndag. 1970-01-01 var en torsdag.
 export const ukedag = (iso) => (((dagNr(iso) + 3) % 7) + 7) % 7
 

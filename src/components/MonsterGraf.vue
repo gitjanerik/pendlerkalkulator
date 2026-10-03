@@ -1,6 +1,6 @@
 <script setup>
 import { computed, ref } from 'vue'
-import { flertall, kr } from '../lib/format.js'
+import { flertall, kiloKr, kr } from '../lib/format.js'
 import Estimat from './Estimat.vue'
 
 const p = defineProps({ monster: Array, antall: Number, prosent: Number })
@@ -47,18 +47,19 @@ const sparing = computed(() => {
         @focus="fokus = m.antall"
         @blur="fokus = null"
       >
-        <span class="text-xs tabular-nums text-[var(--color-ink-2)]" :class="m.antall === antall ? '' : '@max-[19rem]:hidden'">{{ m.kostnad ? Math.round(m.kostnad / 100) / 10 + 'k' : '–' }}</span>
+        <span class="text-sm tabular-nums text-[var(--color-ink-2)]" :class="m.antall === antall ? '' : '@max-[19rem]:hidden'">{{ m.kostnad ? kiloKr(m.kostnad) : '–' }}</span>
         <span
-          class="block w-full rounded-t-md"
+          class="forced-color-adjust-none block w-full rounded-t-md"
           :class="m.antall === antall ? 'bg-[var(--color-accent)]' : 'bg-[var(--color-bar)]'"
           :style="{ height: ((m.kostnad ?? 0) / maks) * 80 + '%' }"
         ></span>
       </button>
     </div>
     <div class="mt-1 flex gap-2" aria-hidden="true">
-      <span v-for="m in monster" :key="m.antall" class="flex-1 text-center text-xs text-[var(--color-ink-3)]">{{ m.antall }}</span>
+      <span v-for="m in monster" :key="m.antall" class="flex-1 text-center text-sm" :class="m.antall === antall ? 'font-bold text-[var(--color-ink)] underline underline-offset-2' : 'text-[var(--color-ink-3)]'">{{ m.antall }}</span>
     </div>
-    <p class="mt-3 text-sm text-[var(--color-ink-2)]" aria-live="polite">{{ tekst }}<Estimat v-if="tekst && tekstEstimert" /><span v-if="sparing" class="mt-1 block font-medium text-[var(--color-ink)]">{{ sparing }}<Estimat v-if="sparingEstimert" /></span></p>
-    <p v-if="monster.some((m) => m.estimert)" class="mt-2 text-xs text-[var(--color-ink-3)]">* Estimat: regner med {{ prosent }} % prisøkning hver 1. februar.</p>
+    <p class="mt-1 text-center text-sm text-[var(--color-ink-3)]" aria-hidden="true">Dager i uka</p>
+    <p class="mt-3 text-sm text-[var(--color-ink-2)]">{{ tekst }}<Estimat v-if="tekst && tekstEstimert" /><span v-if="sparing" class="mt-1 block font-medium text-[var(--color-ink)]">{{ sparing }}<Estimat v-if="sparingEstimert" /></span></p>
+    <p v-if="monster.some((m) => m.estimert)" class="mt-2 text-sm text-[var(--color-ink-3)]">* Estimat: regner med {{ prosent }} % prisøkning hver 1. februar.</p>
   </section>
 </template>

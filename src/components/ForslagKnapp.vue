@@ -10,6 +10,7 @@ const laster = ref(false)
 const melding = ref('')
 
 async function foreslaa() {
+  if (laster.value) return
   laster.value = true
   melding.value = ''
   try {
@@ -28,7 +29,8 @@ async function foreslaa() {
 
 <template>
   <div class="flex flex-col gap-2">
-    <button type="button" class="chip self-start px-3" :disabled="laster" @click="foreslaa">
+    <!-- aria-disabled i stedet for disabled, så fokus blir stående mens det lastes. -->
+    <button type="button" class="chip self-start px-3 aria-disabled:opacity-60" :aria-disabled="laster" @click="foreslaa">
       {{ laster ? 'Henter …' : 'Foreslå fra Entur' }}
     </button>
     <p v-if="melding" class="text-sm" role="status">{{ melding }}</p>

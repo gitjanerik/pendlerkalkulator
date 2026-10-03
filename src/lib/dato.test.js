@@ -3,6 +3,7 @@ import {
   dagNr,
   isoFraDagNr,
   leggTilDager,
+  leggTilMaaneder,
   ukedag,
   tidspunkt,
   formaterTidspunkt,
@@ -25,6 +26,17 @@ describe('dato', () => {
 
   it('leggTilDager krysser måneds- og årsskifte', () => {
     expect(leggTilDager('2026-12-30', 4)).toBe('2027-01-03')
+  })
+
+  it('leggTilMaaneder beholder dagen og kutter til månedens siste dag', () => {
+    expect(leggTilMaaneder('2026-10-12', 1)).toBe('2026-11-12')
+    expect(leggTilMaaneder('2026-12-15', 1)).toBe('2027-01-15')
+    expect(leggTilMaaneder('2026-01-15', -1)).toBe('2025-12-15')
+    expect(leggTilMaaneder('2026-01-31', 1)).toBe('2026-02-28')
+    expect(leggTilMaaneder('2028-01-31', 1)).toBe('2028-02-29')
+    expect(leggTilMaaneder('2026-03-31', -1)).toBe('2026-02-28')
+    expect(leggTilMaaneder('2028-02-29', 12)).toBe('2029-02-28')
+    expect(leggTilMaaneder('2026-05-15', -12)).toBe('2025-05-15')
   })
 
   it('formaterer og parser tidspunkt', () => {

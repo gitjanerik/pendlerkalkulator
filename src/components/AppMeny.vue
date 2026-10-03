@@ -62,7 +62,7 @@ const klikkBakgrunn = (e) => {
       <div class="-mt-4 text-sm text-[var(--color-ink-2)]">
         <p>Lønner det seg å fornye månedskortet? Sammenlign periodebilletter og finn billigste kombinasjon for din arbeidsuke.</p>
         <details class="mt-2">
-          <summary class="cursor-pointer font-medium text-[var(--color-ink)]">Lei av månedsbasert billettpsykose?</summary>
+          <summary class="vis-pil min-h-11 font-medium text-[var(--color-ink)]">Lei av månedsbasert billettpsykose?</summary>
           <p class="mt-1">Som pendler er det surt å subsidiere Vy med dårlig utnyttede ukes- og månedskort. Legg inn ferie og fravær i god tid, så finner appen billigste totalpris. Jo lengre periode, jo bedre optimalisering.</p>
         </details>
       </div>
@@ -119,7 +119,7 @@ const klikkBakgrunn = (e) => {
           </div>
 
           <details v-for="s in m.strekninger" :key="s.id" class="mt-3 rounded-xl border border-[var(--color-line)] px-3">
-            <summary class="flex min-h-11 cursor-pointer items-center font-medium">{{ s.navn }} – priser</summary>
+            <summary class="vis-pil min-h-11 font-medium">{{ s.navn }} – priser</summary>
             <div class="grid grid-cols-2 gap-3 pb-3">
               <div>
                 <label class="etikett" :for="`enkelt-${s.id}`">Enkeltbillett</label>
@@ -143,7 +143,7 @@ const klikkBakgrunn = (e) => {
         </div>
         <div>
           <label class="etikett" for="skala">Tekststørrelse: {{ skalaVis }} %</label>
-          <input id="skala" v-model.number="skalaVis" type="range" min="100" max="200" step="5" @change="settSkala" />
+          <input id="skala" v-model.number="skalaVis" type="range" min="100" max="200" step="5" :aria-valuetext="`${skalaVis} prosent`" @change="settSkala" />
         </div>
       </section>
 
@@ -156,10 +156,10 @@ const klikkBakgrunn = (e) => {
         </template>
       </section>
 
-      <footer class="flex items-center justify-between gap-3 border-t border-[var(--color-line)] pt-4 text-sm text-[var(--color-ink-3)]">
+      <div class="flex items-center justify-between gap-3 border-t border-[var(--color-line)] pt-4 text-sm text-[var(--color-ink-3)]">
         <span>v{{ APP_VERSION }}</span>
         <button v-if="!wizard" type="button" class="knapp knapp-fare" @click="bekreft.showModal()">Nullstill</button>
-      </footer>
+      </div>
     </div>
   </dialog>
 

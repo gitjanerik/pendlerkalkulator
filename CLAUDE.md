@@ -46,6 +46,18 @@ npm run build   # produksjonsbygg
 - Norsk UI-tekst (bokmål) med ekte æ/ø/å.
 - Tailwind CSS 4 (`@import "tailwindcss"`, ingen config-fil).
 - Mobil-først, WCAG AA, `prefers-color-scheme` og `prefers-reduced-motion`.
+- Universell utforming:
+  - Kanten på felt, knapper og brytere bruker `--color-edge` (3:1 mot flatene).
+    `--color-line` er bare til skillelinjer og kort.
+  - Native `<dialog>` med `showModal()` for alt som skal fange fokus.
+  - Knapper som mister fokus når de skjules eller lastes bruker `aria-disabled`
+    eller `invisible`, ikke `disabled`. Elementer som forsvinner (lukk, fjern,
+    siste steg) sender fokus videre til noe som finnes.
+  - Regler i `style.css` utenfor `@layer` vinner over Tailwind-utilities, også
+    `:focus-visible`. Trenger en komponent noe annet, bruk en egen klasse
+    (`.paa-aksent`).
+  - Sjekk med tastatur, tekststørrelse 200 %, mørkt tema og Playwright-emulering
+    av `forcedColors` og `reducedMotion`.
 - Kommentarer bare der koden gjør noe overraskende.
 
 ## Versjonshåndtering — én PR per leveranse

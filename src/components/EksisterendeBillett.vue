@@ -23,13 +23,13 @@ const sett = (paa) => {
       <div class="flex flex-wrap gap-2" role="group" aria-label="Type billett">
         <button v-for="[id, navn] in TYPER" :key="id" type="button" class="chip" :aria-pressed="m.eksisterende.type === id" @click="m.eksisterende.type = id">{{ navn }}</button>
       </div>
-      <p class="etikett !mb-0">Når utløper billetten?</p>
-      <div class="felt-par">
+      <p id="eb-utloper" class="etikett !mb-0">Når utløper billetten?</p>
+      <div class="felt-par" role="group" aria-labelledby="eb-utloper">
         <input v-model="m.eksisterende.til" class="felt" type="date" aria-label="Utløpsdato" />
         <input v-model="m.eksisterende.klokke" class="felt" type="time" aria-label="Utløpsklokkeslett" />
       </div>
       <details class="text-sm text-[var(--color-ink-2)]">
-        <summary class="min-h-11 cursor-pointer py-2 font-medium">Når starter den nye billetten?</summary>
+        <summary class="vis-pil min-h-11 py-2 font-medium">Når starter den nye billetten?</summary>
         <p>Beregningen starter når billetten din utløper. Vi foreslår aldri ny billett rett etter utløp, men ved neste arbeidsreise. Gjelder billetten til fredag ettermiddag, starter den nye for eksempel mandag morgen. Vi tar også høyde for hvilke arbeidsdager du har valgt.</p>
       </details>
     </div>
