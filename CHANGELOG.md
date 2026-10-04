@@ -1,3 +1,9 @@
+## 2026-10-04 — v2.2.2: Ryddigere billett-tabell
+
+Pris-kolonnen i tabellen ligger ikke lenger fast ved scrolling. Ukekolonnen er smalere, med siste uke på linje to. Årskort markeres med en liten pil mot høyre i stedet for ∞. «Full pendleruke» kommer nå før «Periode».
+
+---
+
 ## 2026-10-04 — v2.2.1: Nye priser følger med i delte lenker
 
 Når «Nye priser fra en dato» er på, tar delte lenker med de nye prisene og datoen. Mottakeren får bryteren på og ser de samme prisene.

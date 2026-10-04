@@ -296,12 +296,12 @@ const uker = computed(() => {
               <th scope="col" class="px-3 py-2 font-medium">Fra</th>
               <th scope="col" class="px-3 py-2 font-medium">Til</th>
               <th scope="col" class="px-3 py-2 font-medium">Billett</th>
-              <th scope="col" class="sticky right-0 z-10 bg-[var(--color-surface)] shadow-[-1px_0_0_var(--color-line)] py-2 pl-3 font-medium">Pris</th>
+              <th scope="col" class="px-3 py-2 font-medium">Pris</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="r in rader" :key="r.i" class="border-t border-[var(--color-line)] align-top">
-              <th scope="row" class="sticky left-0 z-10 bg-[var(--color-surface)] shadow-[1px_0_0_var(--color-line)] py-2 pr-3 text-left font-normal">{{ r.ukeFra }}<template v-if="r.dager >= 365"><sup class="ml-0.5 text-[0.9em] leading-none" title="Årskort starter" aria-hidden="true">∞</sup><span class="sr-only"> (årskort starter)</span></template>{{ r.ukeRest }}</th>
+              <th scope="row" class="sticky left-0 z-10 bg-[var(--color-surface)] shadow-[1px_0_0_var(--color-line)] py-2 pr-3 text-left font-normal">{{ r.ukeFra }}<template v-if="r.dager >= 365"><svg class="ml-1 inline-block h-3 w-3 align-baseline" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" /></svg><span class="sr-only"> (årskort starter)</span></template><span v-if="r.ukeRest" class="block text-[var(--color-ink-3)]">{{ r.ukeRest }}</span></th>
               <td class="px-3 py-2" :class="r.prosent < ADVARSEL_PROSENT ? 'text-[var(--color-warn)]' : ''">
                 {{ r.prosent }} %
                 <span class="mt-1 block h-1 w-9 overflow-hidden rounded-full bg-[var(--color-line)]" aria-hidden="true"><span class="block h-full rounded-full" :class="r.prosent < ADVARSEL_PROSENT ? 'bg-[var(--color-warn)]' : 'bg-[var(--color-accent)]'" :style="{ width: r.prosent + '%' }"></span></span>
@@ -310,7 +310,7 @@ const uker = computed(() => {
               <td class="px-3 py-2">{{ dagTekst(r.fra) }}<span class="block text-sm text-[var(--color-ink-3)]">{{ r.klokkeFra }}</span></td>
               <td class="px-3 py-2">{{ dagTekst(r.til) }}<span class="block text-sm text-[var(--color-ink-3)]">{{ r.klokkeTil }}</span></td>
               <td class="px-3 py-2">{{ dagerTekst(r.dager) }}<span v-if="utfall.flereRuter" class="block text-sm text-[var(--color-ink-3)]">{{ r.strekningNavn }}</span></td>
-              <td class="sticky right-0 z-10 bg-[var(--color-surface)] shadow-[-1px_0_0_var(--color-line)] py-2 pl-3">{{ kr(r.pris) }}<Estimat v-if="r.estimert" /></td>
+              <td class="px-3 py-2">{{ kr(r.pris) }}<Estimat v-if="r.estimert" /></td>
             </tr>
           </tbody>
           <tfoot>
@@ -319,7 +319,7 @@ const uker = computed(() => {
               <td></td>
               <td class="px-3 py-2">{{ sum.turer }}</td>
               <td colspan="3"></td>
-              <td class="sticky right-0 z-10 bg-[var(--color-surface)] shadow-[-1px_0_0_var(--color-line)] py-2 pl-3">{{ kr(sum.pris) }}<Estimat v-if="sum.estimert" /></td>
+              <td class="px-3 py-2">{{ kr(sum.pris) }}<Estimat v-if="sum.estimert" /></td>
             </tr>
           </tfoot>
         </table>
