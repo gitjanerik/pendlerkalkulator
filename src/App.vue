@@ -29,8 +29,8 @@ const ferdig = () => {
   window.scrollTo({ top: 0 });
   fokuserInnhold();
 };
-const nullstillOgFokuser = () => {
-  nullstill();
+const nullstillOgFokuser = (ogsaaStasjoner) => {
+  nullstill(ogsaaStasjoner);
   window.scrollTo({ top: 0 });
   fokuserInnhold();
 };

@@ -1,7 +1,7 @@
 <script setup>
 import { computed, useId } from 'vue'
 
-defineProps({ id: String, placeholder: String })
+defineProps({ id: String, placeholder: String, ugyldig: Boolean, feilId: String })
 const modell = defineModel({ default: '' })
 const enhet = useId()
 
@@ -16,7 +16,7 @@ const skriv = (e) => {
 
 <template>
   <div class="relative">
-    <input :id="id" class="felt !pl-10 text-right" type="text" inputmode="numeric" autocomplete="off" :aria-describedby="enhet" :placeholder="placeholder" :value="vist" @input="skriv" />
+    <input :id="id" class="felt !pl-10 text-right" type="text" inputmode="numeric" autocomplete="off" :aria-invalid="ugyldig || undefined" :aria-describedby="feilId ? `${enhet} ${feilId}` : enhet" :placeholder="placeholder" :value="vist" @input="skriv" />
     <span aria-hidden="true" class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-[var(--color-ink-3)]">kr</span>
     <span :id="enhet" class="sr-only">Beløp i kroner</span>
   </div>

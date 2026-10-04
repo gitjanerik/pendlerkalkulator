@@ -1,3 +1,9 @@
+## 2026-10-04 — v1.5.0: Egne hjemstasjoner
+
+Veiviseren og Innstillinger har «+ Egen stasjon». Du oppgir navn og priser (enkeltbillett, ukeskort og månedskort er påkrevd; årskort og flyplassbillett er valgfrie), og kan redigere og slette stasjonen etterpå. Skjemaet validerer innholdet: navnet må være gyldig og unikt, prisene hele beløp, og lengre billetter må koste mer enn kortere. Feil står ved feltet, og fokus går til det første feltet med feil. «Nullstill» beholder egne stasjoner, med en bryter i bekreftelsen (av som standard) for å slette dem også.
+
+---
+
 ## 2026-10-04 — v1.4.0: Flyplasspris per strekning
 
 Prisen for enkeltbillett til Oslo lufthavn er et eget felt på hver strekning, forhåndsutfylt for de åtte stasjonene (Gulskogen 308, Drammen 298, Brakerøya 295, Lier 283, Asker, Heggedal, Røyken og Spikkestad 162 kr). Egne strekninger kan fylle det ut i veiviseren og i innstillingene. Står feltet tomt, brukes enkeltbillett til Oslo S pluss tillegget som anslag. Lagrede strekninger fra før henter prisen fra forhåndsvalget med samme id.
