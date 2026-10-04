@@ -1,3 +1,9 @@
+## 2026-10-04 — v1.9.1: Versjonsnummer i veiviseren
+
+Versjonsnummeret står nederst i veiviseren, med samme skriftstørrelse og farge som i Innstillinger.
+
+---
+
 ## 2026-10-04 — v1.9.0: Flyplassen for alle jobbsteder
 
 Sjekken mot Entur gjelder nå alle jobbsteder, ikke bare Oslo S. Appen finner ut om jobbstedet ligger på veien til Oslo lufthavn:

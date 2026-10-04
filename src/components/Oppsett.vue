@@ -1,6 +1,7 @@
 <script setup>
 import { computed, ref } from 'vue'
 import StasjonsChips from './StasjonsChips.vue'
+import { APP_VERSION } from '../version.js'
 import { flyplassForhold } from '../lib/fritid.js'
 import { maalnavn, OSLO_S, stasjonsnavn } from '../lib/stasjoner.js'
 import { UKEDAGER_KORT, UKEDAGER_LANG } from '../lib/dagmonster.js'
@@ -240,6 +241,7 @@ const taster = (e) => {
     <ol class="mt-3 flex items-center justify-center gap-2" aria-hidden="true">
       <li v-for="(s, n) in STEG" :key="s" class="h-2 rounded-full transition-all" :class="n === i ? 'w-5 bg-[var(--color-accent)]' : 'w-2 bg-[var(--color-line)]'" />
     </ol>
+    <p class="mt-3 text-center text-sm text-[var(--color-ink-3)]">v{{ APP_VERSION }}</p>
   </section>
 </template>
 
