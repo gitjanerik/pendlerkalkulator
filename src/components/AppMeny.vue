@@ -214,7 +214,7 @@ const klikkBakgrunn = (e) => {
 
         <section aria-labelledby="m-del" class="flex flex-col gap-3">
           <h3 id="m-del" class="seksjonstittel">Del</h3>
-          <p class="text-sm text-[var(--color-ink-2)]">Send en lenke med strekning og priser til en bekjent. Ferie, fritidsreiser og billetten du har nå følger ikke med.</p>
+          <p class="text-sm text-[var(--color-ink-2)]">Send en lenke med strekning, priser og eventuelle nye priser til en bekjent. Ferie, fritidsreiser og billetten du har nå følger ikke med.</p>
           <button type="button" class="knapp" @click="del">Del lenke</button>
           <p role="status" class="text-sm text-[var(--color-ink-2)]">{{ delStatus }}</p>
         </section>
