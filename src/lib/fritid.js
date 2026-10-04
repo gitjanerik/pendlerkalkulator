@@ -1,8 +1,7 @@
 import { tidspunkt, ukedag } from './dato.js'
-import { antallPrisokninger, prisPaaDato } from './priser.js'
 
-// Fritidsreise til Oslo lufthavn kjøpes som én enkeltbillett hjemstasjon–Oslo lufthavn.
-// To billetter (til Oslo S og tillegg videre) lønner seg aldri, og periodebilletten teller ikke med.
+// Fritidsreise til Oslo lufthavn: uten gyldig periodebillett kjøpes én enkeltbillett hjemstasjon–Oslo lufthavn
+// (to billetter lønner seg aldri). Med periodebillett eller eksisterende billett kjøpes bare tillegget Oslo S–Oslo lufthavn.
 // Kilde: oppgitt av eier oktober 2026 – ikke sjekket mot Vy.
 export const OSL_PRISER = {
   gulskogen: 308,
@@ -14,20 +13,15 @@ export const OSL_PRISER = {
   royken: 162,
   spikkestad: 162,
 }
-// Egne strekninger uten kjent pris: enkeltbillett til Oslo S pluss tillegget Oslo S–Oslo lufthavn.
+// Tillegget Oslo S–Oslo lufthavn. Egne strekninger uten kjent flyplasspris bruker enkeltbillett til Oslo S pluss dette.
 export const OSL_TILLEGG = 134
 
 export const fritidGrunnpris = (strekning) => OSL_PRISER[strekning?.id] ?? (Number.isFinite(strekning?.enkelt) ? strekning.enkelt + OSL_TILLEGG : OSL_TILLEGG)
 
-export function prisFritidsturer(turer, strekning, prisDato, prisokning) {
-  const grunn = fritidGrunnpris(strekning)
-  return turer.map((t) => ({
-    dato: t.dato,
-    retning: t.retning,
-    tid: t.tid,
-    pris: prisPaaDato(grunn, prisDato, t.dato, prisokning),
-    estimert: Boolean(prisokning?.paa) && antallPrisokninger(prisDato, t.dato, prisokning) > 0,
-  }))
+// Turene får grunnprisene optimereren trenger: tillegget betales alltid, resten av flyplassbilletten bare uten dekning.
+export function medFritidspriser(turer, strekning) {
+  const total = fritidGrunnpris(strekning)
+  return turer.map((t) => ({ ...t, tilleggGrunn: OSL_TILLEGG, enkeltGrunn: Math.max(0, total - OSL_TILLEGG) }))
 }
 
 // Hver registrerte reise er et par: ned en dag og hjem en annen (eller samme) dag.

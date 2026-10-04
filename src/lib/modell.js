@@ -4,9 +4,9 @@ import { datoerMellom, leggTilDager, tidspunkt, ukedag } from './dato.js'
 import { tilEtterMaaneder } from './periode.js'
 import { MONSTER } from './dagmonster.js'
 import { PRESETS, strekningFraPreset } from './presets.js'
-import { STANDARD_PRISOKNING } from './priser.js'
 import { aarskortAnalyse, sammenlignAlternativer } from './optimerer.js'
-import { byggFritidsturer, prisFritidsturer } from './fritid.js'
+import { OSL_TILLEGG, byggFritidsturer, medFritidspriser } from './fritid.js'
+import { STANDARD_PRISOKNING, antallPrisokninger, prisPaaDato } from './priser.js'
 
 const ISO = /^\d{4}-\d{2}-\d{2}$/
 const KLOKKE = /^([01]\d|2[0-3]):[0-5]\d$/
@@ -107,26 +107,37 @@ export function beregn(modell) {
     (modell.fritidsreiser ?? []).filter((r) => ISO.test(r.fra) && ISO.test(r.til) && r.til >= r.fra),
     { fra, til, fraKlokke, morgen: modell.morgen, ettermiddag: modell.ettermiddag, bilUkedager },
   )
-  const turer = jobbTurer
+  // Reiser mens den eksisterende billetten gjelder er dekket og koster bare tillegget.
+  const fritidMedPris = medFritidspriser(fritidsturer, strekninger[0])
+  const turer = [...jobbTurer, ...fritidMedPris.filter((t) => t.tid >= fraTidspunkt)].sort((a, b) => a.tid - b.tid)
   if (!turer.length) {
     return tom(eksUtloep === null ? 'Ingen reisedager i perioden.' : 'Periodebilletten din dekker hele perioden.')
   }
 
   const prisDato = ISO.test(modell.prisDato ?? '') ? modell.prisDato : fra
-  const fritidReiser = prisFritidsturer(fritidsturer, strekninger[0], prisDato, modell.prisokning)
-  const fritidSum = fritidReiser.reduce((sum, r) => sum + r.pris, 0)
   const opsjoner = {
     prisDato,
     prisokning: modell.prisokning,
     inkluderAarskort: modell.inkluderAarskort,
     reis: Boolean(modell.reis),
-    fritidTillegg: fritidSum,
     vinduSlutt,
   }
   const { beste, alternativer } = sammenlignAlternativer(turer, strekninger, opsjoner)
   if (!beste.mulig) {
     return tom('Turene lar seg ikke dekke. Legg inn enkeltpris eller velg flere bildager.')
   }
+  const tidligTillegg = (t) => ({
+    dato: t.dato,
+    retning: t.retning,
+    tid: t.tid,
+    dekning: 'eksisterende',
+    pris: prisPaaDato(OSL_TILLEGG, prisDato, t.dato, modell.prisokning),
+    estimert: Boolean(modell.prisokning?.paa) && antallPrisokninger(prisDato, t.dato, modell.prisokning) > 0,
+  })
+  const tidlige = fritidMedPris.filter((t) => t.tid < fraTidspunkt).map(tidligTillegg)
+  const fritidReiser = [...beste.fritid, ...tidlige].sort((a, b) => a.tid - b.tid)
+  const fritidSum = fritidReiser.reduce((sum, r) => sum + r.pris, 0)
+  beste.kostnad += tidlige.reduce((sum, r) => sum + r.pris, 0)
   if (fritidReiser.some((r) => r.estimert)) beste.estimert = true
   const harAarskort = strekninger.some((s) => s.perioder.some((p) => p.dager >= 365))
   return {
