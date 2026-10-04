@@ -1,7 +1,6 @@
 <script setup>
 import { computed, nextTick, ref } from 'vue'
 import { norskDato } from '../lib/format.js'
-import { OSL_TILLEGG } from '../lib/fritid.js'
 import Kalender from './Kalender.vue'
 
 const m = defineModel({ type: Object })
@@ -12,7 +11,7 @@ const leggTilKnapp = ref(null)
 const melding = ref('')
 
 const liste = computed(() => [...m.value.fritidsreiser].sort((a, b) => a.fra.localeCompare(b.fra)))
-const tekst = (r) => `Ned ${norskDato(r.fra)} · hjem ${norskDato(r.til)}`
+const tekst = (r) => `Opp ${norskDato(r.fra, true)} · hjem ${norskDato(r.til, true)}`
 
 const veksleVelger = async () => {
   velger.value = !velger.value
@@ -56,10 +55,10 @@ const fjern = async (r) => {
       <button ref="leggTilKnapp" type="button" class="knapp" :aria-expanded="velger" aria-controls="fritid-kalender" @click="veksleVelger">+ Legg til fritidsreise</button>
     </div>
     <div v-if="velger" id="fritid-kalender" class="mt-3 rounded-xl border border-[var(--color-line)] p-3">
-      <Kalender ref="kal" tekst-start="Velg dagen du reiser ned, så dagen du kommer hjem." tekst-slutt="Ned {dato}. Velg dagen du kommer hjem." @velg="legTil" @lukk="lukk" />
+      <Kalender ref="kal" tekst-start="Velg dagen du reiser opp til flyplassen, så dagen du kommer hjem." tekst-slutt="Opp {dato}. Velg dagen du kommer hjem." @velg="legTil" @lukk="lukk" />
     </div>
     <p class="mt-3 text-sm text-[var(--color-ink-2)]">
-      Til Oslo lufthavn trenger du bare tilleggsbillett Oslo S–Oslo lufthavn ({{ OSL_TILLEGG }} kr) når periodebilletten din er gyldig. Reiser før startdatoen eller etter sluttdatoen regnes ikke med.
+      Hver reise regnes som én enkeltbillett fra hjemstasjonen til Oslo lufthavn, uavhengig av periodebilletten. Reiser før startdatoen eller etter sluttdatoen regnes ikke med.
     </p>
   </div>
 </template>

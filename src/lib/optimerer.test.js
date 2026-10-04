@@ -3,7 +3,6 @@ import { byggKalender, reisedager } from './kalender.js'
 import { byggTurer } from './turer.js'
 import { tidspunkt, leggTilDager } from './dato.js'
 import { optimaliser, sammenlignAlternativer, aarskortAnalyse } from './optimerer.js'
-import { sommertidVarsler } from './varsler.js'
 
 const gulskogen = {
   id: 'gulskogen',
@@ -134,20 +133,6 @@ describe('optimaliser — egenskaper', () => {
   it('billigste enkeltbillett velges blant tillatte strekninger', () => {
     const turer = byggTurer([{ dato: '2026-10-02' }], { retninger: 'morgen', bilDager: 'alle' })
     expect(optimaliser(turer, [gulskogen, asker]).kostnad).toBe(68)
-  })
-})
-
-describe('sommertidVarsler', () => {
-  it('varsler om billett som spenner over overgangen til vintertid', () => {
-    const turer = handoffTurer()
-    const res = optimaliser(turer, [gulskogen], { inkluderAarskort: false })
-    const varsler = sommertidVarsler(res.billetter)
-    expect(varsler.map((v) => [v.dato, v.billett.dager])).toEqual([['2026-10-25', 30]])
-  })
-
-  it('hopper over årskort', () => {
-    const b = { dager: 365, aktivering: '2026-10-01T07:00', utloper: '2027-10-01T07:00' }
-    expect(sommertidVarsler([b])).toEqual([])
   })
 })
 

@@ -31,7 +31,7 @@ onBeforeUnmount(() => clearTimeout(tidtaker))
       <template v-if="utfall.resultat.udekteDager.length"> + {{ flertall(utfall.resultat.udekteDager.length, 'dag', 'dager') }} med enkeltbillett</template>
     </p>
     <p v-if="utfall.fritid" class="mt-2 text-sm text-[var(--color-ink-2)]">
-      Med {{ flertall(utfall.fritid.reiser.length, 'fritidsreise', 'fritidsreiser') }} til Oslo lufthavn ({{ kr(utfall.fritid.sum) }} i tillegg).
+      Med {{ flertall(utfall.fritid.reiser.length, 'fritidsreise', 'fritidsreiser') }} til Oslo lufthavn ({{ kr(utfall.fritid.sum) }}<Estimat v-if="utfall.fritid.estimert" /> i tillegg).
     </p>
     <p v-if="utfall.resultat.reis" class="mt-2 text-sm text-[var(--color-ink-2)]">
       Ruter Reis sparer {{ kr(utfall.resultat.reis.besparelse) }} på {{ flertall(utfall.resultat.reis.enkeltreiser, 'enkeltreise', 'enkeltreiser') }} (opptil {{ utfall.resultat.reis.maksProsent }} %).

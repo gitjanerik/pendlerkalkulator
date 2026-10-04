@@ -6,8 +6,7 @@ import { MONSTER } from './dagmonster.js'
 import { PRESETS, strekningFraPreset } from './presets.js'
 import { STANDARD_PRISOKNING } from './priser.js'
 import { aarskortAnalyse, sammenlignAlternativer } from './optimerer.js'
-import { sommertidVarsler } from './varsler.js'
-import { OSL_TILLEGG, byggFritidsturer } from './fritid.js'
+import { byggFritidsturer, prisFritidsturer } from './fritid.js'
 
 const ISO = /^\d{4}-\d{2}-\d{2}$/
 const KLOKKE = /^([01]\d|2[0-3]):[0-5]\d$/
@@ -35,7 +34,7 @@ export function standardModell(idag) {
     bilUkedager: [0, 1, 2, 3, 4],
     prisokning: { ...STANDARD_PRISOKNING },
     prisDato: idag,
-    inkluderAarskort: true,
+    inkluderAarskort: false,
     reis: false,
     // Periodebillett brukeren allerede har: beregningen starter når den utløper.
     eksisterende: { paa: false, type: 'maaned', til: '', klokke: '07:00' },
@@ -108,42 +107,36 @@ export function beregn(modell) {
     (modell.fritidsreiser ?? []).filter((r) => ISO.test(r.fra) && ISO.test(r.til) && r.til >= r.fra),
     { fra, til, fraKlokke, morgen: modell.morgen, ettermiddag: modell.ettermiddag, bilUkedager },
   )
-  const turer = [...jobbTurer, ...fritidsturer.filter((t) => t.tid >= fraTidspunkt)].sort((a, b) => a.tid - b.tid)
+  const turer = jobbTurer
   if (!turer.length) {
     return tom(eksUtloep === null ? 'Ingen reisedager i perioden.' : 'Periodebilletten din dekker hele perioden.')
   }
 
+  const prisDato = ISO.test(modell.prisDato ?? '') ? modell.prisDato : fra
+  const fritidReiser = prisFritidsturer(fritidsturer, strekninger[0], prisDato, modell.prisokning)
+  const fritidSum = fritidReiser.reduce((sum, r) => sum + r.pris, 0)
   const opsjoner = {
-    prisDato: ISO.test(modell.prisDato ?? '') ? modell.prisDato : fra,
+    prisDato,
     prisokning: modell.prisokning,
     inkluderAarskort: modell.inkluderAarskort,
     reis: Boolean(modell.reis),
-    fritidTillegg: fritidsturer.length * OSL_TILLEGG,
+    fritidTillegg: fritidSum,
     vinduSlutt,
   }
   const { beste, alternativer } = sammenlignAlternativer(turer, strekninger, opsjoner)
   if (!beste.mulig) {
     return tom('Turene lar seg ikke dekke. Legg inn enkeltpris eller velg flere bildager.')
   }
+  if (fritidReiser.some((r) => r.estimert)) beste.estimert = true
   const harAarskort = strekninger.some((s) => s.perioder.some((p) => p.dager >= 365))
   return {
     feil: null,
     resultat: beste,
     alternativer: alternativer.filter((a) => a.resultat.mulig),
     aarskort: harAarskort ? aarskortAnalyse(turer, strekninger, opsjoner) : null,
-    fritid: fritidsturer.length
-      ? {
-          tillegg: OSL_TILLEGG,
-          sum: fritidsturer.length * OSL_TILLEGG,
-          reiser: fritidsturer.map((t) => beste.fritid.find((f) => f.tid === t.tid && f.retning === t.retning) ?? {
-            dato: t.dato,
-            retning: t.retning,
-            tid: t.tid,
-            dekning: 'eksisterende',
-          }),
-        }
+    fritid: fritidReiser.length
+      ? { sum: fritidSum, estimert: fritidReiser.some((r) => r.estimert), reiser: fritidReiser }
       : null,
-    varsler: sommertidVarsler(beste.billetter),
     kalender,
     tidsramme: { morgen: modell.morgen, ettermiddag: modell.ettermiddag, retninger: modell.retninger },
     prisokningProsent: modell.prisokning?.paa ? Number(modell.prisokning.prosent) : null,

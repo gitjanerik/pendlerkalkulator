@@ -8,7 +8,6 @@ import PrefBryter from "./components/PrefBryter.vue";
 import MenyKnapp from "./components/MenyKnapp.vue";
 import AppMeny from "./components/AppMeny.vue";
 import Oppsett from "./components/Oppsett.vue";
-import AvgangerKort from "./components/AvgangerKort.vue";
 import PeriodeValg from "./components/PeriodeValg.vue";
 import DagerPerUke from "./components/DagerPerUke.vue";
 import Hovedtall from "./components/Hovedtall.vue";
@@ -22,26 +21,6 @@ useTema();
 const { modell, utfall, monster, nullstill, startKlokke, utdatert, oppdaterNa } = useModell();
 const menyApen = ref(false);
 const strekning = computed(() => modell.strekninger[0]?.navn.replace("–", " – ") ?? "");
-const MAANEDER = ["januar", "februar", "mars", "april", "mai", "juni", "juli", "august", "september", "oktober", "november", "desember"];
-const langDato = (iso) => `${Number(iso.slice(8))}. ${MAANEDER[Number(iso.slice(5, 7)) - 1]} ${iso.slice(0, 4)}`;
-const klokkeskifter = computed(() => {
-  const grupper = [
-    { retning: "sommertid", tittel: "Overgang til sommertid", dato: new Map() },
-    { retning: "vintertid", tittel: "Overgang til vintertid", dato: new Map() },
-  ];
-  for (const v of utfall.value.varsler) {
-    if (!v.retning) continue
-    const g = grupper.find((x) => x.retning === v.retning)
-    g.dato.set(v.dato, [...(g.dato.get(v.dato) ?? []), v.billett.dager])
-  }
-  return grupper
-    .filter((g) => g.dato.size)
-    .map((g) => ({
-      ...g,
-      rader: [...g.dato].sort().map(([dato, dager]) => `${langDato(dato)} (${[...new Set(dager)].join(" og ")}-dagersbillett)`),
-    }))
-});
-const stasjon = computed(() => modell.strekninger[0]?.navn.split("–")[0] ?? "");
 // Knappen brukeren trykket på forsvinner når visningen skifter; fokus går til innholdet, ikke til <body>.
 const fokuserInnhold = () => nextTick(() => document.getElementById("hovedinnhold")?.focus({ preventScroll: true }));
 const ferdig = () => {
@@ -64,7 +43,7 @@ const settDager = (n) => (modell.jobbUkedager = [...MONSTER[n]]);
 
 <template>
   <header
-    class="sticky top-0 z-10 border-b border-[var(--color-line)] bg-[var(--color-app)]"
+    class="sticky top-0 z-20 border-b border-[var(--color-line)] bg-[var(--color-app)]"
   >
     <div class="mx-auto flex max-w-xl items-center gap-2 px-2 py-1">
       <MenyKnapp
@@ -100,7 +79,6 @@ const settDager = (n) => (modell.jobbUkedager = [...MONSTER[n]]);
           <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
         </button>
       </aside>
-      <AvgangerKort v-if="modell.oppsettFerdig" :stasjon="stasjon" />
       <!-- Resultatet står rett over det som styrer det, så tallet er synlig uten å rulle. -->
       <p v-if="utfall.feil" class="kort text-[var(--color-bad)]" role="alert">
         {{ utfall.feil }}
@@ -112,7 +90,7 @@ const settDager = (n) => (modell.jobbUkedager = [...MONSTER[n]]);
       <template v-if="!utfall.feil">
         <SammenlignGraf :utfall="utfall" />
         <BillettTidslinje :utfall="utfall" />
-        <FritidKort :utfall="utfall" :stasjon="stasjon" />
+        <FritidKort :utfall="utfall" />
         <MonsterGraf
           :monster="monster"
           :antall="modell.jobbUkedager.length"
@@ -120,21 +98,6 @@ const settDager = (n) => (modell.jobbUkedager = [...MONSTER[n]]);
           @velg="settDager"
         />
 
-        <section
-          v-if="klokkeskifter.length"
-          class="kort flex flex-col gap-3 text-sm text-[var(--color-warn)]"
-          aria-labelledby="ks-tittel"
-        >
-          <h2 id="ks-tittel">
-            <span aria-hidden="true">⚠ </span>Klokkeskifte kan flytte utløpet av billetter med én time:
-          </h2>
-          <div v-for="g in klokkeskifter" :key="g.retning">
-            <h3 class="font-semibold">{{ g.tittel }}</h3>
-            <ul class="mt-1 list-disc pl-5">
-              <li v-for="r in g.rader" :key="r">{{ r }}</li>
-            </ul>
-          </div>
-        </section>
         <section
           v-if="utfall.aarskort?.besparelse != null"
           class="kort text-sm text-[var(--color-ink-2)]"

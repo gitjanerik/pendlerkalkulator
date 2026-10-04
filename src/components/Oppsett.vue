@@ -122,6 +122,7 @@ const taster = (e) => {
               <li class="py-3">
                 <strong class="block">Årskort</strong>
                 <span class="block text-sm text-[var(--color-ink-2)]">Koster ti til elleve månedskort. Det er den største gevinsten, men binder deg i 12 måneder.</span>
+                <PrefBryter v-model="m.inkluderAarskort" tittel="Vurder årskort" tekst="Appen foreslår årskort når det lønner seg." />
               </li>
               <li class="py-3">
                 <strong class="block">Ferie på tre uker eller mer</strong>

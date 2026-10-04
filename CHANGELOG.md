@@ -1,3 +1,17 @@
+## 2026-10-04 — v1.3.0: Widget-justeringer
+
+**Billettene dine.** Den klebrige venstrekolonnen i tabellen ligger ikke lenger oppå tannhjulet i toppen.
+
+**Fritidsreiser til Oslo lufthavn.** Hver reise er én enkeltbillett fra hjemstasjonen til Oslo lufthavn (Gulskogen 308, Drammen 298, Brakerøya 295, Lier 283, Asker, Heggedal, Røyken og Spikkestad 162 kr), uavhengig av periodebilletten. To billetter lønner seg aldri. Prisen følger den årlige prisøkningen, og reiser etter første økning får asterisk. Listen sier «Opp til» og «Hjem fra» og viser årstall.
+
+**Spart med hjemmekontor.** Grafen teller dager med hjemmekontor (0–4) i stedet for dager på jobb. 0 er full pendleruke.
+
+**Fjernet.** Varselet om sommer- og vintertid og kortet «Neste tog».
+
+**Årskort.** «Vurder årskort» er en bryter i veiviserens første steg, og er av som standard.
+
+---
+
 ## 2026-10-03 — v1.2.0: Universell utforming og bedre brukeropplevelse
 
 Gjennomgang med fokus på universell utforming (WCAG 2.2 AA) og brukeropplevelse. En designagent målte kontrast, berøringsmål og layout i nettleser i lyst og mørkt tema.
