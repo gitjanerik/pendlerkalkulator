@@ -133,6 +133,10 @@ const taster = (e) => {
                 <strong class="block">Ferie på tre uker eller mer</strong>
                 <span class="block text-sm text-[var(--color-ink-2)]">Treffer ferien rett etter en fornyelse, sparer du opptil ett månedskort. Treffer den feil, sparer du ingenting.</span>
               </li>
+              <li class="py-3">
+                <strong class="block">Mange turer til flyplassen</strong>
+                <span class="block text-sm text-[var(--color-ink-2)]">Med gyldig periodebillett kjøper du bare tillegget videre, ikke ny billett hele veien. Appen tar hensyn til fritidsreisene når den velger når billettene skal starte. Gjelder når jobbstedet ligger på veien til flyplassen.</span>
+              </li>
             </ul>
             <p class="mt-3 text-sm text-[var(--color-ink-3)]">Tallene er regnet ut av appen for Vys priser høsten 2026.</p>
           </template>
