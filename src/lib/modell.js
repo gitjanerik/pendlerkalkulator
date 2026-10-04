@@ -6,7 +6,7 @@ import { MONSTER } from './dagmonster.js'
 import { PRESETS, strekningFraPreset } from './presets.js'
 import { aarskortAnalyse, sammenlignAlternativer } from './optimerer.js'
 import { byggFritidsturer, flyplassForhold, fritidTillegg, medFritidspriser } from './fritid.js'
-import { maalnavn } from './stasjoner.js'
+import { maalnavn, stasjonsnavn } from './stasjoner.js'
 import { STANDARD_PRISOKNING, antallPrisokninger, prisPaaDato } from './priser.js'
 
 const ISO = /^\d{4}-\d{2}-\d{2}$/
@@ -159,7 +159,7 @@ export function beregn(modell) {
     alternativer: alternativer.filter((a) => a.resultat.mulig),
     aarskort: harAarskort ? aarskortAnalyse(turer, strekninger, opsjoner) : null,
     fritid: fritidReiser.length
-      ? { sum: fritidSum, forhold: flyplassForhold(strekninger[0]), maal: maalnavn(strekninger[0]), estimert: fritidReiser.some((r) => r.estimert), reiser: fritidReiser }
+      ? { sum: fritidSum, forhold: flyplassForhold(strekninger[0]), fra: stasjonsnavn(strekninger[0]), maal: maalnavn(strekninger[0]), estimert: fritidReiser.some((r) => r.estimert), reiser: fritidReiser }
       : null,
     kalender,
     tidsramme: { morgen: modell.morgen, ettermiddag: modell.ettermiddag, retninger: modell.retninger },
