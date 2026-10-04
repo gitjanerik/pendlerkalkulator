@@ -7,8 +7,8 @@ const GEOCODER = 'https://api.entur.io/geocoder/v1/autocomplete'
 const PLANLEGGER = 'https://api.entur.io/journey-planner/v3/graphql'
 const HODER = { 'ET-Client-Name': ENTUR_KLIENT }
 
-export const stedsokUrl = (navn) =>
-  `${GEOCODER}?${new URLSearchParams({ text: navn, size: '5', layers: 'venue', lang: 'no' })}`
+export const stedsokUrl = (navn, antall = 5) =>
+  `${GEOCODER}?${new URLSearchParams({ text: navn, size: String(antall), layers: 'venue', lang: 'no' })}`
 
 // Første treff som er en jernbanestasjon.
 export function velgStasjon(json) {
@@ -55,6 +55,18 @@ async function json(hent, url, init) {
   if (!svar.ok) throw new Error(`Entur svarte ${svar.status}`)
   return svar.json()
 }
+
+// Alle jernbanestasjoner i et stedsøk, med kommune eller fylke til å skille like navn.
+export function stasjonsForslag(json) {
+  const sett = new Set()
+  return (json?.features ?? [])
+    .filter((x) => [].concat(x.properties?.category ?? []).includes('railStation'))
+    .map((x) => ({ id: x.properties.id, navn: x.properties.name, sted: x.properties.locality ?? x.properties.county ?? '' }))
+    .filter((f) => f.id && f.navn && !sett.has(f.id) && sett.add(f.id))
+}
+
+export const sokStasjoner = async (tekst, hent = fetch, signal) =>
+  stasjonsForslag(await json(hent, stedsokUrl(tekst, 10), { headers: HODER, signal }))
 
 export const finnStasjon = async (navn, hent = fetch, signal) =>
   velgStasjon(await json(hent, stedsokUrl(navn), { headers: HODER, signal }))

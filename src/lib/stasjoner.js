@@ -7,6 +7,9 @@ const NAVN = /^[\p{L}\p{N}][\p{L}\p{N} .'-]*$/u
 
 export const tomtSkjema = () => ({ navn: '', enkelt: '', lufthavn: '', uke: '', maaned: '', aar: '' })
 
+// Entur kaller dem «Asker stasjon»; i appen heter de bare «Asker».
+export const rensStasjonsnavn = (navn) => navn.replace(/\s+stasjon$/i, '').trim()
+
 export const stasjonsnavn = (s) => s.navn.split('–')[0]
 
 const normalt = (t) => t.trim().replace(/\s+/g, ' ')

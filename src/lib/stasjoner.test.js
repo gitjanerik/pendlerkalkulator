@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { byggStasjon, nyStasjonsId, skjemaFraStasjon, tomtSkjema, validerStasjon } from './stasjoner.js'
+import { rensStasjonsnavn, byggStasjon, nyStasjonsId, skjemaFraStasjon, tomtSkjema, validerStasjon } from './stasjoner.js'
 import { beregn, standardModell } from './modell.js'
 
 const gyldig = { navn: 'Lillestrøm', enkelt: 90, lufthavn: 120, uke: 500, maaned: 1200, aar: 12000 }
@@ -51,5 +51,12 @@ describe('byggStasjon', () => {
   it('kan brukes i beregningen', () => {
     const r = beregn({ ...standardModell('2026-10-02'), strekninger: [byggStasjon(gyldig, 'egen-1')], til: '2026-12-18' })
     expect(r.feil).toBeNull()
+  })
+})
+
+describe('rensStasjonsnavn', () => {
+  it('fjerner «stasjon» på slutten', () => {
+    expect(rensStasjonsnavn('Asker stasjon')).toBe('Asker')
+    expect(rensStasjonsnavn('Stasjonsveien')).toBe('Stasjonsveien')
   })
 })

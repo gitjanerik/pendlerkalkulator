@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { finnStasjon, foreslaaAvganger, hentAvganger, klokke, nesteArbeidsdag, osloTid, tolkAvganger, velgForslag, velgStasjon } from './entur.js'
+import { sokStasjoner, stasjonsForslag, finnStasjon, foreslaaAvganger, hentAvganger, klokke, nesteArbeidsdag, osloTid, tolkAvganger, velgForslag, velgStasjon } from './entur.js'
 
 const svar = (data, ok = true, status = 200) => vi.fn().mockResolvedValue({ ok, status, json: async () => data })
 
@@ -112,5 +112,21 @@ describe('Entur', () => {
       planSvar(JSON.parse(init.body).variables.fra === 'A' ? [] : [tur('2026-10-05T16:12:00+02:00', '2026-10-05T16:50:00+02:00')]),
     )
     expect(await foreslaaAvganger('A', 'O', '2026-10-02', { hent })).toEqual({ morgen: null, ettermiddag: '16:12' })
+  })
+})
+
+describe('stasjonsForslag', () => {
+  const f = (id, navn, category, extra = {}) => ({ properties: { id, name: navn, category, ...extra } })
+  const j = { features: [f('A', 'Lillestrøm stasjon', ['railStation'], { locality: 'Lillestrøm' }), f('B', 'Lillestrøm bussterminal', ['busStation']), f('A', 'Lillestrøm stasjon', ['railStation']), f('C', 'Lillehammer stasjon', 'railStation', { county: 'Innlandet' })] }
+  it('beholder bare jernbanestasjoner, uten duplikater, med sted', () => {
+    expect(stasjonsForslag(j)).toEqual([
+      { id: 'A', navn: 'Lillestrøm stasjon', sted: 'Lillestrøm' },
+      { id: 'C', navn: 'Lillehammer stasjon', sted: 'Innlandet' },
+    ])
+    expect(stasjonsForslag(null)).toEqual([])
+  })
+  it('sokStasjoner henter fra stedsøket', async () => {
+    const hent = async (url) => ({ ok: true, json: async () => (url.includes('text=Lille') ? j : { features: [] }) })
+    expect((await sokStasjoner('Lille', hent)).length).toBe(2)
   })
 })

@@ -1,7 +1,8 @@
 <script setup>
-import { computed, nextTick, reactive, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, reactive, ref, watch } from 'vue'
 import { PRESETS, strekningFraPreset } from '../lib/presets.js'
-import { byggStasjon, MAKS_NAVN, nyStasjonsId, skjemaFraStasjon, stasjonsnavn, tomtSkjema, validerStasjon } from '../lib/stasjoner.js'
+import { sokStasjoner } from '../lib/entur.js'
+import { byggStasjon, MAKS_NAVN, nyStasjonsId, rensStasjonsnavn, skjemaFraStasjon, stasjonsnavn, tomtSkjema, validerStasjon } from '../lib/stasjoner.js'
 import Beloep from './Beloep.vue'
 
 const m = defineModel({ type: Object })
@@ -19,6 +20,51 @@ const redigerKnapp = ref(null)
 const skjemaEl = ref(null)
 const slettDlg = ref(null)
 
+// Stedsøk mot Entur mens brukeren skriver. Navnet kan skrives fritt også, så appen virker uten nett.
+const forslag = ref([])
+const sokStatus = ref('')
+let stille = true
+let tidtaker
+let avbryt
+const sok = async (tekst) => {
+  avbryt?.abort()
+  avbryt = new AbortController()
+  try {
+    const treff = await sokStasjoner(tekst, fetch, avbryt.signal)
+    forslag.value = treff
+    sokStatus.value = treff.length ? `${treff.length} ${treff.length === 1 ? 'stasjon' : 'stasjoner'} funnet. Velg en, eller skriv navnet selv.` : 'Ingen stasjoner funnet. Skriv navnet selv.'
+  } catch (e) {
+    if (e.name === 'AbortError') return
+    forslag.value = []
+    sokStatus.value = 'Fikk ikke kontakt med Entur. Skriv navnet selv.'
+  }
+}
+watch(() => skjema.navn, (tekst) => {
+  clearTimeout(tidtaker)
+  if (stille || !modus.value) return
+  const t = String(tekst).trim()
+  if (t.length < 2) {
+    avbryt?.abort()
+    forslag.value = []
+    sokStatus.value = ''
+    return
+  }
+  tidtaker = setTimeout(() => sok(t), 300)
+})
+onBeforeUnmount(() => {
+  clearTimeout(tidtaker)
+  avbryt?.abort()
+})
+const velgForslag = async (f) => {
+  stille = true
+  skjema.navn = rensStasjonsnavn(f.navn)
+  forslag.value = []
+  sokStatus.value = `${skjema.navn} valgt.`
+  await nextTick()
+  document.getElementById('st-enkelt')?.focus()
+  stille = false
+}
+
 const FELT = [
   ['enkelt', 'Enkeltbillett'],
   ['lufthavn', 'Enkeltbillett til Oslo lufthavn (valgfritt)'],
@@ -32,16 +78,21 @@ const velgPreset = (p) => (m.value.strekninger = [strekningFraPreset(p, p.id)])
 const velgEgen = (e) => (m.value.strekninger = [structuredClone(e)])
 
 const aapne = async (nyModus) => {
+  stille = true
   modus.value = nyModus
   feil.value = {}
+  forslag.value = []
+  sokStatus.value = ''
   Object.assign(skjema, nyModus === 'ny' ? tomtSkjema() : skjemaFraStasjon(valgtEgen.value))
   redigerId.value = nyModus === 'ny' ? null : valgtEgen.value.id
   await nextTick()
+  stille = false
   skjemaEl.value?.querySelector('input')?.focus()
 }
 const lukk = async (tilbake) => {
   modus.value = null
   feil.value = {}
+  forslag.value = []
   await nextTick()
   ;(tilbake?.value ?? leggTilKnapp.value)?.focus()
 }
@@ -92,6 +143,15 @@ const slett = async () => {
         <label class="etikett" for="st-navn">Stasjonens navn</label>
         <input id="st-navn" v-model="skjema.navn" class="felt" type="text" autocomplete="off" :maxlength="MAKS_NAVN + 10" :aria-invalid="Boolean(feil.navn)" :aria-describedby="feil.navn ? 'st-navn-feil' : undefined" />
         <p v-if="feil.navn" id="st-navn-feil" class="mt-1 text-sm text-[var(--color-bad)]">{{ feil.navn }}</p>
+        <p class="mt-1 text-sm text-[var(--color-ink-2)]" role="status">{{ sokStatus || 'Begynn å skrive, så foreslår Entur stasjoner.' }}</p>
+        <ul v-if="forslag.length" class="mt-1 flex flex-col divide-y divide-[var(--color-line)] rounded-xl border border-[var(--color-edge)]" aria-label="Forslag fra Entur">
+          <li v-for="f in forslag" :key="f.id">
+            <button type="button" class="flex min-h-11 w-full items-baseline justify-between gap-3 px-3 py-2 text-left hover:bg-[var(--color-app)]" @click="velgForslag(f)">
+              <span class="font-medium">{{ rensStasjonsnavn(f.navn) }}</span>
+              <span v-if="f.sted" class="text-sm text-[var(--color-ink-2)]">{{ f.sted }}</span>
+            </button>
+          </li>
+        </ul>
       </div>
       <div class="grid grid-cols-2 items-end gap-3">
         <div v-for="[felt, navn] in FELT" :key="felt">
