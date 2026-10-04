@@ -1,3 +1,9 @@
+## 2026-10-04 — v2.1.3: Info om årskort før prisøkningen
+
+Under årskortvurderingen står det nå hva et årskort koster rett før og rett etter neste prisøkning (1. februar), og hvor mye mer det blir. Teksten ber deg sjekke i Vy-appen hvor langt frem du kan forhåndsbestille, siden grensen flytter seg. Vises bare når prisøkning er slått på og det er en forskjell.
+
+---
+
 ## 2026-10-04 — v2.1.2: Mer generell flyplasstekst og installering fra delt lenke
 
 - Teksten «Mange turer til flyplassen» i veiviseren gjelder nå både når flyplassen ligger før og bak jobbstedet, ikke bare for reiser sørfra.

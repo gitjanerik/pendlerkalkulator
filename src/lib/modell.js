@@ -7,7 +7,7 @@ import { PRESETS, strekningFraPreset } from './presets.js'
 import { aarskortAnalyse, sammenlignAlternativer } from './optimerer.js'
 import { byggFritidsturer, flyplassForhold, fritidTillegg, medFritidspriser } from './fritid.js'
 import { maalnavn, stasjonsnavn } from './stasjoner.js'
-import { STANDARD_PRISOKNING, antallPrisokninger, prisPaaDato } from './priser.js'
+import { STANDARD_PRISOKNING, aarskortFoerEtter, antallPrisokninger, prisPaaDato } from './priser.js'
 
 const ISO = /^\d{4}-\d{2}-\d{2}$/
 const KLOKKE = /^([01]\d|2[0-3]):[0-5]\d$/
@@ -83,6 +83,14 @@ export function normaliserStrekninger(strekninger) {
         .filter((p) => Number.isInteger(p.dager) && p.dager > 0 && p.pris > 0),
     }))
     .filter((s) => s.enkelt !== Infinity || s.perioder.length)
+}
+
+// Årskortet på første strekning rett før mot rett etter neste prisøkning; null uten årskortpris, prisøkning eller forskjell.
+function aarskortForOkning(strekning, prisDato, fra, prisokning) {
+  const grunn = strekning.perioder.find((p) => p.dager >= 365)?.pris
+  if (!grunn || !prisokning?.paa || !ISO.test(prisDato ?? '')) return null
+  const r = aarskortFoerEtter(grunn, prisDato, fra, prisokning)
+  return r.differanse > 0 ? r : null
 }
 
 const tom = (feil) => ({ feil, resultat: null })
@@ -175,7 +183,7 @@ export function beregn(modell) {
     feil: null,
     resultat: beste,
     alternativer: alternativer.filter((a) => a.resultat.mulig),
-    aarskort: harAarskort ? aarskortAnalyse(turer, strekninger, opsjoner) : null,
+    aarskort: harAarskort ? { ...aarskortAnalyse(turer, strekninger, opsjoner), foerEtter: aarskortForOkning(strekninger[0], prisDato, fra, modell.prisokning) } : null,
     fritid: fritidReiser.length
       ? { sum: fritidSum, forhold: flyplassForhold(strekninger[0]), fra: stasjonsnavn(strekninger[0]), maal: maalnavn(strekninger[0]), estimert: fritidReiser.some((r) => r.estimert), reiser: fritidReiser }
       : null,
