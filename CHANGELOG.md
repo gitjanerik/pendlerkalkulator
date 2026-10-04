@@ -1,3 +1,9 @@
+## 2026-10-04 — v1.4.0: Flyplasspris per strekning
+
+Prisen for enkeltbillett til Oslo lufthavn er et eget felt på hver strekning, forhåndsutfylt for de åtte stasjonene (Gulskogen 308, Drammen 298, Brakerøya 295, Lier 283, Asker, Heggedal, Røyken og Spikkestad 162 kr). Egne strekninger kan fylle det ut i veiviseren og i innstillingene. Står feltet tomt, brukes enkeltbillett til Oslo S pluss tillegget som anslag. Lagrede strekninger fra før henter prisen fra forhåndsvalget med samme id.
+
+---
+
 ## 2026-10-04 — v1.3.1: Fritidsreiser dekket av periodebillett
 
 Fritidsreiser til Oslo lufthavn koster bare tillegget Oslo S–Oslo lufthavn (134 kr) når en periodebillett eller den eksisterende billetten dekker reisen. Uten dekning kjøpes én enkeltbillett hele veien fra hjemstasjonen (Gulskogen 308 kr osv.). Kortet viser igjen om hver reise er dekket, og prisene følger prisøkningen med asterisk.

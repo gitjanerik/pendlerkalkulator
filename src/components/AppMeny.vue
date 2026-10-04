@@ -125,6 +125,10 @@ const klikkBakgrunn = (e) => {
                 <label class="etikett" :for="`enkelt-${s.id}`">Enkeltbillett</label>
                 <Beloep :id="`enkelt-${s.id}`" v-model="s.enkelt" placeholder="Ukjent" />
               </div>
+              <div>
+                <label class="etikett" :for="`lufthavn-${s.id}`">Enkeltbillett til Oslo lufthavn</label>
+                <Beloep :id="`lufthavn-${s.id}`" v-model="s.lufthavn" placeholder="Ukjent" />
+              </div>
               <div v-for="p in s.perioder" :key="p.dager">
                 <label class="etikett" :for="`p-${s.id}-${p.dager}`">{{ dagerTekst(p.dager) }}</label>
                 <Beloep :id="`p-${s.id}-${p.dager}`" v-model="p.pris" />
