@@ -209,6 +209,22 @@ input[type='range'] {
   .chip[aria-pressed='true'] {
     @apply border-transparent bg-[var(--color-accent)] text-[var(--color-on-accent)];
   }
+  /* Egen strekning: valget og redigering/sletting er ett chip. */
+  .chip-egen {
+    @apply inline-flex items-center rounded-full border border-[var(--color-edge)] bg-[var(--color-surface)] text-sm font-medium transition-colors;
+  }
+  .chip-egen[data-valgt='true'] {
+    @apply border-transparent bg-[var(--color-accent)] text-[var(--color-on-accent)];
+  }
+  .chip-egen-valg {
+    @apply inline-flex min-h-11 items-center rounded-full px-4;
+  }
+  .chip-egen[data-valgt='true'] .chip-egen-valg {
+    @apply pr-2;
+  }
+  .chip-egen-ikon {
+    @apply grid min-h-11 min-w-11 place-items-center rounded-full hover:bg-black/10;
+  }
   /* aria-disabled i stedet for disabled holder fokus på knappen. */
   .chip[aria-disabled='true'],
   .knapp[aria-disabled='true'] {
@@ -326,6 +342,7 @@ input[type='range'] {
 /* Windows høykontrast: bakgrunnsfarger fjernes, så valgt tilstand må tegnes med systemfarger. */
 @media (forced-colors: active) {
   .chip[aria-pressed='true'],
+  .chip-egen[data-valgt='true'],
   .visning[aria-pressed='true'] {
     forced-color-adjust: none;
     border-color: Highlight;

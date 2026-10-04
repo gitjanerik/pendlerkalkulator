@@ -28,7 +28,7 @@ const settIGang = async () => {
 const ALLE_STEG = ['intro', 'stasjon', 'uke', 'tider', 'billett', 'fri', 'ferie', 'fritid', 'priser', 'klar']
 const TITLER = {
   intro: 'Hvor mye har du å vinne?',
-  stasjon: 'Hvor reiser du fra?',
+  stasjon: 'Hvilken strekning reiser du?',
   uke: 'Hvilke dager drar du på jobb?',
   tider: 'Når tar du toget?',
   billett: 'Har du en periodebillett nå?',
@@ -142,7 +142,6 @@ const taster = (e) => {
           </template>
 
           <template v-else-if="STEG[i] === 'stasjon'">
-            <p class="steg-tekst">Målet er Oslo S, og vi har priseksempler for åtte stasjoner. Jobber du et annet sted, eller mangler stasjonen din, kan du legge til en egen strekning og fylle inn prisene selv.</p>
             <StasjonsChips v-model="m" kun-en class="mt-4" />
           </template>
 
