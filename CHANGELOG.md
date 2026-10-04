@@ -1,3 +1,9 @@
+## 2026-10-04 — v1.7.0: Flyplassen før eller bak Oslo S
+
+Fritidsreiser til Oslo lufthavn regnes nå riktig for pendlere fra nord (Hamar, Eidsvoll). Når du velger en egen stasjon, spør appen Enturs reiseplanlegger om reisen til Oslo lufthavn går via Oslo S. Fra sør (alle forhåndsvalgene) er det som før: periodebilletten dekker til Oslo S, og du kjøper bare tillegget Oslo S–Oslo lufthavn. Fra nord ligger flyplassen før Oslo S, så periodebilletten dekker hele veien og reisen koster ingenting ekstra. Uten gyldig billett kjøpes hele billetten til flyplassen. Fra nord er flyplassprisen påkrevd i skjemaet, siden den ikke kan regnes ut fra enkeltbilletten til Oslo S. Fra sør er den fortsatt valgfri, og skjemaet forklarer anslaget. Får appen ikke svar fra Entur, regnes flyplassen som bak Oslo S. Fikser også statusteksten under søkefeltet, som viste feil melding siden v1.6.1.
+
+---
+
 ## 2026-10-04 — v1.6.1: Strengere valg av egen stasjon
 
 Egne stasjoner må velges fra Enturs søk, så navnet alltid er offisielt. Skriver du videre etter at du har valgt, må du velge på nytt. Prisfeltene er vanlige tallfelt med `min` og `max`: enkeltbillett og flyplassbillett høyst 999 kr, uke- og månedskort høyst 9 999 kr, årskort høyst 99 999 kr. I veiviseren kan du legge til én egen stasjon; Innstillinger har fortsatt «+ Egen stasjon» uten grense. Egne stasjoner lagret før denne versjonen må velges på nytt fra listen ved neste redigering.

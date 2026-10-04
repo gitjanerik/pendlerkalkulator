@@ -8,8 +8,9 @@ const fritid = computed(() => p.utfall.fritid)
 
 const RETNING = { ned: 'Opp til', hjem: 'Hjem fra' }
 const status = (r) => {
-  if (r.dekning === 'periode') return `Dekket av ${r.dager >= 365 ? 'årskortet' : `${r.dager}-dagersbilletten`}. Kjøp bare tillegget Oslo S–Oslo lufthavn.`
-  if (r.dekning === 'eksisterende') return 'Dekket av billetten du har nå. Kjøp bare tillegget Oslo S–Oslo lufthavn.'
+  const rest = fritid.value.bakOsloS ? 'Kjøp bare tillegget Oslo S–Oslo lufthavn.' : 'Flyplassen ligger før Oslo S, så du trenger ingen ekstra billett.'
+  if (r.dekning === 'periode') return `Dekket av ${r.dager >= 365 ? 'årskortet' : `${r.dager}-dagersbilletten`}. ${rest}`
+  if (r.dekning === 'eksisterende') return `Dekket av billetten du har nå. ${rest}`
   return 'Ingen periodebillett gyldig. Kjøp én enkeltbillett hele veien.'
 }
 </script>
@@ -24,7 +25,7 @@ const status = (r) => {
       <li v-for="r in fritid.reiser" :key="r.tid + r.retning" class="py-2 text-sm">
         <p class="flex items-baseline justify-between gap-3">
           <span class="font-semibold">{{ RETNING[r.retning] }} Oslo lufthavn {{ norskDato(r.dato, true) }}</span>
-          <span class="shrink-0 tabular-nums">{{ kr(r.pris) }}<Estimat v-if="r.estimert" /></span>
+          <span class="shrink-0 tabular-nums">{{ r.pris ? kr(r.pris) : 'Inkludert' }}<Estimat v-if="r.pris && r.estimert" /></span>
         </p>
         <p class="text-[var(--color-ink-2)]">
           <span aria-hidden="true" :class="r.dekning === 'enkelt' ? 'text-[var(--color-warn)]' : ''">{{ r.dekning === 'enkelt' ? '⚠ ' : '✓ ' }}</span>{{ status(r) }}

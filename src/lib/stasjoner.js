@@ -4,7 +4,8 @@ export const MAKS_NAVN = 40
 // Høyeste pris per felt i kroner. Samme tall står som max i skjemafeltene.
 export const MAKS_PRIS = { enkelt: 999, lufthavn: 999, uke: 9999, maaned: 9999, aar: 99999 }
 
-export const tomtSkjema = () => ({ navn: '', enturId: '', enkelt: '', lufthavn: '', uke: '', maaned: '', aar: '' })
+// bakOsloS: true/false fra Entur, null mens vi sjekker eller ikke fikk svar (regnes som true).
+export const tomtSkjema = () => ({ navn: '', enturId: '', bakOsloS: null, enkelt: '', lufthavn: '', uke: '', maaned: '', aar: '' })
 
 // Entur kaller dem «Asker stasjon»; i appen heter de bare «Asker».
 // Tankestrek (–) skiller stasjonen fra Oslo S i strekningsnavnet, så den byttes mot bindestrek.
@@ -41,7 +42,8 @@ export function validerStasjon(skjema, egne = [], redigerer = null) {
     return null
   }
   const enkelt = tall(skjema.enkelt, 'enkelt', { paakrevd: true, tekst: 'prisen på enkeltbillett' })
-  tall(skjema.lufthavn, 'lufthavn', { paakrevd: false })
+  // Ligger flyplassen før Oslo S, er prisen ikke noe vi kan regne ut fra enkeltbilletten.
+  tall(skjema.lufthavn, 'lufthavn', { paakrevd: skjema.bakOsloS === false, tekst: 'prisen på enkeltbillett til Oslo lufthavn' })
   const uke = tall(skjema.uke, 'uke', { paakrevd: true, tekst: 'prisen på ukeskort' })
   const maaned = tall(skjema.maaned, 'maaned', { paakrevd: true, tekst: 'prisen på månedskort' })
   const aar = tall(skjema.aar, 'aar', { paakrevd: false })
@@ -63,6 +65,7 @@ export function byggStasjon(skjema, id) {
   return {
     id,
     enturId: skjema.enturId,
+    bakOsloS: skjema.bakOsloS !== false,
     navn: `${normalt(skjema.navn)}–Oslo S`,
     bil: false,
     ruter: false,
@@ -74,7 +77,7 @@ export function byggStasjon(skjema, id) {
 
 export function skjemaFraStasjon(s) {
   const pris = (dager) => s.perioder.find((p) => p.dager === dager)?.pris ?? ''
-  return { navn: stasjonsnavn(s), enturId: s.enturId ?? '', enkelt: s.enkelt ?? '', lufthavn: s.lufthavn ?? '', uke: pris(7), maaned: pris(30), aar: pris(365) }
+  return { navn: stasjonsnavn(s), enturId: s.enturId ?? '', bakOsloS: s.bakOsloS !== false, enkelt: s.enkelt ?? '', lufthavn: s.lufthavn ?? '', uke: pris(7), maaned: pris(30), aar: pris(365) }
 }
 
 export function nyStasjonsId(egne) {

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { sokStasjoner, stasjonsForslag, finnStasjon, foreslaaAvganger, hentAvganger, klokke, nesteArbeidsdag, osloTid, tolkAvganger, velgForslag, velgStasjon } from './entur.js'
+import { flyplassBakOsloS, passererOsloS, sokStasjoner, stasjonsForslag, finnStasjon, foreslaaAvganger, hentAvganger, klokke, nesteArbeidsdag, osloTid, tolkAvganger, velgForslag, velgStasjon } from './entur.js'
 
 const svar = (data, ok = true, status = 200) => vi.fn().mockResolvedValue({ ok, status, json: async () => data })
 
@@ -128,5 +128,37 @@ describe('stasjonsForslag', () => {
   it('sokStasjoner henter fra stedsøket', async () => {
     const hent = async (url) => ({ ok: true, json: async () => (url.includes('text=Lille') ? j : { features: [] }) })
     expect((await sokStasjoner('Lille', hent)).length).toBe(2)
+  })
+})
+
+describe('passererOsloS', () => {
+  const sted = (name, id) => ({ name, quay: { stopPlace: { id } } })
+  const forslag = (...legs) => ({ data: { trip: { tripPatterns: legs.map((l) => ({ legs: l })) } } })
+  const ben = (fra, til, mellom = []) => ({ fromPlace: sted(fra, 'x'), toPlace: sted(til, 'y'), intermediateQuays: mellom.map((n) => ({ name: n, stopPlace: { id: n } })) })
+
+  it('sørfra går reisen via Oslo S', () => {
+    expect(passererOsloS(forslag([ben('Drammen', 'Oslo lufthavn', ['Asker', 'Oslo S', 'Lillestrøm'])]), 'NSR:oslo')).toBe(true)
+    expect(passererOsloS(forslag([ben('Drammen', 'Oslo S'), ben('Oslo S', 'Oslo lufthavn')]))).toBe(true)
+  })
+  it('nordfra går reisen uten Oslo S', () => {
+    expect(passererOsloS(forslag([ben('Hamar', 'Oslo lufthavn', ['Stange', 'Eidsvoll'])]), 'NSR:oslo')).toBe(false)
+  })
+  it('kjenner Oslo S på id også', () => {
+    expect(passererOsloS(forslag([ben('A', 'B', ['Oslo sentralstasjon'])]), 'Oslo sentralstasjon')).toBe(true)
+  })
+  it('uten reiser vet vi ikke', () => {
+    expect(passererOsloS({ data: { trip: { tripPatterns: [] } } })).toBeNull()
+    expect(passererOsloS(null)).toBeNull()
+  })
+  it('flyplassBakOsloS slår opp stedene og leser reisen', async () => {
+    const geo = (id, navn) => ({ features: [{ properties: { id, name: navn, category: ['railStation'] } }] })
+    const hent = vi.fn(async (url, init) => ({
+      ok: true,
+      json: async () => {
+        if (init?.method === 'POST') return forslag([ben('Hamar', 'Oslo lufthavn', ['Eidsvoll'])])
+        return url.includes('text=Oslo+S') ? geo('NSR:oslo', 'Oslo S') : geo('NSR:osl', 'Oslo lufthavn stasjon')
+      },
+    }))
+    expect(await flyplassBakOsloS('NSR:hamar', { hent })).toBe(false)
   })
 })

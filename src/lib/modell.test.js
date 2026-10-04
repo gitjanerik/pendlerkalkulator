@@ -47,7 +47,7 @@ describe('normaliserStrekninger', () => {
       { id: '2', navn: 'Tom', enkelt: '', perioder: [] },
     ])
     expect(res).toEqual([
-      { id: '1', navn: 'Uten navn', bil: false, ruter: true, enkelt: 156, lufthavn: null, perioder: [{ dager: 30, pris: 100 }] },
+      { id: '1', navn: 'Uten navn', bil: false, ruter: true, enkelt: 156, lufthavn: null, bakOsloS: true, perioder: [{ dager: 30, pris: 100 }] },
     ])
   })
 })
