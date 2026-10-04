@@ -5,7 +5,7 @@ import { tilEtterMaaneder } from './periode.js'
 import { MONSTER } from './dagmonster.js'
 import { PRESETS, strekningFraPreset } from './presets.js'
 import { aarskortAnalyse, sammenlignAlternativer } from './optimerer.js'
-import { bakOsloS, byggFritidsturer, fritidTillegg, medFritidspriser } from './fritid.js'
+import { bakOsloS, byggFritidsturer, fritidTillegg, harFlyplass, medFritidspriser } from './fritid.js'
 import { STANDARD_PRISOKNING, antallPrisokninger, prisPaaDato } from './priser.js'
 
 const ISO = /^\d{4}-\d{2}-\d{2}$/
@@ -63,6 +63,7 @@ export function normaliserStrekninger(strekninger) {
       // Lagrede strekninger fra før feltet fantes henter prisen fra forhåndsvalget med samme id.
       lufthavn: lufthavnPris(s),
       bakOsloS: s.bakOsloS !== false,
+      tilEnturId: s.tilEnturId ?? '',
       perioder: s.perioder
         .map((p) => ({ dager: Number(p.dager), pris: Number(p.pris) }))
         .filter((p) => Number.isInteger(p.dager) && p.dager > 0 && p.pris > 0),
@@ -114,7 +115,7 @@ export function beregn(modell) {
     bilDager,
   })
   const fritidsturer = byggFritidsturer(
-    (modell.fritidsreiser ?? []).filter((r) => ISO.test(r.fra) && ISO.test(r.til) && r.til >= r.fra),
+    (harFlyplass(strekninger[0]) ? modell.fritidsreiser ?? [] : []).filter((r) => ISO.test(r.fra) && ISO.test(r.til) && r.til >= r.fra),
     { fra, til, fraKlokke, morgen: modell.morgen, ettermiddag: modell.ettermiddag, bilUkedager },
   )
   // Reiser mens den eksisterende billetten gjelder er dekket og koster bare tillegget.

@@ -1,4 +1,5 @@
 import { tidspunkt, ukedag } from './dato.js'
+import { gaarTilOsloS } from './stasjoner.js'
 
 // Fritidsreise til Oslo lufthavn: uten gyldig periodebillett kjøpes én enkeltbillett hjemstasjon–Oslo lufthavn
 // (to billetter lønner seg aldri). Med periodebillett eller eksisterende billett er det litt ulikt:
@@ -7,6 +8,9 @@ import { tidspunkt, ukedag } from './dato.js'
 // Kilde: oppgitt av eier oktober 2026 – ikke sjekket mot Vy.
 // Tillegget Oslo S–Oslo lufthavn. Strekninger uten oppgitt flyplasspris bruker enkeltbillett til Oslo S pluss dette som anslag.
 export const OSL_TILLEGG = 134
+
+// Fritidsreiser til Oslo lufthavn regnes bare for strekninger til Oslo S.
+export const harFlyplass = (strekning) => !strekning || gaarTilOsloS(strekning)
 
 export const bakOsloS = (strekning) => strekning?.bakOsloS !== false
 

@@ -1,3 +1,9 @@
+## 2026-10-04 — v1.8.0: Fritt valgt jobbsted
+
+Strekningen har nå et valgfritt mål. «+ Egen strekning» i veiviseren og Innstillinger har to stedsøk mot Entur, «Fra stasjon» og «Til stasjon». Til er Oslo S som standard, og alle forhåndsvalgene og tidligere lagrede stasjoner er fortsatt strekninger til Oslo S. Begge stasjonene må velges fra Enturs liste (Oslo S som mål trenger ikke valg), fra og til kan ikke være samme stasjon, og samme strekning kan ikke legges inn to ganger. Valg som ikke går til Oslo S vises som «Fra–Til». Avreisetidene, «Foreslå fra Entur», prissteget og tekstene bruker målet i stedet for Oslo S. Fritidsreiser til Oslo lufthavn finnes bare for strekninger til Oslo S: for andre mål forsvinner steget i veiviseren («Steg N av M» teller riktig) og seksjonen i Innstillinger, og lagrede fritidsreiser ignoreres. Flyplasssjekken mot Entur kjøres bare når målet er Oslo S. Prisgrensene i skjemaet (enkeltbillett 999 kr, uke- og månedskort 9 999 kr) gjelder uendret også for lange strekninger.
+
+---
+
 ## 2026-10-04 — v1.7.1: Tekster i veiviseren
 
 Teksten under «Her gjør appen størst forskjell» nevner ikke lenger Gulskogen–Oslo S: «Tallene er regnet ut av appen for Vys priser høsten 2026.» Forklaringen i steget «Fritidsreiser» (og under fritidslisten i Innstillinger) tilpasser seg hjemstasjonen: ligger flyplassen bak Oslo S, nevnes tillegget Oslo S–Oslo lufthavn, og ligger den på veien til Oslo S, sies det at periodebilletten dekker hele reisen.

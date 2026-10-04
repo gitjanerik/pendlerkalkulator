@@ -14,7 +14,7 @@ const bildag = (i) => {
 
 <template>
   <section aria-labelledby="st-tittel">
-    <h3 id="st-tittel" class="seksjonstittel">Reiser til Oslo S fra</h3>
+    <h3 id="st-tittel" class="seksjonstittel">Reiser fra</h3>
     <StasjonsChips v-model="m" class="mt-3" />
     <div v-if="valgt?.bil" class="mt-4">
       <p class="etikett">Dager du kjører bil i stedet</p>
