@@ -147,7 +147,7 @@ const klikkBakgrunn = (e) => {
           <h3 id="m-pris" class="seksjonstittel mb-1">Priser og beregning</h3>
           <PrefBryter v-model="m.inkluderAarskort" tittel="Vurder årskort" tekst="Binder deg i 12 måneder." />
           <PrefBryter v-if="prisStrekninger.some((x) => x.s.ruter)" v-model="m.reis" tittel="Ruter Reis på enkeltbilletter" tekst="Rabatt fra 5 % på reise nr. 5 til 40 % fra reise nr. 40 de siste 30 dagene. Gjelder bare innenfor Ruters soner (Oslo og Akershus), altså fra Asker. Vy Smartpris er ikke med." />
-          <PrefBryter v-model="m.prisokning.paa" tittel="Prisøkning hver 1. februar" tekst="Regn med at prisene stiger." />
+          <PrefBryter v-model="m.prisokning.paa" tittel="Årlig prisøkning" tekst="Regn med at prisene stiger. Appen antar 1. februar, men tidspunktet kan variere." />
           <div class="mt-2 felt-par">
             <div v-if="m.prisokning.paa">
               <label class="etikett" for="prosent">Økning (%)</label>

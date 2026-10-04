@@ -98,7 +98,7 @@ const settDager = (n) => (modell.jobbUkedager = [...MONSTER[n]]);
         <button v-if="tilbyInstall" type="button" class="knapp mt-2" @click="installer().finally(fokuserInnhold)">Installer som app</button>
       </Varsel>
       <Varsel v-if="januarVarsel" lukkbar @lukk="lukkJanuar">
-        <p>Vy og Ruter hever prisene 1. februar. Sjekk at prisene dine er oppdatert.</p>
+        <p>Prisene endres ofte rundt nyttår. Sjekk at prisene dine er oppdatert.</p>
         <button type="button" class="mt-1 min-h-11 font-medium underline" @click="menyApen = true">Åpne innstillinger</button>
       </Varsel>
       <!-- Resultatet står rett over det som styrer det, så tallet er synlig uten å rulle. -->
@@ -131,10 +131,10 @@ const settDager = (n) => (modell.jobbUkedager = [...MONSTER[n]]);
           </p>
           <p v-else>Årskort lønner seg ikke for denne perioden.</p>
           <p v-if="utfall.aarskort.estimert" class="mt-1 text-sm">
-            * Estimat: regner med {{ utfall.prisokningProsent }} % prisøkning hver 1. februar.
+            * Estimat: antar {{ utfall.prisokningProsent }} % årlig prisøkning rundt 1. februar.
           </p>
           <p v-if="utfall.aarskort.foerEtter" class="mt-1">
-            Prisene stiger {{ norskDato(utfall.aarskort.foerEtter.etterDato, true) }}. Et årskort som starter senest {{ norskDato(utfall.aarskort.foerEtter.foerDato, true) }} koster ca. {{ kr(utfall.aarskort.foerEtter.foer) }}, mot ca. {{ kr(utfall.aarskort.foerEtter.etter) }} etterpå, altså {{ kr(utfall.aarskort.foerEtter.differanse) }} mer. Sjekk i Vy-appen hvor langt frem du kan forhåndsbestille.
+            Prisene stiger gjerne en gang i året, og tidspunktet kan variere. Regner vi med {{ norskDato(utfall.aarskort.foerEtter.etterDato, true) }}, koster et årskort som starter senest {{ norskDato(utfall.aarskort.foerEtter.foerDato, true) }} ca. {{ kr(utfall.aarskort.foerEtter.foer) }}, mot ca. {{ kr(utfall.aarskort.foerEtter.etter) }} etterpå, altså {{ kr(utfall.aarskort.foerEtter.differanse) }} mer. Sjekk i Vy-appen hvilke priser som gjelder og hvor langt frem du kan forhåndsbestille.
           </p>
           <PrefBryter
             v-if="utfall.aarskort.lonnerSeg || modell.inkluderAarskort"
