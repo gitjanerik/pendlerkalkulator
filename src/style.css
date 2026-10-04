@@ -355,3 +355,45 @@ input[type='range'] {
     border: 1px solid ButtonText;
   }
 }
+
+/* Gul varselboks: egne farger per tema, kant mot forcedColors. */
+.varsel {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  border: 1px solid #b45309;
+  border-radius: 0.75rem;
+  background: #fef3c7;
+  color: #1c1917;
+  padding: 0.5rem 0.75rem;
+}
+.varsel-lukk {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  margin: -0.5rem -0.75rem -0.5rem 0;
+  border-radius: 9999px;
+  flex-shrink: 0;
+}
+.varsel-lukk:hover {
+  background: rgb(0 0 0 / 0.08);
+}
+:root[data-theme='mork'] .varsel {
+  border-color: #ca8a04;
+  background: #422006;
+  color: #fef3c7;
+}
+:root[data-theme='mork'] .varsel-lukk:hover {
+  background: rgb(255 255 255 / 0.12);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='lys']):not([data-theme='mork']) .varsel {
+    border-color: #ca8a04;
+    background: #422006;
+    color: #fef3c7;
+  }
+  :root:not([data-theme='lys']):not([data-theme='mork']) .varsel-lukk:hover {
+    background: rgb(255 255 255 / 0.12);
+  }
+}

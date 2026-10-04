@@ -39,6 +39,8 @@ export function standardModell(idag) {
     bilUkedager: [0, 1, 2, 3, 4],
     prisokning: { ...STANDARD_PRISOKNING },
     prisDato: idag,
+    // Året januar-påminnelsen om nye priser sist ble lukket.
+    prisVarselLukket: '',
     inkluderAarskort: false,
     reis: false,
     // Periodebillett brukeren allerede har: beregningen starter når den utløper.

@@ -1,3 +1,14 @@
+## 2026-10-04 — v2.1.0: Del oppsettet og påminnelse om prisoppdatering
+
+Du kan sende en lenke med strekning og priser til en bekjent, og appen minner deg på å oppdatere prisene.
+
+- Ny seksjon «Del» i Innstillinger: «Del lenke» åpner delingsarket på mobil, ellers kopieres lenken. Lenken har hjemstasjon, mål og priser (for forhåndsvalg bare id), eventuell annen strekning med ukedager, og prisdato når prisene er endret. Ferie, fritidsreiser og billetten du har nå følger ikke med.
+- Mottakeren får strekningen og prisene byttet, og en egen strekning legges blant mottakerens egne. Adressen ryddes, og oppsettet lagres med en gang.
+- Gul varselboks i Innstillinger når prisene ble registrert for mer enn tre måneder siden, med dato. Datofeltet «Prisene ble registrert» vises nå alltid.
+- I januar vises en påminnelse om at prisene hever seg 1. februar. Den kan lukkes (husker året) og vises ikke hvis prisene er registrert i januar.
+
+---
+
 ## 2026-10-04 — v2.0.0: Annen strekning noen ukedager
 
 Under «Reiser fra» i Innstillinger, i den lukkede seksjonen «Avansert: annen strekning noen dager» (åpen når den er i bruk, ikke nevnt i wizarden), kan du slå på «Annen strekning noen dager», velge strekning (forhåndsvalgt eller egen) og hvilke ukedager den gjelder. Resten av jobbdagene bruker den første strekningen.

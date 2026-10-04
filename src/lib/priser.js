@@ -1,4 +1,4 @@
-import { leggTilDager } from './dato.js'
+import { leggTilDager, leggTilMaaneder } from './dato.js'
 
 export const STANDARD_PRISOKNING = { paa: true, prosent: 4, dato: '02-01' }
 
@@ -28,3 +28,11 @@ export function aarskortFoerEtter(grunnpris, prisDato, fraDato, prisokning) {
   const etter = prisPaaDato(grunnpris, prisDato, okning, prisokning)
   return { foerDato, foer, etterDato: okning, etter, differanse: etter - foer }
 }
+
+// Prisene regnes som gamle etter tre måneder.
+export const prisAlderMaaneder = 3
+export const prisErGamle = (prisDato, idag) => /^\d{4}-\d{2}-\d{2}$/.test(prisDato ?? '') && leggTilMaaneder(prisDato, prisAlderMaaneder) < idag
+
+// Januar-påminnelsen: Vy hever prisene 1. februar. Skjules når prisene er registrert i år, eller varselet er lukket i år.
+export const visJanuarVarsel = (prisDato, lukketAar, idag) =>
+  idag.slice(5, 7) === '01' && lukketAar !== idag.slice(0, 4) && !(prisDato >= `${idag.slice(0, 4)}-01-01`)
