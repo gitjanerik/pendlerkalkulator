@@ -9,7 +9,8 @@ export function isoUke(iso) {
 
 // Andel av reisene en full arbeidsuke (man–fre, alle avganger) ville gitt i
 // billettens gyldighet. Hjemmekontor, ferie og fridager drar den ned.
-export function utnyttelse(billett, { morgen, ettermiddag, retninger }) {
+// ukedager: hvilke ukedager (0 = mandag) som teller som full uke, for billetter som bare gjelder noen dager.
+export function utnyttelse(billett, { morgen, ettermiddag, retninger }, ukedager = [0, 1, 2, 3, 4]) {
   const fra = parseTidspunkt(billett.aktivering)
   const til = parseTidspunkt(billett.utloper)
   const avganger = [
@@ -18,7 +19,7 @@ export function utnyttelse(billett, { morgen, ettermiddag, retninger }) {
   ]
   let mulige = 0
   for (let dag = Math.floor(fra / MIN_DOEGN); dag <= Math.floor(til / MIN_DOEGN); dag++) {
-    if (ukedag(isoFraDagNr(dag)) >= 5) continue
+    if (!ukedager.includes(ukedag(isoFraDagNr(dag)))) continue
     for (const min of avganger) {
       const tid = dag * MIN_DOEGN + min
       if (tid >= fra && tid <= til) mulige++

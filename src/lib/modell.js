@@ -31,6 +31,8 @@ export function standardModell(idag) {
     ferie: [],
     // Fritidsreiser til Oslo lufthavn: [{ fra: dato ned, til: dato hjem }]
     fritidsreiser: [],
+    // Andre strekning noen ukedager: { strekning, ukedager: [0–4] } eller null.
+    andreRute: null,
     // Hjemstasjoner brukeren har lagt til selv, samme form som en strekning.
     egneStasjoner: [],
     jobbUkedager: [...MONSTER[5]],
@@ -46,6 +48,14 @@ export function standardModell(idag) {
     infoLukket: true,
     strekninger: [strekningFraPreset(PRESETS[0], PRESETS[0].id)],
   }
+}
+
+// Andre strekning på bestemte ukedager (0 = mandag). Gir null uten gyldige priser eller ukedager.
+export function ekstraRute(andre, hoved) {
+  if (!andre?.strekning || !Array.isArray(andre.ukedager) || !andre.ukedager.length || !hoved) return null
+  const id = andre.strekning.id === hoved.id ? `${hoved.id}-2` : andre.strekning.id
+  const [strekning] = normaliserStrekninger([{ ...andre.strekning, id }])
+  return strekning ? { strekning, ukedager: new Set(andre.ukedager) } : null
 }
 
 const lufthavnPris = (s) => {
@@ -87,6 +97,8 @@ export function beregn(modell) {
   }
   const strekninger = normaliserStrekninger(modell.strekninger)
   if (!strekninger.length) return tom('Legg inn pris for minst én strekning.')
+  const ekstra = ekstraRute(modell.andreRute, strekninger[0])
+  if (ekstra) strekninger.push(ekstra.strekning)
 
   const ferie = modell.ferie.filter((f) => ISO.test(f.fra) && ISO.test(f.til) && f.til >= f.fra)
   const jobbDager = new Set(modell.jobbUkedager ?? MONSTER[5])
@@ -109,13 +121,17 @@ export function beregn(modell) {
   const bilUkedager = new Set(modell.bilUkedager)
   const bilDager = new Set(dager.filter((d) => bilUkedager.has(ukedag(d.dato))).map((d) => d.dato))
   const fraTidspunkt = Math.max(tidspunkt(fra, fraKlokke), eksUtloep ?? -Infinity)
+  // Den eksisterende billetten gjelder bare første strekning; turer på den andre strekningen er ikke dekket av den.
+  const paaEkstra = (t) => Boolean(ekstra) && t.rute === ekstra.strekning.id
   const jobbTurer = byggTurer(dager, {
     morgen: modell.morgen,
     ettermiddag: modell.ettermiddag,
     retninger: modell.retninger,
-    fraTidspunkt,
+    fraTidspunkt: tidspunkt(fra, fraKlokke),
     bilDager,
   })
+    .map((t) => (ekstra ? { ...t, rute: ekstra.ukedager.has(ukedag(t.dato)) ? ekstra.strekning.id : strekninger[0].id } : t))
+    .filter((t) => paaEkstra(t) || t.tid >= fraTidspunkt)
   const fritidsturer = byggFritidsturer(
     (modell.fritidsreiser ?? []).filter((r) => ISO.test(r.fra) && ISO.test(r.til) && r.til >= r.fra),
     { fra, til, fraKlokke, morgen: modell.morgen, ettermiddag: modell.ettermiddag, bilUkedager },
@@ -162,6 +178,7 @@ export function beregn(modell) {
       ? { sum: fritidSum, forhold: flyplassForhold(strekninger[0]), fra: stasjonsnavn(strekninger[0]), maal: maalnavn(strekninger[0]), estimert: fritidReiser.some((r) => r.estimert), reiser: fritidReiser }
       : null,
     kalender,
+    flereRuter: ekstra ? { hoved: strekninger[0].id, ekstra: ekstra.strekning.id, ekstraDager: [...ekstra.ukedager].sort() } : null,
     tidsramme: { morgen: modell.morgen, ettermiddag: modell.ettermiddag, retninger: modell.retninger },
     prisokningProsent: modell.prisokning?.paa ? Number(modell.prisokning.prosent) : null,
     perMaaned: Math.round((beste.kostnad / kalender.length) * 30.44),
