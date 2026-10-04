@@ -1,3 +1,9 @@
+## 2026-10-04 — v2.2.1: Nye priser følger med i delte lenker
+
+Når «Nye priser fra en dato» er på, tar delte lenker med de nye prisene og datoen. Mottakeren får bryteren på og ser de samme prisene.
+
+---
+
 ## 2026-10-04 — v2.2.0: Nye priser fra en dato
 
 I Innstillinger → Priser og beregning kan du slå på «Nye priser fra en dato». Da får hver strekning et ekstra sett prisfelt, og du velger datoen de nye prisene gjelder fra. Dagens priser gjelder før datoen (uten prosentøkning), de nye fra og med den; tomme felt regnes som uendret. Prosentanslaget gjelder fortsatt som reserve, og kommer på toppen av de nye prisene ved neste 1. februar. Årskortinfoen bruker den oppgitte nye prisen og er da ikke et estimat. Funksjonen er bare i Innstillinger, ikke i veiviseren, og følger ikke med i delte lenker.

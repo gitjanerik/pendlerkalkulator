@@ -12,10 +12,23 @@ const likPreset = (s, p) =>
   JSON.stringify(s.perioder.map((x) => [Number(x.dager), Number(x.pris)])) === JSON.stringify(p.perioder)
 
 // Uendret forhåndsvalg deles som id; alt annet som kompakt JSON med bare det mottakeren trenger.
-function kod(s) {
+function nyeKompakt(nye) {
+  if (!nye) return undefined
+  const k = {
+    e: tall(nye.enkelt) || undefined,
+    l: tall(nye.lufthavn) || undefined,
+    t: tall(nye.tillegg) || undefined,
+    p: (nye.perioder ?? []).map((x) => [Number(x.dager), tall(x.pris)]).filter(([, pris]) => pris),
+  }
+  return k.e || k.l || k.t || k.p.length ? k : undefined
+}
+
+function kod(s, medNye = false) {
   const preset = PRESETS.find((p) => p.id === s.id)
-  if (preset && likPreset(s, preset)) return preset.id
+  const ny = medNye ? nyeKompakt(s.nye) : undefined
+  if (preset && likPreset(s, preset) && !ny) return preset.id
   return JSON.stringify({
+    ny,
     i: preset?.id,
     n: s.navn,
     e: tall(s.enkelt) || undefined,
@@ -34,12 +47,15 @@ export function delingsParametre(modell) {
   const hoved = modell.strekninger[0]
   const params = new URLSearchParams()
   if (!hoved) return params
-  params.set('s', kod(hoved))
+  const nyDato = modell.nyePriser?.paa && ISO.test(modell.nyePriser.dato ?? '') ? modell.nyePriser.dato : null
+  params.set('s', kod(hoved, Boolean(nyDato)))
   const andre = modell.andreRute
   if (andre?.strekning && andre.ukedager?.length) {
-    params.set('s2', kod(andre.strekning))
+    params.set('s2', kod(andre.strekning, Boolean(nyDato)))
     params.set('d2', [...andre.ukedager].sort().join(''))
   }
+  const harNye = [hoved, andre?.strekning].some((s) => s && kod(s, Boolean(nyDato)).includes('"ny":'))
+  if (harNye) params.set('nd', nyDato)
   const egendefinert = [hoved, andre?.strekning].some((s) => s && kod(s)[0] === '{')
   if (egendefinert && ISO.test(modell.prisDato ?? '')) params.set('pd', modell.prisDato)
   return params
@@ -72,6 +88,12 @@ function dekod(verdi) {
         enturId: String(j.fe ?? '').slice(0, 60),
         tilEnturId: String(j.te ?? '').slice(0, 60),
         perioder: j.p.slice(0, 6).map(([dager, pris]) => ({ dager: Number(dager), pris: tall(pris) })),
+        nye: j.ny && {
+          enkelt: tall(j.ny.e),
+          lufthavn: tall(j.ny.l),
+          tillegg: tall(j.ny.t),
+          perioder: (Array.isArray(j.ny.p) ? j.ny.p : []).slice(0, 6).map(([dager, pris]) => ({ dager: Number(dager), pris: tall(pris) })),
+        },
       },
     ])
     return s ? { ...s, enturId: String(j.fe ?? '').slice(0, 60) } : null
@@ -87,7 +109,9 @@ export function lesDeling(sok) {
   const andre = dekod(q.get('s2'))
   const ukedager = [...new Set([...(q.get('d2') ?? '')].map(Number))].filter((d) => d >= 0 && d <= 4).sort()
   const pd = q.get('pd')
-  return { hoved, andre: andre && ukedager.length ? { strekning: andre, ukedager } : null, prisDato: ISO.test(pd ?? '') ? pd : null }
+  const nd = q.get('nd')
+  const harNye = Boolean(hoved.nye || andre?.nye)
+  return { hoved, andre: andre && ukedager.length ? { strekning: andre, ukedager } : null, prisDato: ISO.test(pd ?? '') ? pd : null, nyDato: harNye && ISO.test(nd ?? '') ? nd : null }
 }
 
 // Egendefinerte strekninger legges blant mottakerens egne, så de kan velges og endres som andre.
@@ -109,7 +133,7 @@ export function brukDeling(modell, deling) {
     andreRute: andre,
     egneStasjoner: egne,
     prisDato: deling.prisDato ?? modell.prisDato,
-    nyePriser: { paa: false, dato: '' },
+    nyePriser: deling.nyDato ? { paa: true, dato: deling.nyDato } : { paa: false, dato: '' },
     oppsettFerdig: true,
   }
 }

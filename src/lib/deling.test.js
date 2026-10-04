@@ -25,6 +25,27 @@ describe('deling', () => {
     expect(d.hoved.perioder[0].pris).toBe(999)
   })
 
+  it('nye priser fra en dato følger med, også på et uendret forhåndsvalg', () => {
+    const m = modell()
+    m.nyePriser = { paa: true, dato: '2027-01-15' }
+    m.strekninger[0].nye = { enkelt: '', lufthavn: '', perioder: [{ dager: 365, pris: 21500 }] }
+    const q = delingsParametre(m)
+    expect(q.get('nd')).toBe('2027-01-15')
+    const d = lesDeling(q.toString())
+    expect(d.nyDato).toBe('2027-01-15')
+    expect(d.hoved.perioder.find((p) => p.dager === 365).ny).toBe(21500)
+    const ut = brukDeling(modell(), d)
+    expect(ut.nyePriser).toEqual({ paa: true, dato: '2027-01-15' })
+  })
+
+  it('uten bryter deles ingen nye priser', () => {
+    const m = modell()
+    m.nyePriser = { paa: false, dato: '2027-01-15' }
+    m.strekninger[0].nye = { perioder: [{ dager: 365, pris: 21500 }] }
+    expect(delingsParametre(m).get('s')).toBe('gulskogen')
+    expect(delingsParametre(m).get('nd')).toBeNull()
+  })
+
   it('egen strekning går rundt og havner blant mottakerens egne', () => {
     const m = modell()
     m.strekninger = [egen]
