@@ -1,5 +1,6 @@
 import { computed, onUnmounted, reactive, ref, watch } from 'vue'
 import { beregn, monsterAnalyse, standardModell } from '../lib/modell.js'
+import { brukDeling, lesDeling } from '../lib/deling.js'
 
 const NOKKEL = 'pendler-modell'
 
@@ -30,17 +31,36 @@ function les() {
   return standard
 }
 
+// En delt lenke bytter strekning og priser og fjernes fra adressefeltet, så en oppdatering ikke bytter igjen.
+function lesDeltOppsett(start) {
+  const deling = lesDeling(window.location.search)
+  if (!deling) return { start, deltNavn: '' }
+  try {
+    window.history.replaceState(null, '', `${window.location.pathname}${window.location.hash}`)
+  } catch {
+    // Adressen står igjen; lenken gir samme resultat neste gang.
+  }
+  const ny = brukDeling(start, deling)
+  return { start: ny, deltNavn: ny.strekninger[0].navn.replace('–', ' – ') }
+}
+
+function lagre(modell) {
+  try {
+    localStorage.setItem(NOKKEL, JSON.stringify(modell))
+  } catch {
+    // Lagring er en bekvemmelighet, ikke en forutsetning.
+  }
+}
+
 export function useModell() {
-  const modell = reactive(les())
+  const { start, deltNavn } = lesDeltOppsett(les())
+  const modell = reactive(start)
+  const deltVarsel = ref(deltNavn)
+  // Adressen er allerede ryddet, så det delte oppsettet må lagres nå og ikke først ved neste endring.
+  if (deltNavn) lagre(modell)
   watch(
     modell,
-    () => {
-      try {
-        localStorage.setItem(NOKKEL, JSON.stringify(modell))
-      } catch {
-        // Lagring er en bekvemmelighet, ikke en forutsetning.
-      }
-    },
+    () => lagre(modell),
     { deep: true },
   )
   // «Nå» står stille til brukeren selv oppdaterer; klokken under tikker bare for å vise om den er eldre.
@@ -57,8 +77,9 @@ export function useModell() {
   const monster = computed(() => monsterAnalyse(effektiv.value))
   const nullstill = (ogsaaStasjoner = false) => {
     const egne = modell.egneStasjoner
-    Object.assign(modell, standardModell(idag()))
+    const lukket = modell.prisVarselLukket
+    Object.assign(modell, standardModell(idag()), { prisVarselLukket: lukket })
     if (!ogsaaStasjoner) modell.egneStasjoner = egne
   }
-  return { modell, utfall, monster, nullstill, startKlokke, utdatert, oppdaterNa }
+  return { modell, utfall, monster, nullstill, startKlokke, utdatert, oppdaterNa, deltVarsel, idag }
 }

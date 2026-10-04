@@ -15,10 +15,21 @@ import SammenlignGraf from "./components/SammenlignGraf.vue";
 import BillettTidslinje from "./components/BillettTidslinje.vue";
 import FritidKort from "./components/FritidKort.vue";
 import MonsterGraf from "./components/MonsterGraf.vue";
+import Varsel from "./components/Varsel.vue";
 import { kr, norskTidspunkt } from "./lib/format.js";
+import { visJanuarVarsel } from "./lib/priser.js";
 
 useTema();
-const { modell, utfall, monster, nullstill, startKlokke, utdatert, oppdaterNa } = useModell();
+const { modell, utfall, monster, nullstill, startKlokke, utdatert, oppdaterNa, deltVarsel, idag } = useModell();
+const januarVarsel = computed(() => visJanuarVarsel(modell.prisDato, modell.prisVarselLukket, idag()));
+const lukkJanuar = () => {
+  modell.prisVarselLukket = idag().slice(0, 4);
+  fokuserInnhold();
+};
+const lukkDelt = () => {
+  deltVarsel.value = "";
+  fokuserInnhold();
+};
 const menyApen = ref(false);
 const strekning = computed(() => modell.strekninger[0]?.navn.replace("–", " – ") ?? "");
 // Knappen brukeren trykket på forsvinner når visningen skifter; fokus går til innholdet, ikke til <body>.
@@ -79,6 +90,13 @@ const settDager = (n) => (modell.jobbUkedager = [...MONSTER[n]]);
           <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
         </button>
       </aside>
+      <Varsel v-if="deltVarsel" lukkbar @lukk="lukkDelt">
+        Åpnet delt strekning: {{ deltVarsel }}. Ferie og fritidsreiser er dine egne.
+      </Varsel>
+      <Varsel v-if="januarVarsel" lukkbar @lukk="lukkJanuar">
+        <p>Vy og Ruter hever prisene 1. februar. Sjekk at prisene dine er oppdatert.</p>
+        <button type="button" class="mt-1 min-h-11 font-medium underline" @click="menyApen = true">Åpne innstillinger</button>
+      </Varsel>
       <!-- Resultatet står rett over det som styrer det, så tallet er synlig uten å rulle. -->
       <p v-if="utfall.feil" class="kort text-[var(--color-bad)]" role="alert">
         {{ utfall.feil }}

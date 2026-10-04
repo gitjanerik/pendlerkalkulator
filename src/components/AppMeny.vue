@@ -9,6 +9,11 @@ import StasjonsValg from './StasjonsValg.vue'
 import { maalnavn, OSLO_S, stasjonsnavn } from '../lib/stasjoner.js'
 import Beloep from './Beloep.vue'
 import PrefBryter from './PrefBryter.vue'
+import Varsel from './Varsel.vue'
+import { delingsUrl } from '../lib/deling.js'
+import { prisErGamle } from '../lib/priser.js'
+import { idagIso } from '../lib/dato.js'
+import { norskDatoLang } from '../lib/format.js'
 import FerieListe from './FerieListe.vue'
 import FritidListe from './FritidListe.vue'
 import ForslagKnapp from './ForslagKnapp.vue'
@@ -23,6 +28,30 @@ const prisStrekninger = computed(() => [
   ...(m.value.andreRute?.strekning ? [{ s: m.value.andreRute.strekning, nokkel: `${m.value.andreRute.strekning.id}-b` }] : []),
 ])
 const apen = defineModel('apen', { type: Boolean })
+const gamlePriser = computed(() => prisErGamle(m.value.prisDato, idagIso()))
+const delStatus = ref('')
+let delTimer
+const del = async () => {
+  const url = delingsUrl(m.value, `${window.location.origin}${window.location.pathname}`)
+  if (!url) return
+  const data = { title: 'Pendlerkalkulator', text: `Pendlerkalkulator: ${m.value.strekninger[0].navn.replace('–', ' – ')}`, url }
+  if (typeof navigator.share === 'function' && navigator.canShare?.(data) !== false) {
+    try {
+      await navigator.share(data)
+      return
+    } catch (e) {
+      if (e?.name === 'AbortError') return
+    }
+  }
+  try {
+    await navigator.clipboard.writeText(url)
+    delStatus.value = 'Lenken er kopiert.'
+  } catch {
+    delStatus.value = 'Kunne ikke kopiere lenken.'
+  }
+  clearTimeout(delTimer)
+  delTimer = setTimeout(() => (delStatus.value = ''), 4000)
+}
 // I veiviseren vises bare faste valg (utseende, app, versjon).
 defineProps({ wizard: Boolean })
 const emit = defineEmits(['nullstill'])
@@ -119,16 +148,19 @@ const klikkBakgrunn = (e) => {
           <PrefBryter v-model="m.inkluderAarskort" tittel="Vurder årskort" tekst="Binder deg i 12 måneder." />
           <PrefBryter v-if="prisStrekninger.some((x) => x.s.ruter)" v-model="m.reis" tittel="Ruter Reis på enkeltbilletter" tekst="Rabatt fra 5 % på reise nr. 5 til 40 % fra reise nr. 40 de siste 30 dagene. Gjelder bare innenfor Ruters soner (Oslo og Akershus), altså fra Asker. Vy Smartpris er ikke med." />
           <PrefBryter v-model="m.prisokning.paa" tittel="Prisøkning hver 1. februar" tekst="Regn med at prisene stiger." />
-          <div v-if="m.prisokning.paa" class="mt-2 felt-par">
-            <div>
+          <div class="mt-2 felt-par">
+            <div v-if="m.prisokning.paa">
               <label class="etikett" for="prosent">Økning (%)</label>
               <input id="prosent" v-model.number="m.prisokning.prosent" class="felt" type="number" inputmode="decimal" min="0" step="0.1" />
             </div>
             <div>
-              <label class="etikett" for="prisdato">Prisene gjelder fra</label>
+              <label class="etikett" for="prisdato">Prisene ble registrert</label>
               <input id="prisdato" v-model="m.prisDato" class="felt" type="date" />
             </div>
           </div>
+          <Varsel v-if="gamlePriser" class="mt-3">
+            Prisene ble registrert {{ norskDatoLang(m.prisDato) }}, for mer enn tre måneder siden. Sjekk dem mot Vy og Ruter, og endre datoen når du har oppdatert.
+          </Varsel>
 
           <details v-for="{ s, nokkel } in prisStrekninger" :key="nokkel" class="mt-3 rounded-xl border border-[var(--color-line)] px-3">
             <summary class="vis-pil min-h-11 font-medium">{{ s.navn }} – priser</summary>
@@ -148,6 +180,13 @@ const klikkBakgrunn = (e) => {
               <p class="col-span-2 text-sm text-[var(--color-ink-3)]">Forslagsprisene er Vys voksenpriser {{ PRESET_DATO }}. Sjekk dem mot appen.</p>
             </div>
           </details>
+        </section>
+
+        <section aria-labelledby="m-del" class="flex flex-col gap-3">
+          <h3 id="m-del" class="seksjonstittel">Del</h3>
+          <p class="text-sm text-[var(--color-ink-2)]">Send en lenke med strekning og priser til en bekjent. Ferie, fritidsreiser og billetten du har nå følger ikke med.</p>
+          <button type="button" class="knapp" @click="del">Del lenke</button>
+          <p role="status" class="text-sm text-[var(--color-ink-2)]">{{ delStatus }}</p>
         </section>
 
       </template>
