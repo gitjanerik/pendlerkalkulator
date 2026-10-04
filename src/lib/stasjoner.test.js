@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { rensStasjonsnavn, byggStasjon, nyStasjonsId, skjemaFraStasjon, tomtSkjema, validerStasjon } from './stasjoner.js'
 import { beregn, standardModell } from './modell.js'
 
-const gyldig = { navn: 'Lillestrøm', enkelt: 90, lufthavn: 120, uke: 500, maaned: 1200, aar: 12000 }
+const gyldig = { navn: 'Lillestrøm', enturId: 'NSR:StopPlace:1', enkelt: 90, lufthavn: 120, uke: 500, maaned: 1200, aar: 12000 }
 
 describe('validerStasjon', () => {
   it('godtar et gyldig skjema, og at årskort og flyplass er valgfrie', () => {
@@ -12,11 +12,12 @@ describe('validerStasjon', () => {
   it('krever navn og de påkrevde prisene', () => {
     expect(Object.keys(validerStasjon(tomtSkjema())).sort()).toEqual(['enkelt', 'maaned', 'navn', 'uke'])
   })
-  it('avviser ugyldige navn', () => {
-    for (const navn of ['  ', 'A–B', '<b>', '-Lier', 'x'.repeat(41), 'Oslo S', 'oslo']) {
+  it('godtar bare stasjoner valgt fra Entur', () => {
+    expect(validerStasjon({ ...gyldig, enturId: '' }).navn).toMatch(/Entur/)
+    expect(validerStasjon({ ...gyldig, navn: '  ', enturId: '' }).navn).toBeTruthy()
+    for (const navn of ['Oslo S', 'oslo', 'x'.repeat(41)]) {
       expect(validerStasjon({ ...gyldig, navn }).navn, navn).toBeTruthy()
     }
-    expect(validerStasjon({ ...gyldig, navn: "Sørumsand's  st." })).toEqual({})
   })
   it('avviser navn som finnes fra før, uavhengig av store bokstaver', () => {
     expect(validerStasjon({ ...gyldig, navn: 'drammen' }).navn).toMatch(/allerede/)
@@ -28,7 +29,10 @@ describe('validerStasjon', () => {
     expect(validerStasjon({ ...gyldig, enkelt: 0 }).enkelt).toBeTruthy()
     expect(validerStasjon({ ...gyldig, uke: -5 }).uke).toBeTruthy()
     expect(validerStasjon({ ...gyldig, maaned: 1.5 }).maaned).toBeTruthy()
-    expect(validerStasjon({ ...gyldig, aar: 1e9 }).aar).toBeTruthy()
+    expect(validerStasjon({ ...gyldig, enkelt: 999, lufthavn: 999, uke: 1500, maaned: 9999, aar: 99999 })).toEqual({})
+    expect(validerStasjon({ ...gyldig, enkelt: 1000 }).enkelt).toMatch(/999/)
+    expect(validerStasjon({ ...gyldig, maaned: 10000 }).maaned).toMatch(/9999/)
+    expect(validerStasjon({ ...gyldig, aar: 100000 }).aar).toBeTruthy()
     expect(validerStasjon({ ...gyldig, maaned: 400 }).maaned).toMatch(/ukeskortet/)
     expect(validerStasjon({ ...gyldig, aar: 1000 }).aar).toMatch(/månedskortet/)
     expect(validerStasjon({ ...gyldig, uke: 50 }).uke).toMatch(/enkeltbillett/)
@@ -58,5 +62,6 @@ describe('rensStasjonsnavn', () => {
   it('fjerner «stasjon» på slutten', () => {
     expect(rensStasjonsnavn('Asker stasjon')).toBe('Asker')
     expect(rensStasjonsnavn('Stasjonsveien')).toBe('Stasjonsveien')
+    expect(rensStasjonsnavn('Mo–Rana stasjon')).toBe('Mo-Rana')
   })
 })

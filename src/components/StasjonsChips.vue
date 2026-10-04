@@ -2,10 +2,12 @@
 import { computed, nextTick, onBeforeUnmount, reactive, ref, watch } from 'vue'
 import { PRESETS, strekningFraPreset } from '../lib/presets.js'
 import { sokStasjoner } from '../lib/entur.js'
-import { byggStasjon, MAKS_NAVN, nyStasjonsId, rensStasjonsnavn, skjemaFraStasjon, stasjonsnavn, tomtSkjema, validerStasjon } from '../lib/stasjoner.js'
+import { byggStasjon, MAKS_NAVN, MAKS_PRIS, nyStasjonsId, rensStasjonsnavn, skjemaFraStasjon, stasjonsnavn, tomtSkjema, validerStasjon } from '../lib/stasjoner.js'
 import Beloep from './Beloep.vue'
 
 const m = defineModel({ type: Object })
+// I veiviseren kan brukeren legge til én egen stasjon; flere finnes i Innstillinger.
+defineProps({ kunEn: Boolean })
 const valgt = computed(() => m.value.strekninger[0])
 const egne = computed(() => m.value.egneStasjoner ?? [])
 const valgtEgen = computed(() => egne.value.find((e) => e.id === valgt.value?.id))
@@ -32,16 +34,18 @@ const sok = async (tekst) => {
   try {
     const treff = await sokStasjoner(tekst, fetch, avbryt.signal)
     forslag.value = treff
-    sokStatus.value = treff.length ? `${treff.length} ${treff.length === 1 ? 'stasjon' : 'stasjoner'} funnet. Velg en, eller skriv navnet selv.` : 'Ingen stasjoner funnet. Skriv navnet selv.'
+    sokStatus.value = treff.length ? `${treff.length} ${treff.length === 1 ? 'stasjon' : 'stasjoner'} funnet. Velg en fra listen.` : 'Ingen stasjoner funnet. Prøv en annen skrivemåte.'
   } catch (e) {
     if (e.name === 'AbortError') return
     forslag.value = []
-    sokStatus.value = 'Fikk ikke kontakt med Entur. Skriv navnet selv.'
+    sokStatus.value = 'Fikk ikke kontakt med Entur. Du må være på nett for å legge til en stasjon.'
   }
 }
 watch(() => skjema.navn, (tekst) => {
   clearTimeout(tidtaker)
   if (stille || !modus.value) return
+  // Skriver brukeren videre, er valget fra listen ikke lenger gyldig.
+  skjema.enturId = ''
   const t = String(tekst).trim()
   if (t.length < 2) {
     avbryt?.abort()
@@ -58,6 +62,7 @@ onBeforeUnmount(() => {
 const velgForslag = async (f) => {
   stille = true
   skjema.navn = rensStasjonsnavn(f.navn)
+  skjema.enturId = f.id
   forslag.value = []
   sokStatus.value = `${skjema.navn} valgt.`
   await nextTick()
@@ -126,7 +131,7 @@ const slett = async () => {
     <div class="flex flex-wrap gap-2" role="group" aria-label="Hjemstasjon">
       <button v-for="p in PRESETS" :key="p.id" type="button" class="chip" :aria-pressed="valgt?.id === p.id" @click="velgPreset(p)">{{ stasjonsnavn(p) }}</button>
       <button v-for="e in egne" :key="e.id" type="button" class="chip" :aria-pressed="valgt?.id === e.id" @click="velgEgen(e)">{{ stasjonsnavn(e) }}</button>
-      <button ref="leggTilKnapp" type="button" class="chip" :aria-expanded="modus === 'ny'" aria-controls="stasjon-skjema" @click="modus === 'ny' ? lukk() : aapne('ny')">+ Egen stasjon</button>
+      <button v-if="!(kunEn && egne.length)" ref="leggTilKnapp" type="button" class="chip" :aria-expanded="modus === 'ny'" aria-controls="stasjon-skjema" @click="modus === 'ny' ? lukk() : aapne('ny')">+ Egen stasjon</button>
     </div>
     <p class="sr-only" role="status">{{ melding }}</p>
 
@@ -140,10 +145,10 @@ const slett = async () => {
       <p class="text-sm text-[var(--color-ink-2)]">Voksenpriser til Oslo S. Du kan finne dem i Vy- eller Ruter-appen.</p>
       <p v-if="feilListe.length" class="text-sm text-[var(--color-bad)]" role="alert">Rett {{ feilListe.length === 1 ? 'feltet' : 'feltene' }} med feil før du lagrer.</p>
       <div>
-        <label class="etikett" for="st-navn">Stasjonens navn</label>
+        <label class="etikett" for="st-navn">Søk etter stasjon</label>
         <input id="st-navn" v-model="skjema.navn" class="felt" type="text" autocomplete="off" :maxlength="MAKS_NAVN + 10" :aria-invalid="Boolean(feil.navn)" :aria-describedby="feil.navn ? 'st-navn-feil' : undefined" />
         <p v-if="feil.navn" id="st-navn-feil" class="mt-1 text-sm text-[var(--color-bad)]">{{ feil.navn }}</p>
-        <p class="mt-1 text-sm text-[var(--color-ink-2)]" role="status">{{ sokStatus || 'Begynn å skrive, så foreslår Entur stasjoner.' }}</p>
+        <p class="mt-1 text-sm text-[var(--color-ink-2)]" role="status">{{ sokStatus || skjema.enturId ? `${skjema.navn} er valgt.` : 'Begynn å skrive, så foreslår Entur stasjoner.' }}</p>
         <ul v-if="forslag.length" class="mt-1 flex flex-col divide-y divide-[var(--color-line)] rounded-xl border border-[var(--color-edge)]" aria-label="Forslag fra Entur">
           <li v-for="f in forslag" :key="f.id">
             <button type="button" class="flex min-h-11 w-full items-baseline justify-between gap-3 px-3 py-2 text-left hover:bg-[var(--color-app)]" @click="velgForslag(f)">
@@ -156,7 +161,7 @@ const slett = async () => {
       <div class="grid grid-cols-2 items-end gap-3">
         <div v-for="[felt, navn] in FELT" :key="felt">
           <label class="etikett" :for="`st-${felt}`">{{ navn }}</label>
-          <Beloep :id="`st-${felt}`" v-model="skjema[felt]" :ugyldig="Boolean(feil[felt])" :feil-id="feil[felt] ? `st-${felt}-feil` : undefined" />
+          <Beloep :id="`st-${felt}`" v-model="skjema[felt]" :ugyldig="Boolean(feil[felt])" :max="MAKS_PRIS[felt]" :feil-id="feil[felt] ? `st-${felt}-feil` : undefined" />
           <p v-if="feil[felt]" :id="`st-${felt}-feil`" class="mt-1 text-sm text-[var(--color-bad)]">{{ feil[felt] }}</p>
         </div>
       </div>

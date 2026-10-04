@@ -1,14 +1,14 @@
 import { PRESETS } from './presets.js'
 
 export const MAKS_NAVN = 40
-const MAKS_PRIS = 100000
-// Bokstaver, tall, mellomrom, punktum, apostrof og bindestrek. Tankestrek (–) skiller stasjon og Oslo S i strekningsnavnet, så den er ikke tillatt.
-const NAVN = /^[\p{L}\p{N}][\p{L}\p{N} .'-]*$/u
+// Høyeste pris per felt i kroner. Samme tall står som max i skjemafeltene.
+export const MAKS_PRIS = { enkelt: 999, lufthavn: 999, uke: 9999, maaned: 9999, aar: 99999 }
 
-export const tomtSkjema = () => ({ navn: '', enkelt: '', lufthavn: '', uke: '', maaned: '', aar: '' })
+export const tomtSkjema = () => ({ navn: '', enturId: '', enkelt: '', lufthavn: '', uke: '', maaned: '', aar: '' })
 
 // Entur kaller dem «Asker stasjon»; i appen heter de bare «Asker».
-export const rensStasjonsnavn = (navn) => navn.replace(/\s+stasjon$/i, '').trim()
+// Tankestrek (–) skiller stasjonen fra Oslo S i strekningsnavnet, så den byttes mot bindestrek.
+export const rensStasjonsnavn = (navn) => navn.replace(/\s+stasjon$/i, '').replace(/–/g, '-').trim()
 
 export const stasjonsnavn = (s) => s.navn.split('–')[0]
 
@@ -19,9 +19,10 @@ const lik = (a, b) => a.toLocaleLowerCase('nb') === b.toLocaleLowerCase('nb')
 export function validerStasjon(skjema, egne = [], redigerer = null) {
   const feil = {}
   const navn = normalt(String(skjema.navn ?? ''))
-  if (!navn) feil.navn = 'Skriv inn navnet på stasjonen.'
+  // Bare stasjoner valgt fra Enturs søk er gyldige, så navnet alltid er offisielt.
+  if (!navn) feil.navn = 'Søk etter stasjonen og velg den fra listen.'
+  else if (!skjema.enturId) feil.navn = 'Velg stasjonen fra listen med forslag fra Entur.'
   else if (navn.length > MAKS_NAVN) feil.navn = `Navnet kan ha høyst ${MAKS_NAVN} tegn.`
-  else if (!NAVN.test(navn)) feil.navn = 'Bruk bokstaver, tall, mellomrom, punktum, apostrof eller bindestrek.'
   else if (/^oslo( s)?$/i.test(navn)) feil.navn = 'Oslo S er målet. Skriv hjemstasjonen.'
   else {
     const andre = [...PRESETS.map(stasjonsnavn), ...egne.filter((e) => e.id !== redigerer).map(stasjonsnavn)]
@@ -35,7 +36,7 @@ export function validerStasjon(skjema, egne = [], redigerer = null) {
     }
     const n = Number(verdi)
     if (!Number.isInteger(n) || n <= 0) feil[felt] = 'Prisen må være et helt beløp over 0 kr.'
-    else if (n > MAKS_PRIS) feil[felt] = `Prisen kan ikke være over ${MAKS_PRIS.toLocaleString('nb').replace(/\s/g, ' ')} kr.`
+    else if (n > MAKS_PRIS[felt]) feil[felt] = `Prisen kan ikke være over ${MAKS_PRIS[felt]} kr.`
     else return n
     return null
   }
@@ -61,6 +62,7 @@ export function byggStasjon(skjema, id) {
     .map(([dager, pris]) => ({ dager, pris: Number(pris) }))
   return {
     id,
+    enturId: skjema.enturId,
     navn: `${normalt(skjema.navn)}–Oslo S`,
     bil: false,
     ruter: false,
@@ -72,7 +74,7 @@ export function byggStasjon(skjema, id) {
 
 export function skjemaFraStasjon(s) {
   const pris = (dager) => s.perioder.find((p) => p.dager === dager)?.pris ?? ''
-  return { navn: stasjonsnavn(s), enkelt: s.enkelt ?? '', lufthavn: s.lufthavn ?? '', uke: pris(7), maaned: pris(30), aar: pris(365) }
+  return { navn: stasjonsnavn(s), enturId: s.enturId ?? '', enkelt: s.enkelt ?? '', lufthavn: s.lufthavn ?? '', uke: pris(7), maaned: pris(30), aar: pris(365) }
 }
 
 export function nyStasjonsId(egne) {
