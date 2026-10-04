@@ -27,13 +27,13 @@ describe('flyplassprisen', () => {
 
 describe('flyplass før Oslo S (fra nord)', () => {
   const reise = { fra: '2026-10-10', til: '2026-10-11' }
-  const nord = (m, lufthavn = 200) => ({ ...m, strekninger: [{ ...m.strekninger[0], bakOsloS: false, lufthavn }] })
+  const nord = (m, lufthavn = 200) => ({ ...m, strekninger: [{ ...m.strekninger[0], flyplass: "foer", lufthavn }] })
 
   it('periodebillett dekker hele veien, uten tillegg', () => {
     const base = beregn(nord(handoff()))
     const r = beregn({ ...nord(handoff()), fritidsreiser: [reise] })
     expect(r.resultat.kostnad).toBe(base.resultat.kostnad)
-    expect(r.fritid.bakOsloS).toBe(false)
+    expect(r.fritid.forhold).toBe('foer')
     expect(r.fritid.reiser.map((x) => [x.dekning, x.pris])).toEqual([['periode', 0], ['periode', 0]])
   })
   it('uten periodebillett kjøpes hele flyplassbilletten', () => {

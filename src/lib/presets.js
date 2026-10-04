@@ -25,7 +25,6 @@ export function strekningFraPreset(preset, id) {
     ruter: preset.ruter ?? false,
     enkelt: preset.enkelt ?? '',
     lufthavn: preset.lufthavn ?? '',
-    bakOsloS: preset.bakOsloS ?? true,
     perioder: preset.perioder.map(([dager, pris]) => ({ dager, pris })),
   }
 }

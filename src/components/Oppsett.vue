@@ -1,7 +1,7 @@
 <script setup>
 import { computed, ref } from 'vue'
 import StasjonsChips from './StasjonsChips.vue'
-import { bakOsloS, harFlyplass } from '../lib/fritid.js'
+import { flyplassForhold } from '../lib/fritid.js'
 import { maalnavn, OSLO_S, stasjonsnavn } from '../lib/stasjoner.js'
 import { UKEDAGER_KORT, UKEDAGER_LANG } from '../lib/dagmonster.js'
 import Beloep from './Beloep.vue'
@@ -45,7 +45,8 @@ const strekning = computed(() => m.value.strekninger[0])
 const stasjon = computed(() => (strekning.value ? stasjonsnavn(strekning.value) : ''))
 const maal = computed(() => (strekning.value ? maalnavn(strekning.value) : OSLO_S))
 // Fritidsreiser til flyplassen finnes bare for strekninger til Oslo S.
-const STEG = computed(() => ALLE_STEG.filter((s) => s !== 'fritid' || harFlyplass(strekning.value)))
+const forhold = computed(() => flyplassForhold(strekning.value))
+const STEG = computed(() => ALLE_STEG)
 
 const gaa = (n) => {
   const ny = Math.min(Math.max(i.value + n, 0), STEG.value.length - 1)
@@ -183,8 +184,9 @@ const taster = (e) => {
           <template v-else-if="STEG[i] === 'fritid'">
             <p class="steg-tekst">
               Valgfritt. Skal du til Oslo lufthavn en bestemt dag?
-              <template v-if="bakOsloS(strekning)">Fra {{ stasjon }} ligger flyplassen bak Oslo S. Er periodebilletten gyldig, regner vi bare med tillegget Oslo S–Oslo lufthavn. Ellers regner vi med enkeltbillett hele veien.</template>
-              <template v-else>Fra {{ stasjon }} ligger flyplassen på veien til Oslo S. Er periodebilletten gyldig, koster reisen ingenting ekstra. Ellers regner vi med enkeltbillett til flyplassen.</template>
+              <template v-if="forhold === 'bak'">Fra {{ stasjon }} ligger flyplassen bak {{ maal }}. Er periodebilletten gyldig, regner vi bare med tillegget {{ maal }}–Oslo lufthavn. Ellers regner vi med enkeltbillett hele veien.</template>
+              <template v-else-if="forhold === 'foer'">Fra {{ stasjon }} ligger flyplassen på veien til {{ maal }}. Er periodebilletten gyldig, koster reisen ingenting ekstra. Ellers regner vi med enkeltbillett til flyplassen.</template>
+              <template v-else>{{ maal }} ligger ikke på veien til flyplassen, så periodebilletten hjelper ikke. Vi regner enkeltbillett til flyplassen for hver reise.</template>
             </p>
             <div class="mt-4"><FritidListe v-model="m" /></div>
           </template>

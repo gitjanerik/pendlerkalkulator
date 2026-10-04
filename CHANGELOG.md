@@ -1,3 +1,15 @@
+## 2026-10-04 — v1.9.0: Flyplassen for alle jobbsteder
+
+Sjekken mot Entur gjelder nå alle jobbsteder, ikke bare Oslo S. Appen finner ut om jobbstedet ligger på veien til Oslo lufthavn:
+
+- **På veien (bak):** periodebilletten dekker til jobbstedet, og du kjøper bare tillegget videre. Tillegget fylles inn for egne strekninger (Oslo S har fast 134 kr).
+- **Flyplassen før jobbstedet:** billetten dekker hele veien.
+- **Ikke på veien:** periodebilletten hjelper ikke, og flyplassreisen regnes som enkeltbillett (pris må fylles inn).
+
+Fritidsreiser vises nå for alle strekninger, og tekstene bruker navnet på jobbstedet. Inkluderer v1.8.1 (info om priseksempler).
+
+---
+
 ## 2026-10-04 — v1.8.1: Info om priseksempler
 
 Oslo S er fortsatt standardmålet. Veiviseren og Innstillinger sier nå at appen har priseksempler for åtte stasjoner til Oslo S, og at andre strekninger legges til og prises av brukeren.

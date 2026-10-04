@@ -5,7 +5,8 @@ import { tilEtterMaaneder } from './periode.js'
 import { MONSTER } from './dagmonster.js'
 import { PRESETS, strekningFraPreset } from './presets.js'
 import { aarskortAnalyse, sammenlignAlternativer } from './optimerer.js'
-import { bakOsloS, byggFritidsturer, fritidTillegg, harFlyplass, medFritidspriser } from './fritid.js'
+import { byggFritidsturer, flyplassForhold, fritidTillegg, medFritidspriser } from './fritid.js'
+import { maalnavn } from './stasjoner.js'
 import { STANDARD_PRISOKNING, antallPrisokninger, prisPaaDato } from './priser.js'
 
 const ISO = /^\d{4}-\d{2}-\d{2}$/
@@ -62,7 +63,8 @@ export function normaliserStrekninger(strekninger) {
       enkelt: Number(s.enkelt) > 0 ? Number(s.enkelt) : Infinity,
       // Lagrede strekninger fra før feltet fantes henter prisen fra forhåndsvalget med samme id.
       lufthavn: lufthavnPris(s),
-      bakOsloS: s.bakOsloS !== false,
+      flyplass: ['bak', 'foer', 'utenfor'].includes(s.flyplass) ? s.flyplass : s.bakOsloS === false ? 'foer' : null,
+      tillegg: Number(s.tillegg) > 0 ? Number(s.tillegg) : '',
       tilEnturId: s.tilEnturId ?? '',
       perioder: s.perioder
         .map((p) => ({ dager: Number(p.dager), pris: Number(p.pris) }))
@@ -115,7 +117,7 @@ export function beregn(modell) {
     bilDager,
   })
   const fritidsturer = byggFritidsturer(
-    (harFlyplass(strekninger[0]) ? modell.fritidsreiser ?? [] : []).filter((r) => ISO.test(r.fra) && ISO.test(r.til) && r.til >= r.fra),
+    (modell.fritidsreiser ?? []).filter((r) => ISO.test(r.fra) && ISO.test(r.til) && r.til >= r.fra),
     { fra, til, fraKlokke, morgen: modell.morgen, ettermiddag: modell.ettermiddag, bilUkedager },
   )
   // Reiser mens den eksisterende billetten gjelder er dekket og koster bare tillegget.
@@ -142,7 +144,7 @@ export function beregn(modell) {
     retning: t.retning,
     tid: t.tid,
     dekning: 'eksisterende',
-    pris: prisPaaDato(fritidTillegg(strekninger[0]), prisDato, t.dato, modell.prisokning),
+    pris: prisPaaDato(flyplassForhold(strekninger[0]) === 'utenfor' ? t.tilleggGrunn : fritidTillegg(strekninger[0]), prisDato, t.dato, modell.prisokning),
     estimert: Boolean(modell.prisokning?.paa) && antallPrisokninger(prisDato, t.dato, modell.prisokning) > 0,
   })
   const tidlige = fritidMedPris.filter((t) => t.tid < fraTidspunkt).map(tidligTillegg)
@@ -157,7 +159,7 @@ export function beregn(modell) {
     alternativer: alternativer.filter((a) => a.resultat.mulig),
     aarskort: harAarskort ? aarskortAnalyse(turer, strekninger, opsjoner) : null,
     fritid: fritidReiser.length
-      ? { sum: fritidSum, bakOsloS: bakOsloS(strekninger[0]), estimert: fritidReiser.some((r) => r.estimert), reiser: fritidReiser }
+      ? { sum: fritidSum, forhold: flyplassForhold(strekninger[0]), maal: maalnavn(strekninger[0]), estimert: fritidReiser.some((r) => r.estimert), reiser: fritidReiser }
       : null,
     kalender,
     tidsramme: { morgen: modell.morgen, ettermiddag: modell.ettermiddag, retninger: modell.retninger },

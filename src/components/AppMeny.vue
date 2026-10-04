@@ -6,7 +6,6 @@ import { dagerTekst } from '../lib/format.js'
 import { useTema } from '../composables/useTema.js'
 import { usePwaInstall } from '../composables/usePwaInstall.js'
 import StasjonsValg from './StasjonsValg.vue'
-import { harFlyplass } from '../lib/fritid.js'
 import { maalnavn, OSLO_S, stasjonsnavn } from '../lib/stasjoner.js'
 import Beloep from './Beloep.vue'
 import PrefBryter from './PrefBryter.vue'
@@ -18,7 +17,6 @@ import EksisterendeBillett from './EksisterendeBillett.vue'
 const m = defineModel('modell', { type: Object })
 const stasjon = computed(() => (m.value.strekninger[0] ? stasjonsnavn(m.value.strekninger[0]) : 'stasjon'))
 const maal = computed(() => (m.value.strekninger[0] ? maalnavn(m.value.strekninger[0]) : OSLO_S))
-const medFlyplass = computed(() => harFlyplass(m.value.strekninger[0]))
 const apen = defineModel('apen', { type: Boolean })
 // I veiviseren vises bare faste valg (utseende, app, versjon).
 defineProps({ wizard: Boolean })
@@ -84,7 +82,7 @@ const klikkBakgrunn = (e) => {
           <div class="mt-3"><FerieListe v-model="m" /></div>
         </section>
 
-        <section v-if="medFlyplass" aria-labelledby="m-fritid" class="flex flex-col">
+        <section aria-labelledby="m-fritid" class="flex flex-col">
           <h3 id="m-fritid" class="seksjonstittel mb-1">Fritidsreiser</h3>
           <FritidListe v-model="m" />
         </section>

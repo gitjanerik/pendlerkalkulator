@@ -8,7 +8,9 @@ const fritid = computed(() => p.utfall.fritid)
 
 const RETNING = { ned: 'Opp til', hjem: 'Hjem fra' }
 const status = (r) => {
-  const rest = fritid.value.bakOsloS ? 'Kjøp bare tillegget Oslo S–Oslo lufthavn.' : 'Flyplassen ligger før Oslo S, så du trenger ingen ekstra billett.'
+  const { forhold, maal } = fritid.value
+  if (forhold === 'utenfor') return `${maal} ligger ikke på veien til flyplassen. Kjøp enkeltbillett hele veien.`
+  const rest = forhold === 'bak' ? `Kjøp bare tillegget ${maal}–Oslo lufthavn.` : `Flyplassen ligger før ${maal}, så du trenger ingen ekstra billett.`
   if (r.dekning === 'periode') return `Dekket av ${r.dager >= 365 ? 'årskortet' : `${r.dager}-dagersbilletten`}. ${rest}`
   if (r.dekning === 'eksisterende') return `Dekket av billetten du har nå. ${rest}`
   return 'Ingen periodebillett gyldig. Kjøp én enkeltbillett hele veien.'
@@ -28,7 +30,7 @@ const status = (r) => {
           <span class="shrink-0 tabular-nums">{{ r.pris ? kr(r.pris) : 'Inkludert' }}<Estimat v-if="r.pris && r.estimert" /></span>
         </p>
         <p class="text-[var(--color-ink-2)]">
-          <span aria-hidden="true" :class="r.dekning === 'enkelt' ? 'text-[var(--color-warn)]' : ''">{{ r.dekning === 'enkelt' ? '⚠ ' : '✓ ' }}</span>{{ status(r) }}
+          <span aria-hidden="true" :class="r.dekning === 'enkelt' && fritid.forhold !== 'utenfor' ? 'text-[var(--color-warn)]' : ''">{{ fritid.forhold === 'utenfor' ? '• ' : r.dekning === 'enkelt' ? '⚠ ' : '✓ ' }}</span>{{ status(r) }}
         </p>
       </li>
     </ul>

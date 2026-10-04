@@ -1,12 +1,14 @@
 <script setup>
 import { computed, nextTick, ref } from 'vue'
 import { norskDato } from '../lib/format.js'
-import { bakOsloS } from '../lib/fritid.js'
+import { flyplassForhold } from '../lib/fritid.js'
+import { maalnavn } from '../lib/stasjoner.js'
 import Kalender from './Kalender.vue'
 
 const m = defineModel({ type: Object })
 const velger = ref(false)
-const bak = computed(() => bakOsloS(m.value.strekninger[0]))
+const forhold = computed(() => flyplassForhold(m.value.strekninger[0]))
+const maal = computed(() => maalnavn(m.value.strekninger[0]))
 const kal = ref(null)
 const listeEl = ref(null)
 const leggTilKnapp = ref(null)
@@ -60,8 +62,9 @@ const fjern = async (r) => {
       <Kalender ref="kal" tekst-start="Velg dagen du reiser opp til flyplassen, så dagen du kommer hjem." tekst-slutt="Opp {dato}. Velg dagen du kommer hjem." @velg="legTil" @lukk="lukk" />
     </div>
     <p class="mt-3 text-sm text-[var(--color-ink-2)]">
-      <template v-if="bak">Flyplassen ligger bak Oslo S fra hjemstasjonen. Er periodebilletten gyldig, kjøper du bare tillegget Oslo S–Oslo lufthavn. Ellers kjøper du én enkeltbillett hele veien.</template>
-      <template v-else>Flyplassen ligger på veien til Oslo S fra hjemstasjonen. Er periodebilletten gyldig, trenger du ingen ekstra billett. Ellers kjøper du én enkeltbillett til flyplassen.</template>
+      <template v-if="forhold === 'bak'">Flyplassen ligger bak {{ maal }} fra hjemstasjonen. Er periodebilletten gyldig, kjøper du bare tillegget {{ maal }}–Oslo lufthavn. Ellers kjøper du én enkeltbillett hele veien.</template>
+      <template v-else-if="forhold === 'foer'">Flyplassen ligger på veien til {{ maal }} fra hjemstasjonen. Er periodebilletten gyldig, trenger du ingen ekstra billett. Ellers kjøper du én enkeltbillett til flyplassen.</template>
+      <template v-else>{{ maal }} ligger ikke på veien til flyplassen, så periodebilletten hjelper ikke. Du kjøper én enkeltbillett til flyplassen for hver reise.</template>
       Reiser før startdatoen eller etter sluttdatoen regnes ikke med.
     </p>
   </div>

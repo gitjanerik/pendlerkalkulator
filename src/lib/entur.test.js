@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { flyplassBakOsloS, passererOsloS, sokStasjoner, stasjonsForslag, finnStasjon, foreslaaAvganger, hentAvganger, klokke, nesteArbeidsdag, osloTid, tolkAvganger, velgForslag, velgStasjon } from './entur.js'
+import { flyplassBakOsloS, flyplassForhold, passererOsloS, sokStasjoner, stasjonsForslag, finnStasjon, foreslaaAvganger, hentAvganger, klokke, nesteArbeidsdag, osloTid, tolkAvganger, velgForslag, velgStasjon } from './entur.js'
 
 const svar = (data, ok = true, status = 200) => vi.fn().mockResolvedValue({ ok, status, json: async () => data })
 
@@ -160,5 +160,29 @@ describe('passererOsloS', () => {
       },
     }))
     expect(await flyplassBakOsloS('NSR:hamar', { hent })).toBe(false)
+  })
+
+  describe('flyplassForhold for fritt valgt jobbsted', () => {
+    const geo = (id, navn) => ({ features: [{ properties: { id, name: navn, category: ['railStation'] } }] })
+    const lag = (tilFlyplass, tilJobb) => vi.fn(async (url, init) => ({
+      ok: true,
+      json: async () => {
+        if (init?.method === 'POST') return JSON.parse(init.body).variables.til === 'NSR:osl' ? tilFlyplass : tilJobb
+        return geo('NSR:osl', 'Oslo lufthavn stasjon')
+      },
+    }))
+    const maal = { id: 'NSR:lillestrom', navn: 'Lillestrøm' }
+    it('jobbstedet på veien til flyplassen er «bak»', async () => {
+      const hent = lag(forslag([ben('Drammen', 'Oslo lufthavn', ['Lillestrøm'])]), null)
+      expect(await flyplassForhold('NSR:drammen', maal, { hent })).toBe('bak')
+    })
+    it('flyplassen på veien til jobbstedet er «foer»', async () => {
+      const hent = lag(forslag([ben('Hamar', 'Oslo lufthavn', ['Eidsvoll'])]), forslag([ben('Hamar', 'Lillestrøm', ['Oslo lufthavn'])]))
+      expect(await flyplassForhold('NSR:hamar', maal, { hent })).toBe('foer')
+    })
+    it('ellers er jobbstedet «utenfor»', async () => {
+      const hent = lag(forslag([ben('Drammen', 'Oslo lufthavn', ['Asker'])]), forslag([ben('Drammen', 'Lillestrøm', ['Asker'])]))
+      expect(await flyplassForhold('NSR:drammen', maal, { hent })).toBe('utenfor')
+    })
   })
 })
