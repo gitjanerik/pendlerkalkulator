@@ -1,6 +1,6 @@
-## 2026-10-04 — v1.7.1: Tekst i veiviserens første steg
+## 2026-10-04 — v1.7.1: Tekster i veiviseren
 
-Teksten under «Her gjør appen størst forskjell» nevner ikke lenger Gulskogen–Oslo S: «Tallene er regnet ut av appen for Vys priser høsten 2026.»
+Teksten under «Her gjør appen størst forskjell» nevner ikke lenger Gulskogen–Oslo S: «Tallene er regnet ut av appen for Vys priser høsten 2026.» Forklaringen i steget «Fritidsreiser» (og under fritidslisten i Innstillinger) tilpasser seg hjemstasjonen: ligger flyplassen bak Oslo S, nevnes tillegget Oslo S–Oslo lufthavn, og ligger den på veien til Oslo S, sies det at periodebilletten dekker hele reisen.
 
 ---
 
