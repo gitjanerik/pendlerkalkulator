@@ -1,3 +1,9 @@
+## 2026-10-04 — v1.6.0: Stedsøk for egne stasjoner
+
+Når du legger til en egen hjemstasjon, foreslår Entur jernbanestasjoner mens du skriver (med kommune eller fylke), og et trykk fyller inn navnet og flytter fokus til prisene. Navnet kan fortsatt skrives fritt, så appen virker uten nett. Prisene fylles fortsatt ut selv, siden Entur ikke åpner for dem uten partneravtale.
+
+---
+
 ## 2026-10-04 — v1.5.0: Egne hjemstasjoner
 
 Veiviseren og Innstillinger har «+ Egen stasjon». Du oppgir navn og priser (enkeltbillett, ukeskort og månedskort er påkrevd; årskort og flyplassbillett er valgfrie), og kan redigere og slette stasjonen etterpå. Skjemaet validerer innholdet: navnet må være gyldig og unikt, prisene hele beløp, og lengre billetter må koste mer enn kortere. Feil står ved feltet, og fokus går til det første feltet med feil. «Nullstill» beholder egne stasjoner, med en bryter i bekreftelsen (av som standard) for å slette dem også.
