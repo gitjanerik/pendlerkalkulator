@@ -48,7 +48,7 @@ describe('normaliserStrekninger', () => {
       { id: '2', navn: 'Tom', enkelt: '', perioder: [] },
     ])
     expect(res).toEqual([
-      { id: '1', navn: 'Uten navn', bil: false, ruter: true, enkelt: 156, lufthavn: null, flyplass: null, tillegg: '', tilEnturId: '', perioder: [{ dager: 30, pris: 100 }] },
+      { id: '1', navn: 'Uten navn', bil: false, ruter: true, enkelt: 156, lufthavn: null, flyplass: null, tillegg: '', tilEnturId: '', nye: null, perioder: [{ dager: 30, pris: 100, ny: null }] },
     ])
   })
 })
@@ -173,5 +173,43 @@ describe('årskort før mot etter prisøkning', () => {
   it('er null uten prisøkning', () => {
     const m = { ...standardModell('2026-10-04'), prisDato: '2026-10-02', fra: '2026-11-01', til: '2027-12-31', fraKlokke: '00:00', prisokning: { paa: false, prosent: 4, dato: '02-01' } }
     expect(beregn(m).aarskort.foerEtter).toBeNull()
+  })
+})
+
+describe('nye priser fra dato', () => {
+  const med = (nyePriser, nye, ekstra = {}) => {
+    const m = { ...standardModell('2026-10-04'), prisDato: '2026-10-02', fra: '2026-11-01', til: '2027-12-31', fraKlokke: '00:00', ...ekstra }
+    m.strekninger = [{ ...m.strekninger[0], nye }]
+    return { ...m, nyePriser }
+  }
+  const aarskortNy = { enkelt: '', lufthavn: '', perioder: [{ dager: 365, pris: 21500 }] }
+
+  it('årskortforskjellen bruker oppgitt ny pris og er bekreftet', () => {
+    const r = beregn(med({ paa: true, dato: '2027-01-15' }, aarskortNy)).aarskort.foerEtter
+    expect(r).toMatchObject({ foer: 20380, etter: 21500, differanse: 1120, etterDato: '2027-01-15', foerDato: '2027-01-14', bekreftet: true })
+  })
+
+  it('uten bryter gjelder prosentanslaget som før', () => {
+    const r = beregn(med({ paa: false, dato: '2027-01-15' }, aarskortNy)).aarskort.foerEtter
+    expect(r).toMatchObject({ differanse: 815, bekreftet: false })
+  })
+
+  it('en høyere ny pris gjør årskortet dyrere totalt enn uten ny pris', () => {
+    const uten = beregn({ ...med({ paa: false, dato: '' }, null), prisokning: { paa: false, prosent: 4, dato: '02-01' }, inkluderAarskort: true })
+    const ny = beregn({ ...med({ paa: true, dato: '2027-01-15' }, { ...aarskortNy, perioder: [{ dager: 365, pris: 30000 }, { dager: 30, pris: 5000 }] }), prisokning: { paa: false, prosent: 4, dato: '02-01' }, inkluderAarskort: true })
+    expect(ny.resultat.kostnad).toBeGreaterThan(uten.resultat.kostnad)
+  })
+
+  it('felt uten ny pris regnes som uendret', () => {
+    const m = med({ paa: true, dato: '2027-01-15' }, { enkelt: '', lufthavn: '', perioder: [] })
+    const grunn = { ...m, prisokning: { paa: false, prosent: 4, dato: '02-01' } }
+    expect(beregn(grunn).resultat.kostnad).toBe(beregn({ ...grunn, nyePriser: { paa: false, dato: '' } }).resultat.kostnad)
+  })
+
+  it('normaliserer nye priser og dropper tomme', () => {
+    const [s] = normaliserStrekninger([{ ...strekningFraPreset(PRESETS[0], PRESETS[0].id), nye: { enkelt: '200', perioder: [{ dager: 30, pris: '' }, { dager: 7, pris: '700' }] } }])
+    expect(s.nye).toMatchObject({ enkelt: 200, perioder: [{ dager: 7, pris: 700 }] })
+    expect(s.perioder.find((p) => p.dager === 7).ny).toBe(700)
+    expect(normaliserStrekninger([{ ...strekningFraPreset(PRESETS[0], PRESETS[0].id), nye: { enkelt: '', perioder: [] } }])[0].nye).toBeNull()
   })
 })

@@ -28,6 +28,15 @@ const prisStrekninger = computed(() => [
   ...(m.value.andreRute?.strekning ? [{ s: m.value.andreRute.strekning, nokkel: `${m.value.andreRute.strekning.id}-b` }] : []),
 ])
 const apen = defineModel('apen', { type: Boolean })
+// Feltene for nye priser opprettes når bryteren slås på, og for strekninger som kommer til etterpå.
+const sikreNye = () => {
+  if (!m.value.nyePriser?.paa) return
+  for (const { s } of prisStrekninger.value) {
+    s.nye ??= { enkelt: '', lufthavn: '', tillegg: '', perioder: [] }
+    s.nye.perioder = s.perioder.map((p) => ({ dager: p.dager, pris: s.nye.perioder.find((n) => n.dager === p.dager)?.pris ?? '' }))
+  }
+}
+watch(() => [m.value.nyePriser?.paa, prisStrekninger.value.length, apen.value], sikreNye, { immediate: true })
 const gamlePriser = computed(() => prisErGamle(m.value.prisDato, idagIso()))
 const delStatus = ref('')
 let delTimer
@@ -158,6 +167,12 @@ const klikkBakgrunn = (e) => {
               <input id="prisdato" v-model="m.prisDato" class="felt" type="date" />
             </div>
           </div>
+          <PrefBryter v-if="m.nyePriser" v-model="m.nyePriser.paa" tittel="Nye priser fra en dato" tekst="Midlertidig: legg inn nye priser ved siden av dagens. Dagens priser gjelder før datoen, de nye fra og med den." />
+          <div v-if="m.nyePriser?.paa" class="mt-2">
+            <label class="etikett" for="nyprisdato">Nye priser gjelder fra</label>
+            <input id="nyprisdato" v-model="m.nyePriser.dato" class="felt" type="date" :min="m.prisDato" />
+            <p class="mt-1 text-sm text-[var(--color-ink-3)]">Fyll ut nye priser under hver strekning. Felt du lar stå tomme regnes som uendret. Fra og med datoen kan prosentøkningen komme på toppen ved neste prisøkning.</p>
+          </div>
           <Varsel v-if="gamlePriser" class="mt-3">
             Prisene ble registrert {{ norskDatoLang(m.prisDato) }}, for mer enn tre måneder siden. Sjekk dem mot Vy og Ruter, og endre datoen når du har oppdatert.
           </Varsel>
@@ -177,6 +192,21 @@ const klikkBakgrunn = (e) => {
                 <label class="etikett" :for="`p-${nokkel}-${p.dager}`">{{ dagerTekst(p.dager) }}</label>
                 <Beloep :id="`p-${nokkel}-${p.dager}`" v-model="p.pris" />
               </div>
+              <template v-if="m.nyePriser?.paa && s.nye">
+                <h4 class="col-span-2 mt-1 border-t border-[var(--color-line)] pt-3 font-medium">Nye priser{{ m.nyePriser.dato ? ` fra ${norskDatoLang(m.nyePriser.dato)}` : '' }}</h4>
+                <div>
+                  <label class="etikett" :for="`ny-enkelt-${nokkel}`">Enkeltbillett</label>
+                  <Beloep :id="`ny-enkelt-${nokkel}`" v-model="s.nye.enkelt" placeholder="Uendret" />
+                </div>
+                <div v-if="nokkel === s.id">
+                  <label class="etikett" :for="`ny-lufthavn-${nokkel}`">Enkeltbillett til Oslo lufthavn</label>
+                  <Beloep :id="`ny-lufthavn-${nokkel}`" v-model="s.nye.lufthavn" placeholder="Uendret" />
+                </div>
+                <div v-for="p in s.nye.perioder" :key="p.dager">
+                  <label class="etikett" :for="`ny-p-${nokkel}-${p.dager}`">{{ dagerTekst(p.dager) }}</label>
+                  <Beloep :id="`ny-p-${nokkel}-${p.dager}`" v-model="p.pris" placeholder="Uendret" />
+                </div>
+              </template>
               <p class="col-span-2 text-sm text-[var(--color-ink-3)]">Forslagsprisene er Vys voksenpriser {{ PRESET_DATO }}. Sjekk dem mot appen.</p>
             </div>
           </details>

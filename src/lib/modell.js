@@ -5,9 +5,9 @@ import { tilEtterMaaneder } from './periode.js'
 import { MONSTER } from './dagmonster.js'
 import { PRESETS, strekningFraPreset } from './presets.js'
 import { aarskortAnalyse, sammenlignAlternativer } from './optimerer.js'
-import { byggFritidsturer, flyplassForhold, fritidTillegg, medFritidspriser } from './fritid.js'
+import { byggFritidsturer, flyplassForhold, medFritidspriser } from './fritid.js'
 import { maalnavn, stasjonsnavn } from './stasjoner.js'
-import { STANDARD_PRISOKNING, aarskortFoerEtter, antallPrisokninger, prisPaaDato } from './priser.js'
+import { STANDARD_PRISOKNING, aarskortFoerEtter, erEstimert, prisMedNy } from './priser.js'
 
 const ISO = /^\d{4}-\d{2}-\d{2}$/
 const KLOKKE = /^([01]\d|2[0-3]):[0-5]\d$/
@@ -39,6 +39,8 @@ export function standardModell(idag) {
     bilUkedager: [0, 1, 2, 3, 4],
     prisokning: { ...STANDARD_PRISOKNING },
     prisDato: idag,
+    // Midlertidig: nye priser (strekning.nye) som gjelder fra en dato.
+    nyePriser: { paa: false, dato: '' },
     // Året januar-påminnelsen om nye priser sist ble lukket.
     prisVarselLukket: '',
     inkluderAarskort: false,
@@ -65,8 +67,19 @@ const lufthavnPris = (s) => {
   return pris > 0 ? pris : null
 }
 
+const krPris = (v) => (Number(v) > 0 ? Number(v) : null)
+
+// Nye priser som gjelder fra en dato; null når ingen felt er fylt ut.
+function normaliserNye(nye) {
+  if (!nye) return null
+  const perioder = (nye.perioder ?? []).map((p) => ({ dager: Number(p.dager), pris: krPris(p.pris) })).filter((p) => Number.isInteger(p.dager) && p.pris)
+  const ut = { enkelt: krPris(nye.enkelt), lufthavn: krPris(nye.lufthavn), tillegg: krPris(nye.tillegg), perioder }
+  return ut.enkelt || ut.lufthavn || ut.tillegg || perioder.length ? ut : null
+}
+
 export function normaliserStrekninger(strekninger) {
   return strekninger
+    .map((s) => ({ ...s, nye: normaliserNye(s.nye) }))
     .map((s) => ({
       id: s.id,
       navn: String(s.navn ?? '').trim() || 'Uten navn',
@@ -78,19 +91,27 @@ export function normaliserStrekninger(strekninger) {
       flyplass: ['bak', 'foer', 'utenfor'].includes(s.flyplass) ? s.flyplass : s.bakOsloS === false ? 'foer' : null,
       tillegg: Number(s.tillegg) > 0 ? Number(s.tillegg) : '',
       tilEnturId: s.tilEnturId ?? '',
+      nye: s.nye,
       perioder: s.perioder
-        .map((p) => ({ dager: Number(p.dager), pris: Number(p.pris) }))
+        .map((p) => ({ dager: Number(p.dager), pris: Number(p.pris), ny: s.nye?.perioder.find((n) => n.dager === Number(p.dager))?.pris ?? null }))
         .filter((p) => Number.isInteger(p.dager) && p.dager > 0 && p.pris > 0),
     }))
     .filter((s) => s.enkelt !== Infinity || s.perioder.length)
 }
 
 // Årskortet på første strekning rett før mot rett etter neste prisøkning; null uten årskortpris, prisøkning eller forskjell.
-function aarskortForOkning(strekning, prisDato, fra, prisokning) {
-  const grunn = strekning.perioder.find((p) => p.dager >= 365)?.pris
-  if (!grunn || !prisokning?.paa || !ISO.test(prisDato ?? '')) return null
-  const r = aarskortFoerEtter(grunn, prisDato, fra, prisokning)
-  return r.differanse > 0 ? r : null
+// Med en kjent ny pris fra en dato i fremtiden er forskjellen oppgitt av brukeren (bekreftet), ikke et estimat.
+function aarskortForOkning(strekning, prisDato, fra, prisokning, nyDato) {
+  const aarskort = strekning.perioder.find((p) => p.dager >= 365)
+  const grunn = aarskort?.pris
+  if (!grunn || !ISO.test(prisDato ?? '')) return null
+  if (nyDato && fra < nyDato && aarskort.ny) {
+    const differanse = aarskort.ny - grunn
+    return differanse > 0 ? { foerDato: leggTilDager(nyDato, -1), foer: grunn, etterDato: nyDato, etter: aarskort.ny, differanse, bekreftet: true } : null
+  }
+  if (!prisokning?.paa) return null
+  const r = nyDato && fra >= nyDato ? aarskortFoerEtter(aarskort.ny ?? grunn, nyDato, fra, prisokning) : aarskortFoerEtter(grunn, prisDato, fra, prisokning)
+  return r.differanse > 0 ? { ...r, bekreftet: false } : null
 }
 
 const tom = (feil) => ({ feil, resultat: null })
@@ -154,8 +175,10 @@ export function beregn(modell) {
   }
 
   const prisDato = ISO.test(modell.prisDato ?? '') ? modell.prisDato : fra
+  const nyDato = modell.nyePriser?.paa && ISO.test(modell.nyePriser.dato ?? '') ? modell.nyePriser.dato : null
   const opsjoner = {
     prisDato,
+    nyDato,
     prisokning: modell.prisokning,
     inkluderAarskort: modell.inkluderAarskort,
     reis: Boolean(modell.reis),
@@ -170,8 +193,8 @@ export function beregn(modell) {
     retning: t.retning,
     tid: t.tid,
     dekning: 'eksisterende',
-    pris: prisPaaDato(flyplassForhold(strekninger[0]) === 'utenfor' ? t.tilleggGrunn : fritidTillegg(strekninger[0]), prisDato, t.dato, modell.prisokning),
-    estimert: Boolean(modell.prisokning?.paa) && antallPrisokninger(prisDato, t.dato, modell.prisokning) > 0,
+    pris: prisMedNy(t.tilleggGrunn, t.tilleggGrunnNy, t.dato, opsjoner),
+    estimert: erEstimert(t.dato, opsjoner),
   })
   const tidlige = fritidMedPris.filter((t) => t.tid < fraTidspunkt).map(tidligTillegg)
   const fritidReiser = [...beste.fritid, ...tidlige].sort((a, b) => a.tid - b.tid)
@@ -183,7 +206,7 @@ export function beregn(modell) {
     feil: null,
     resultat: beste,
     alternativer: alternativer.filter((a) => a.resultat.mulig),
-    aarskort: harAarskort ? { ...aarskortAnalyse(turer, strekninger, opsjoner), foerEtter: aarskortForOkning(strekninger[0], prisDato, fra, modell.prisokning) } : null,
+    aarskort: harAarskort ? { ...aarskortAnalyse(turer, strekninger, opsjoner), foerEtter: aarskortForOkning(strekninger[0], prisDato, fra, modell.prisokning, nyDato) } : null,
     fritid: fritidReiser.length
       ? { sum: fritidSum, forhold: flyplassForhold(strekninger[0]), fra: stasjonsnavn(strekninger[0]), maal: maalnavn(strekninger[0]), estimert: fritidReiser.some((r) => r.estimert), reiser: fritidReiser }
       : null,

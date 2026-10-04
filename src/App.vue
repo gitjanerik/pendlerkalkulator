@@ -133,7 +133,10 @@ const settDager = (n) => (modell.jobbUkedager = [...MONSTER[n]]);
           <p v-if="utfall.aarskort.estimert" class="mt-1 text-sm">
             * Estimat: antar {{ utfall.prisokningProsent }} % årlig prisøkning rundt 1. februar.
           </p>
-          <p v-if="utfall.aarskort.foerEtter" class="mt-1">
+          <p v-if="utfall.aarskort.foerEtter?.bekreftet" class="mt-1">
+            Med de nye prisene dine fra {{ norskDato(utfall.aarskort.foerEtter.etterDato, true) }} koster et årskort som starter senest {{ norskDato(utfall.aarskort.foerEtter.foerDato, true) }} {{ kr(utfall.aarskort.foerEtter.foer) }}, mot {{ kr(utfall.aarskort.foerEtter.etter) }} etterpå, altså {{ kr(utfall.aarskort.foerEtter.differanse) }} mer. Sjekk i Vy-appen hvor langt frem du kan forhåndsbestille.
+          </p>
+          <p v-else-if="utfall.aarskort.foerEtter" class="mt-1">
             Prisene stiger gjerne en gang i året, og tidspunktet kan variere. Regner vi med {{ norskDato(utfall.aarskort.foerEtter.etterDato, true) }}, koster et årskort som starter senest {{ norskDato(utfall.aarskort.foerEtter.foerDato, true) }} ca. {{ kr(utfall.aarskort.foerEtter.foer) }}, mot ca. {{ kr(utfall.aarskort.foerEtter.etter) }} etterpå, altså {{ kr(utfall.aarskort.foerEtter.differanse) }} mer. Sjekk i Vy-appen hvilke priser som gjelder og hvor langt frem du kan forhåndsbestille.
           </p>
           <PrefBryter

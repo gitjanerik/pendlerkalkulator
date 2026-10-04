@@ -1,5 +1,5 @@
 import { MIN_DOEGN, formaterTidspunkt } from './dato.js'
-import { antallPrisokninger, prisPaaDato, STANDARD_PRISOKNING } from './priser.js'
+import { erEstimert, prisMedNy, STANDARD_PRISOKNING } from './priser.js'
 import { anvendReis } from './reis.js'
 
 const AARSKORT_DAGER = 365
@@ -17,6 +17,7 @@ function optimaliserKjerne(turer, strekninger, opsjoner = {}) {
     enkeltFaktor = 1,
     prisDato = turer.length ? turer[0].dato : '1970-01-01',
     prisokning = STANDARD_PRISOKNING,
+    nyDato = null,
     tillatEnkelt = true,
     inkluderAarskort = true,
     kunDager = null,
@@ -27,11 +28,12 @@ function optimaliserKjerne(turer, strekninger, opsjoner = {}) {
   const valg = new Array(n)
   f[n] = 0
 
-  const pris = (grunn, tur) => prisPaaDato(grunn, prisDato, tur.dato, prisokning)
+  const prisInfo = { prisDato, nyDato, prisokning }
+  const pris = (grunn, ny, tur) => prisMedNy(grunn, ny, tur.dato, prisInfo)
   // Priset etter minst én økning er et estimat; før første økning er det brukerens egne priser.
-  const estimert = (tur) => Boolean(prisokning.paa) && antallPrisokninger(prisDato, tur.dato, prisokning) > 0
+  const estimert = (tur) => erEstimert(tur.dato, prisInfo)
   // En fritidstur til flyplassen koster alltid tillegget; uten dekning kommer resten av flyplassbilletten (enkeltGrunn) på toppen.
-  const tillegg = (tur) => (tur.fritid ? pris(tur.tilleggGrunn, tur) : 0)
+  const tillegg = (tur) => (tur.fritid ? pris(tur.tilleggGrunn, tur.tilleggGrunnNy, tur) : 0)
 
   for (let i = n - 1; i >= 0; i--) {
     const tur = turer[i]
@@ -40,10 +42,11 @@ function optimaliserKjerne(turer, strekninger, opsjoner = {}) {
       for (const s of strekninger) {
         if (!tillatt(tur, s)) continue
         const grunn = tur.fritid ? tur.enkeltGrunn : s.enkelt
-        const kost = pris(grunn, tur) * (tur.fritid ? 1 : enkeltFaktor) + f[i + 1]
+        const ny = tur.fritid ? tur.enkeltGrunnNy : s.nye?.enkelt
+        const kost = pris(grunn, ny, tur) * (tur.fritid ? 1 : enkeltFaktor) + f[i + 1]
         if (kost < f[i]) {
           f[i] = kost
-          valg[i] = { type: 'enkelt', strekning: s, pris: pris(grunn, tur), neste: i + 1 }
+          valg[i] = { type: 'enkelt', strekning: s, pris: pris(grunn, ny, tur), neste: i + 1 }
         }
       }
     }
@@ -59,7 +62,7 @@ function optimaliserKjerne(turer, strekninger, opsjoner = {}) {
       const utloper = tur.tid + p.dager * MIN_DOEGN
       let j = i + 1
       while (j < n && turer[j].tid <= utloper && tillatt(turer[j], s)) j++
-      const billettpris = pris(p.pris, tur)
+      const billettpris = pris(p.pris, p.ny, tur)
       // Den delen av billetten som går forbi vindusslutten tilhører neste periode, så sluttdatoen
       // gir ingen grunn til å tilpasse siste billett. Uten vindu er andelen 1.
       const andelPris = billettpris * Math.min(1, (vinduSlutt - tur.tid) / (p.dager * MIN_DOEGN))

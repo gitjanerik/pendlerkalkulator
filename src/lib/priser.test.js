@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { antallPrisokninger, prisPaaDato, aarskortFoerEtter } from './priser.js'
+import { antallPrisokninger, prisPaaDato, aarskortFoerEtter, prisMedNy, erEstimert } from './priser.js'
 
 const paa = { paa: true, prosent: 4, dato: '02-01' }
 
@@ -30,5 +30,27 @@ describe('prisøkning', () => {
     expect(r.etterDato).toBe('2027-02-01')
     expect(r.etter).toBe(21195)
     expect(r.differanse).toBe(815)
+  })
+})
+
+describe('nye priser fra dato', () => {
+  const info = { prisDato: '2026-10-01', nyDato: '2027-01-15', prisokning: { paa: true, prosent: 4, dato: '02-01' } }
+  it('gammel pris før datoen, uten økning', () => {
+    expect(prisMedNy(1000, 1200, '2027-01-14', info)).toBe(1000)
+  })
+  it('ny pris fra datoen, deretter prosent fra neste 1. februar', () => {
+    expect(prisMedNy(1000, 1200, '2027-01-15', info)).toBe(1200)
+    expect(prisMedNy(1000, 1200, '2027-02-01', info)).toBe(1248)
+  })
+  it('uendret pris når ny pris mangler', () => {
+    expect(prisMedNy(1000, null, '2027-01-20', info)).toBe(1000)
+  })
+  it('uten nyDato brukes prosentanslaget', () => {
+    expect(prisMedNy(1000, 1200, '2027-03-01', { ...info, nyDato: null })).toBe(1040)
+  })
+  it('estimert først når prosent er regnet inn', () => {
+    expect(erEstimert('2027-01-20', info)).toBe(false)
+    expect(erEstimert('2027-02-01', info)).toBe(true)
+    expect(erEstimert('2027-01-01', info)).toBe(false)
   })
 })
