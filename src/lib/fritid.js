@@ -3,20 +3,10 @@ import { tidspunkt, ukedag } from './dato.js'
 // Fritidsreise til Oslo lufthavn: uten gyldig periodebillett kjøpes én enkeltbillett hjemstasjon–Oslo lufthavn
 // (to billetter lønner seg aldri). Med periodebillett eller eksisterende billett kjøpes bare tillegget Oslo S–Oslo lufthavn.
 // Kilde: oppgitt av eier oktober 2026 – ikke sjekket mot Vy.
-export const OSL_PRISER = {
-  gulskogen: 308,
-  drammen: 298,
-  brakeroya: 295,
-  lier: 283,
-  asker: 162,
-  heggedal: 162,
-  royken: 162,
-  spikkestad: 162,
-}
-// Tillegget Oslo S–Oslo lufthavn. Egne strekninger uten kjent flyplasspris bruker enkeltbillett til Oslo S pluss dette.
+// Tillegget Oslo S–Oslo lufthavn. Strekninger uten oppgitt flyplasspris bruker enkeltbillett til Oslo S pluss dette som anslag.
 export const OSL_TILLEGG = 134
 
-export const fritidGrunnpris = (strekning) => OSL_PRISER[strekning?.id] ?? (Number.isFinite(strekning?.enkelt) ? strekning.enkelt + OSL_TILLEGG : OSL_TILLEGG)
+export const fritidGrunnpris = (strekning) => strekning?.lufthavn ?? (Number.isFinite(strekning?.enkelt) ? strekning.enkelt + OSL_TILLEGG : OSL_TILLEGG)
 
 // Turene får grunnprisene optimereren trenger: tillegget betales alltid, resten av flyplassbilletten bare uten dekning.
 export function medFritidspriser(turer, strekning) {

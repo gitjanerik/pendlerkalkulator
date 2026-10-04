@@ -75,6 +75,7 @@ const veksleDag = (d) => {
 const pris = (dager) => strekning.value.perioder.find((p) => p.dager === dager)
 const PRISFELT = [
   ['enkelt', 'Enkeltbillett'],
+  ['lufthavn', 'Enkeltbillett til Oslo lufthavn'],
   [7, 'Ukeskort (7 dager)'],
   [30, 'Månedskort (30 dager)'],
   [365, 'Årskort (365 dager)'],
@@ -180,7 +181,7 @@ const taster = (e) => {
           </template>
 
           <template v-else-if="STEG[i] === 'fritid'">
-            <p class="steg-tekst">Valgfritt. Skal du til Oslo lufthavn en bestemt dag? Da regner vi med tilleggsbilletten, og at periodebilletten dekker resten.</p>
+            <p class="steg-tekst">Valgfritt. Skal du til Oslo lufthavn en bestemt dag? Da regner vi med tilleggsbilletten når periodebilletten dekker resten, og ellers en enkeltbillett hele veien.</p>
             <div class="mt-4"><FritidListe v-model="m" /></div>
           </template>
 
@@ -190,6 +191,7 @@ const taster = (e) => {
               <div v-for="[n, navn] in PRISFELT" :key="n">
                 <label class="etikett" :for="`pr-${n}`">{{ navn }}</label>
                 <Beloep v-if="n === 'enkelt'" :id="`pr-${n}`" v-model="strekning.enkelt" />
+                <Beloep v-else-if="n === 'lufthavn'" :id="`pr-${n}`" v-model="strekning.lufthavn" placeholder="Ukjent" />
                 <Beloep v-else-if="pris(n)" :id="`pr-${n}`" v-model="pris(n).pris" />
               </div>
             </div>

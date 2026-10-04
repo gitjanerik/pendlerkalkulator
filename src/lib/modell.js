@@ -45,6 +45,11 @@ export function standardModell(idag) {
   }
 }
 
+const lufthavnPris = (s) => {
+  const pris = Number(s.lufthavn ?? PRESETS.find((p) => p.id === s.id)?.lufthavn)
+  return pris > 0 ? pris : null
+}
+
 export function normaliserStrekninger(strekninger) {
   return strekninger
     .map((s) => ({
@@ -53,6 +58,8 @@ export function normaliserStrekninger(strekninger) {
       bil: Boolean(s.bil),
       ruter: Boolean(s.ruter),
       enkelt: Number(s.enkelt) > 0 ? Number(s.enkelt) : Infinity,
+      // Lagrede strekninger fra før feltet fantes henter prisen fra forhåndsvalget med samme id.
+      lufthavn: lufthavnPris(s),
       perioder: s.perioder
         .map((p) => ({ dager: Number(p.dager), pris: Number(p.pris) }))
         .filter((p) => Number.isInteger(p.dager) && p.dager > 0 && p.pris > 0),
