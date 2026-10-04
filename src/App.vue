@@ -106,8 +106,8 @@ const settDager = (n) => (modell.jobbUkedager = [...MONSTER[n]]);
         {{ utfall.feil }}
       </p>
       <Hovedtall v-else :utfall="utfall" />
-      <PeriodeValg v-model="modell" :start-klokke="startKlokke" :utdatert="utdatert" @oppdater-na="oppdaterNa" />
       <DagerPerUke v-model="modell" />
+      <PeriodeValg v-model="modell" :start-klokke="startKlokke" :utdatert="utdatert" @oppdater-na="oppdaterNa" />
 
       <template v-if="!utfall.feil">
         <SammenlignGraf :utfall="utfall" />
