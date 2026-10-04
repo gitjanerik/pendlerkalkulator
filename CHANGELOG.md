@@ -1,3 +1,9 @@
+## 2026-10-04 — v1.9.2: Fritidsreiser i introduksjonen
+
+Nytt punkt under «Her gjør appen størst forskjell»: mange turer til flyplassen gir fordel, og fritidsreisene påvirker når billettene starter.
+
+---
+
 ## 2026-10-04 — v1.9.1: Versjonsnummer i veiviseren
 
 Versjonsnummeret står nederst i veiviseren, med samme skriftstørrelse og farge som i Innstillinger.
