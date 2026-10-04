@@ -136,7 +136,7 @@ const taster = (e) => {
           </template>
 
           <template v-else-if="STEG[i] === 'stasjon'">
-            <p class="steg-tekst">Målet er Oslo S. Jobber du et annet sted, eller mangler stasjonen din, kan du legge til en egen strekning.</p>
+            <p class="steg-tekst">Målet er Oslo S, og vi har priseksempler for åtte stasjoner. Jobber du et annet sted, eller mangler stasjonen din, kan du legge til en egen strekning og fylle inn prisene selv.</p>
             <StasjonsChips v-model="m" kun-en class="mt-4" />
           </template>
 
