@@ -1,3 +1,9 @@
+## 2026-10-04 — v1.3.1: Fritidsreiser dekket av periodebillett
+
+Fritidsreiser til Oslo lufthavn koster bare tillegget Oslo S–Oslo lufthavn (134 kr) når en periodebillett eller den eksisterende billetten dekker reisen. Uten dekning kjøpes én enkeltbillett hele veien fra hjemstasjonen (Gulskogen 308 kr osv.). Kortet viser igjen om hver reise er dekket, og prisene følger prisøkningen med asterisk.
+
+---
+
 ## 2026-10-04 — v1.3.0: Widget-justeringer
 
 **Billettene dine.** Den klebrige venstrekolonnen i tabellen ligger ikke lenger oppå tannhjulet i toppen.

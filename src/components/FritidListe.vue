@@ -58,7 +58,7 @@ const fjern = async (r) => {
       <Kalender ref="kal" tekst-start="Velg dagen du reiser opp til flyplassen, så dagen du kommer hjem." tekst-slutt="Opp {dato}. Velg dagen du kommer hjem." @velg="legTil" @lukk="lukk" />
     </div>
     <p class="mt-3 text-sm text-[var(--color-ink-2)]">
-      Hver reise regnes som én enkeltbillett fra hjemstasjonen til Oslo lufthavn, uavhengig av periodebilletten. Reiser før startdatoen eller etter sluttdatoen regnes ikke med.
+      Har du gyldig periodebillett, kjøper du bare tillegget Oslo S–Oslo lufthavn. Ellers kjøper du én enkeltbillett fra hjemstasjonen til Oslo lufthavn. Reiser før startdatoen eller etter sluttdatoen regnes ikke med.
     </p>
   </div>
 </template>
