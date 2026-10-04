@@ -127,7 +127,7 @@ const taster = (e) => {
                 <span class="block text-sm text-[var(--color-ink-2)]">Treffer ferien rett etter en fornyelse, sparer du opptil ett månedskort. Treffer den feil, sparer du ingenting.</span>
               </li>
             </ul>
-            <p class="mt-3 text-sm text-[var(--color-ink-3)]">Tallene er regnet ut av appen for Vys priser høsten 2026 (Gulskogen–Oslo S).</p>
+            <p class="mt-3 text-sm text-[var(--color-ink-3)]">Tallene er regnet ut av appen for Vys priser høsten 2026.</p>
           </template>
 
           <template v-else-if="STEG[i] === 'stasjon'">
