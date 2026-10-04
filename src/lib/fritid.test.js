@@ -25,6 +25,28 @@ describe('flyplassprisen', () => {
   })
 })
 
+describe('flyplass før Oslo S (fra nord)', () => {
+  const reise = { fra: '2026-10-10', til: '2026-10-11' }
+  const nord = (m, lufthavn = 200) => ({ ...m, strekninger: [{ ...m.strekninger[0], bakOsloS: false, lufthavn }] })
+
+  it('periodebillett dekker hele veien, uten tillegg', () => {
+    const base = beregn(nord(handoff()))
+    const r = beregn({ ...nord(handoff()), fritidsreiser: [reise] })
+    expect(r.resultat.kostnad).toBe(base.resultat.kostnad)
+    expect(r.fritid.bakOsloS).toBe(false)
+    expect(r.fritid.reiser.map((x) => [x.dekning, x.pris])).toEqual([['periode', 0], ['periode', 0]])
+  })
+  it('uten periodebillett kjøpes hele flyplassbilletten', () => {
+    const m = nord(handoff(), 200)
+    const r = beregn({ ...m, strekninger: [{ ...m.strekninger[0], perioder: [] }], fritidsreiser: [reise] })
+    expect(r.fritid.reiser.map((x) => [x.dekning, x.pris])).toEqual([['enkelt', 200], ['enkelt', 200]])
+  })
+  it('eksisterende billett gir ingen ekstra kostnad', () => {
+    const r = beregn({ ...nord(handoff()), eksisterende: { paa: true, type: 'maaned', til: '2026-10-20', klokke: '07:00' }, fritidsreiser: [reise] })
+    expect(r.fritid.reiser.map((x) => [x.dekning, x.pris])).toEqual([['eksisterende', 0], ['eksisterende', 0]])
+  })
+})
+
 describe('beregn med fritidsreiser', () => {
   const reise = { fra: '2026-10-10', til: '2026-10-11' }
   it('periodebillett dekker strekningen, så bare tillegget kjøpes', () => {

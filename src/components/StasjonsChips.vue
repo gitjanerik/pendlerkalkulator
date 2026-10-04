@@ -1,7 +1,7 @@
 <script setup>
 import { computed, nextTick, onBeforeUnmount, reactive, ref, watch } from 'vue'
 import { PRESETS, strekningFraPreset } from '../lib/presets.js'
-import { sokStasjoner } from '../lib/entur.js'
+import { flyplassBakOsloS, sokStasjoner } from '../lib/entur.js'
 import { byggStasjon, MAKS_NAVN, MAKS_PRIS, nyStasjonsId, rensStasjonsnavn, skjemaFraStasjon, stasjonsnavn, tomtSkjema, validerStasjon } from '../lib/stasjoner.js'
 import Beloep from './Beloep.vue'
 
@@ -46,6 +46,9 @@ watch(() => skjema.navn, (tekst) => {
   if (stille || !modus.value) return
   // Skriver brukeren videre, er valget fra listen ikke lenger gyldig.
   skjema.enturId = ''
+  skjema.bakOsloS = null
+  sjekkId++
+  sjekker.value = false
   const t = String(tekst).trim()
   if (t.length < 2) {
     avbryt?.abort()
@@ -59,12 +62,33 @@ onBeforeUnmount(() => {
   clearTimeout(tidtaker)
   avbryt?.abort()
 })
+// Ligger flyplassen før eller bak Oslo S på reisen? Uten svar regner vi som bak (vanlig fra sør).
+const sjekker = ref(false)
+let sjekkId = 0
+const sjekkFlyplass = async (id) => {
+  const mitt = ++sjekkId
+  sjekker.value = true
+  skjema.bakOsloS = null
+  try {
+    const bak = await flyplassBakOsloS(id); console.log('BAK', bak, mitt, sjekkId)
+    if (mitt !== sjekkId) return
+    skjema.bakOsloS = bak
+    sokStatus.value = bak === false
+      ? `${skjema.navn} er valgt. Flyplassen ligger før Oslo S på din reise, så fyll inn prisen på billett til Oslo lufthavn.`
+      : `${skjema.navn} er valgt.`
+  } catch {
+    if (mitt === sjekkId) sokStatus.value = `${skjema.navn} er valgt, men vi kunne ikke sjekke veien til flyplassen. Vi regner med at den ligger bak Oslo S.`
+  } finally {
+    if (mitt === sjekkId) sjekker.value = false
+  }
+}
 const velgForslag = async (f) => {
   stille = true
   skjema.navn = rensStasjonsnavn(f.navn)
   skjema.enturId = f.id
   forslag.value = []
-  sokStatus.value = `${skjema.navn} valgt.`
+  sokStatus.value = `${skjema.navn} valgt. Sjekker veien til flyplassen …`
+  sjekkFlyplass(f.id)
   await nextTick()
   document.getElementById('st-enkelt')?.focus()
   stille = false
@@ -72,7 +96,7 @@ const velgForslag = async (f) => {
 
 const FELT = [
   ['enkelt', 'Enkeltbillett'],
-  ['lufthavn', 'Enkeltbillett til Oslo lufthavn (valgfritt)'],
+  ['lufthavn', 'Enkeltbillett til Oslo lufthavn'],
   ['uke', 'Ukeskort (7 dager)'],
   ['maaned', 'Månedskort (30 dager)'],
   ['aar', 'Årskort (365 dager, valgfritt)'],
@@ -102,6 +126,10 @@ const lukk = async (tilbake) => {
   ;(tilbake?.value ?? leggTilKnapp.value)?.focus()
 }
 const lagre = async () => {
+  if (sjekker.value) {
+    sokStatus.value = 'Vent et øyeblikk, vi sjekker veien til flyplassen.'
+    return
+  }
   feil.value = validerStasjon(skjema, egne.value, redigerId.value)
   if (feilListe.value.length) {
     await nextTick()
@@ -148,7 +176,7 @@ const slett = async () => {
         <label class="etikett" for="st-navn">Søk etter stasjon</label>
         <input id="st-navn" v-model="skjema.navn" class="felt" type="text" autocomplete="off" :maxlength="MAKS_NAVN + 10" :aria-invalid="Boolean(feil.navn)" :aria-describedby="feil.navn ? 'st-navn-feil' : undefined" />
         <p v-if="feil.navn" id="st-navn-feil" class="mt-1 text-sm text-[var(--color-bad)]">{{ feil.navn }}</p>
-        <p class="mt-1 text-sm text-[var(--color-ink-2)]" role="status">{{ sokStatus || skjema.enturId ? `${skjema.navn} er valgt.` : 'Begynn å skrive, så foreslår Entur stasjoner.' }}</p>
+        <p class="mt-1 text-sm text-[var(--color-ink-2)]" role="status">{{ sokStatus || (skjema.enturId ? `${skjema.navn} er valgt.` : 'Begynn å skrive, så foreslår Entur stasjoner.') }}</p>
         <ul v-if="forslag.length" class="mt-1 flex flex-col divide-y divide-[var(--color-line)] rounded-xl border border-[var(--color-edge)]" aria-label="Forslag fra Entur">
           <li v-for="f in forslag" :key="f.id">
             <button type="button" class="flex min-h-11 w-full items-baseline justify-between gap-3 px-3 py-2 text-left hover:bg-[var(--color-app)]" @click="velgForslag(f)">
@@ -160,11 +188,15 @@ const slett = async () => {
       </div>
       <div class="grid grid-cols-2 items-end gap-3">
         <div v-for="[felt, navn] in FELT" :key="felt">
-          <label class="etikett" :for="`st-${felt}`">{{ navn }}</label>
+          <label class="etikett" :for="`st-${felt}`">{{ navn }}<template v-if="felt === 'lufthavn' && skjema.bakOsloS !== false"> (valgfritt)</template></label>
           <Beloep :id="`st-${felt}`" v-model="skjema[felt]" :ugyldig="Boolean(feil[felt])" :max="MAKS_PRIS[felt]" :feil-id="feil[felt] ? `st-${felt}-feil` : undefined" />
           <p v-if="feil[felt]" :id="`st-${felt}-feil`" class="mt-1 text-sm text-[var(--color-bad)]">{{ feil[felt] }}</p>
         </div>
       </div>
+      <p class="text-sm text-[var(--color-ink-2)]">
+        <template v-if="skjema.bakOsloS === false">Flyplassen ligger før Oslo S på din reise. Periodebilletten dekker da hele veien, og flyplassprisen brukes bare når du ikke har gyldig billett.</template>
+        <template v-else>Billett til Oslo lufthavn er valgfri. Uten den regner vi enkeltbillett pluss 134 kr (tillegget Oslo S–Oslo lufthavn).</template>
+      </p>
       <div class="flex justify-end gap-2">
         <button type="button" class="knapp" @click="lukk(modus === 'ny' ? leggTilKnapp : redigerKnapp)">Avbryt</button>
         <button type="submit" class="knapp knapp-primaer">Lagre</button>

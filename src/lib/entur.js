@@ -68,6 +68,43 @@ export function stasjonsForslag(json) {
 export const sokStasjoner = async (tekst, hent = fetch, signal) =>
   stasjonsForslag(await json(hent, stedsokUrl(tekst, 10), { headers: HODER, signal }))
 
+// Ligger Oslo S på veien fra hjemstasjonen til Oslo lufthavn? Fra sør gjør den det; fra nord (Hamar, Eidsvoll)
+// ligger flyplassen før Oslo S. Spørsmålet gjelder reiseveien, ikke priser.
+export const FLYPLASS_RUTE = `query ($fra: String!, $til: String!) {
+  trip(from: { place: $fra }, to: { place: $til }, numTripPatterns: 3,
+       modes: { transportModes: [{ transportMode: rail }] }) {
+    tripPatterns {
+      legs {
+        fromPlace { name quay { stopPlace { id } } }
+        toPlace { name quay { stopPlace { id } } }
+        intermediateQuays { name stopPlace { id } }
+      }
+    }
+  }
+}`
+
+const erOsloS = (sted, osloSId) => sted?.name === 'Oslo S' || (osloSId && (sted?.stopPlace?.id ?? sted?.quay?.stopPlace?.id) === osloSId)
+
+// true: alle forslagene går via Oslo S. false: minst ett går uten. null: ingen reiser funnet.
+export function passererOsloS(json, osloSId) {
+  const forslag = json?.data?.trip?.tripPatterns ?? []
+  if (!forslag.length) return null
+  const via = forslag.map((f) => f.legs.some((l) => [l.fromPlace, l.toPlace, ...(l.intermediateQuays ?? [])].some((q) => erOsloS(q, osloSId))))
+  return via.every(Boolean)
+}
+
+export async function flyplassBakOsloS(stasjonId, { hent = fetch, signal } = {}) {
+  const [oslo, lufthavn] = await Promise.all([finnStasjon('Oslo S', hent, signal), finnStasjon('Oslo lufthavn', hent, signal)])
+  if (!lufthavn) return null
+  const svar = await json(hent, PLANLEGGER, {
+    method: 'POST',
+    headers: { ...HODER, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ query: FLYPLASS_RUTE, variables: { fra: stasjonId, til: lufthavn.id } }),
+    signal,
+  })
+  return passererOsloS(svar, oslo?.id)
+}
+
 export const finnStasjon = async (navn, hent = fetch, signal) =>
   velgStasjon(await json(hent, stedsokUrl(navn), { headers: HODER, signal }))
 

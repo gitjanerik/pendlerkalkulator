@@ -5,7 +5,7 @@ import { tilEtterMaaneder } from './periode.js'
 import { MONSTER } from './dagmonster.js'
 import { PRESETS, strekningFraPreset } from './presets.js'
 import { aarskortAnalyse, sammenlignAlternativer } from './optimerer.js'
-import { OSL_TILLEGG, byggFritidsturer, medFritidspriser } from './fritid.js'
+import { bakOsloS, byggFritidsturer, fritidTillegg, medFritidspriser } from './fritid.js'
 import { STANDARD_PRISOKNING, antallPrisokninger, prisPaaDato } from './priser.js'
 
 const ISO = /^\d{4}-\d{2}-\d{2}$/
@@ -62,6 +62,7 @@ export function normaliserStrekninger(strekninger) {
       enkelt: Number(s.enkelt) > 0 ? Number(s.enkelt) : Infinity,
       // Lagrede strekninger fra før feltet fantes henter prisen fra forhåndsvalget med samme id.
       lufthavn: lufthavnPris(s),
+      bakOsloS: s.bakOsloS !== false,
       perioder: s.perioder
         .map((p) => ({ dager: Number(p.dager), pris: Number(p.pris) }))
         .filter((p) => Number.isInteger(p.dager) && p.dager > 0 && p.pris > 0),
@@ -140,7 +141,7 @@ export function beregn(modell) {
     retning: t.retning,
     tid: t.tid,
     dekning: 'eksisterende',
-    pris: prisPaaDato(OSL_TILLEGG, prisDato, t.dato, modell.prisokning),
+    pris: prisPaaDato(fritidTillegg(strekninger[0]), prisDato, t.dato, modell.prisokning),
     estimert: Boolean(modell.prisokning?.paa) && antallPrisokninger(prisDato, t.dato, modell.prisokning) > 0,
   })
   const tidlige = fritidMedPris.filter((t) => t.tid < fraTidspunkt).map(tidligTillegg)
@@ -155,7 +156,7 @@ export function beregn(modell) {
     alternativer: alternativer.filter((a) => a.resultat.mulig),
     aarskort: harAarskort ? aarskortAnalyse(turer, strekninger, opsjoner) : null,
     fritid: fritidReiser.length
-      ? { sum: fritidSum, estimert: fritidReiser.some((r) => r.estimert), reiser: fritidReiser }
+      ? { sum: fritidSum, bakOsloS: bakOsloS(strekninger[0]), estimert: fritidReiser.some((r) => r.estimert), reiser: fritidReiser }
       : null,
     kalender,
     tidsramme: { morgen: modell.morgen, ettermiddag: modell.ettermiddag, retninger: modell.retninger },

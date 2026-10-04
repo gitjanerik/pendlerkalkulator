@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { rensStasjonsnavn, byggStasjon, nyStasjonsId, skjemaFraStasjon, tomtSkjema, validerStasjon } from './stasjoner.js'
 import { beregn, standardModell } from './modell.js'
 
-const gyldig = { navn: 'Lillestrøm', enturId: 'NSR:StopPlace:1', enkelt: 90, lufthavn: 120, uke: 500, maaned: 1200, aar: 12000 }
+const gyldig = { navn: 'Lillestrøm', enturId: 'NSR:StopPlace:1', bakOsloS: true, enkelt: 90, lufthavn: 120, uke: 500, maaned: 1200, aar: 12000 }
 
 describe('validerStasjon', () => {
   it('godtar et gyldig skjema, og at årskort og flyplass er valgfrie', () => {
@@ -18,6 +18,12 @@ describe('validerStasjon', () => {
     for (const navn of ['Oslo S', 'oslo', 'x'.repeat(41)]) {
       expect(validerStasjon({ ...gyldig, navn }).navn, navn).toBeTruthy()
     }
+  })
+  it('krever flyplassprisen når flyplassen ligger før Oslo S', () => {
+    expect(validerStasjon({ ...gyldig, bakOsloS: false, lufthavn: '' }).lufthavn).toMatch(/Oslo lufthavn/)
+    expect(validerStasjon({ ...gyldig, bakOsloS: false, lufthavn: 150 })).toEqual({})
+    expect(validerStasjon({ ...gyldig, bakOsloS: true, lufthavn: '' })).toEqual({})
+    expect(byggStasjon({ ...gyldig, bakOsloS: false, lufthavn: 150 }, 'x').bakOsloS).toBe(false)
   })
   it('avviser navn som finnes fra før, uavhengig av store bokstaver', () => {
     expect(validerStasjon({ ...gyldig, navn: 'drammen' }).navn).toMatch(/allerede/)
