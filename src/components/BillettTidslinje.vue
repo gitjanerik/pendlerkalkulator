@@ -65,6 +65,13 @@ const velg = (i) => (valgt.value = valgt.value === i ? null : i)
 
 const dagTekst = (iso) => norskDato(iso)
 const tidTekst = (tekst) => tekst.split('T')[1]
+// Med to strekninger gjelder hver billett bare sine ukedager, og utnyttelsen måles mot dem.
+const ukedagerFor = (b) => {
+  const r = p.utfall.flereRuter
+  if (!r) return undefined
+  const ekstra = r.ekstraDager
+  return b.strekningId === r.ekstra ? ekstra : [0, 1, 2, 3, 4].filter((d) => !ekstra.includes(d))
+}
 const rader = computed(() =>
   segmenter.value.map((b) => {
     const fra = b.aktivering.slice(0, 10)
@@ -77,7 +84,7 @@ const rader = computed(() =>
       til,
       klokkeFra: tidTekst(b.aktivering),
       klokkeTil: tidTekst(b.utloper),
-      prosent: Math.round(utnyttelse(b, p.utfall.tidsramme) * 100),
+      prosent: Math.round(utnyttelse(b, p.utfall.tidsramme, ukedagerFor(b)) * 100),
     }
   }),
 )
@@ -91,7 +98,12 @@ const sum = computed(() => ({
 const dagTilBillett = computed(() => {
   const kart = new Map()
   for (const s of segmenter.value) {
-    for (let nr = dagNr(s.aktivering.slice(0, 10)); nr <= dagNr(s.sisteTur.dato); nr++) kart.set(nr, s.i)
+    const dager = ukedagerFor(s)
+    for (let nr = dagNr(s.aktivering.slice(0, 10)); nr <= dagNr(s.sisteTur.dato); nr++) {
+      // Med to strekninger farges bare ukedagene billetten gjelder (helgene farges som før).
+      const ukedag_ = ukedag(isoFraDagNr(nr))
+      if (!dager || ukedag_ >= 5 || dager.includes(ukedag_)) kart.set(nr, s.i)
+    }
   }
   return kart
 })
@@ -135,7 +147,7 @@ const uker = computed(() => {
       helg: ukedag(iso) >= 5,
       merke: IKKE_ARBEID[type] ?? null,
       flate: b ? (SKYGGE_FLATE[b.dager] ?? 50) : 0,
-      tekst: [norskDatoLang(iso), b ? billettNavn(b.dager) : null, enkeltDatoer.value.has(iso) ? 'enkeltbillett' : null, IKKE_ARBEID[type] ?? null].filter(Boolean).join(', '),
+      tekst: [norskDatoLang(iso), b ? billettNavn(b.dager) + (p.utfall.flereRuter ? ` ${b.strekningNavn}` : '') : null, enkeltDatoer.value.has(iso) ? 'enkeltbillett' : null, IKKE_ARBEID[type] ?? null].filter(Boolean).join(', '),
     })
   }
   const ut = []
@@ -159,23 +171,25 @@ const uker = computed(() => {
     </div>
 
     <template v-if="visning === 'tidslinje'">
-      <div class="relative mt-4 h-20" role="group" aria-label="Billetter langs tidsaksen">
+      <div class="relative mt-4" :class="utfall.flereRuter ? 'h-[7.25rem]' : 'h-20'" role="group" aria-label="Billetter langs tidsaksen">
         <div class="absolute inset-x-0 top-3.5 h-px bg-[var(--color-line)]"></div>
+        <div v-if="utfall.flereRuter" class="absolute inset-x-0 top-[3.125rem] h-px bg-[var(--color-line)]"></div>
         <button
           v-for="s in segmenter"
           :key="s.i"
           type="button"
-          class="segment absolute top-0 h-7 rounded-sm border-2 border-[var(--color-accent)]"
-          :class="{ valgt: valgt === s.i }"
+          class="segment absolute h-7 rounded-sm border-2 border-[var(--color-accent)]"
+          :class="[{ valgt: valgt === s.i }, utfall.flereRuter && s.strekningId === utfall.flereRuter.ekstra ? 'top-9' : 'top-0']"
           :style="{ left: s.left + '%', width: s.width + '%', background: fyll(s.dager) }"
-          :aria-label="`${dagerTekst(s.dager)}, ${kr(s.pris)}${s.estimert ? ' (estimert)' : ''}, aktiveres ${norskDatoLang(s.aktivering.slice(0, 10))}`"
+          :aria-label="`${dagerTekst(s.dager)}${utfall.flereRuter ? ` ${s.strekningNavn}` : ''}, ${kr(s.pris)}${s.estimert ? ' (estimert)' : ''}, aktiveres ${norskDatoLang(s.aktivering.slice(0, 10))}`"
           :aria-pressed="valgt === s.i"
           @click="velg(s.i)"
         ></button>
         <span
           v-for="d in enkelt"
           :key="d.dato"
-          class="absolute top-8 h-2 w-0.5 bg-[var(--color-warn)]"
+          class="absolute h-2 w-0.5 bg-[var(--color-warn)]"
+          :class="utfall.flereRuter ? 'top-[4.5rem]' : 'top-8'"
           :style="{ left: d.left + '%' }"
           :title="`${norskDato(d.dato)}: enkeltbillett ${kr(d.kostnad)}`"
           aria-hidden="true"
@@ -183,7 +197,8 @@ const uker = computed(() => {
         <span
           v-for="f in fritidMerker"
           :key="f.tid + f.retning"
-          class="absolute top-11 h-2.5 w-2.5 -translate-x-1/2 rotate-45 bg-[var(--color-ink)]"
+          class="absolute h-2.5 w-2.5 -translate-x-1/2 rotate-45 bg-[var(--color-ink)]"
+          :class="utfall.flereRuter ? 'top-[5.25rem]' : 'top-11'"
           :style="{ left: Math.min(Math.max(f.left, 1), 99) + '%' }"
           :title="`${norskDato(f.dato)}: fritidsreise til Oslo lufthavn`"
           aria-hidden="true"
@@ -258,6 +273,7 @@ const uker = computed(() => {
         <div v-if="detalj" class="mt-4 rounded-xl bg-[var(--color-app)] p-3 text-sm">
           <p class="font-semibold">{{ dagerTekst(detalj.dager) }} · {{ kr(detalj.pris) }}<Estimat v-if="detalj.estimert" /></p>
           <dl class="mt-1 grid grid-cols-[auto_1fr] gap-x-3 text-[var(--color-ink-2)]">
+            <template v-if="utfall.flereRuter"><dt>Strekning</dt><dd>{{ detalj.strekningNavn }}</dd></template>
             <dt>Aktiver</dt><dd>{{ norskTidspunkt(detalj.aktivering) }}</dd>
             <dt>Utløper</dt><dd>{{ norskTidspunkt(detalj.utloper) }}</dd>
             <dt>Dekker</dt><dd>{{ detalj.antallTurer }} reiser</dd>
@@ -293,7 +309,7 @@ const uker = computed(() => {
               <td class="px-3 py-2">{{ r.antallTurer }}</td>
               <td class="px-3 py-2">{{ dagTekst(r.fra) }}<span class="block text-sm text-[var(--color-ink-3)]">{{ r.klokkeFra }}</span></td>
               <td class="px-3 py-2">{{ dagTekst(r.til) }}<span class="block text-sm text-[var(--color-ink-3)]">{{ r.klokkeTil }}</span></td>
-              <td class="px-3 py-2">{{ dagerTekst(r.dager) }}</td>
+              <td class="px-3 py-2">{{ dagerTekst(r.dager) }}<span v-if="utfall.flereRuter" class="block text-sm text-[var(--color-ink-3)]">{{ r.strekningNavn }}</span></td>
               <td class="sticky right-0 z-10 bg-[var(--color-surface)] shadow-[-1px_0_0_var(--color-line)] py-2 pl-3">{{ kr(r.pris) }}<Estimat v-if="r.estimert" /></td>
             </tr>
           </tbody>

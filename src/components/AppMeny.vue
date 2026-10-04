@@ -17,6 +17,11 @@ import EksisterendeBillett from './EksisterendeBillett.vue'
 const m = defineModel('modell', { type: Object })
 const stasjon = computed(() => (m.value.strekninger[0] ? stasjonsnavn(m.value.strekninger[0]) : 'stasjon'))
 const maal = computed(() => (m.value.strekninger[0] ? maalnavn(m.value.strekninger[0]) : OSLO_S))
+// Redigerer de faktiske strekningene; den andre får egen nøkkel så id-ene ikke kolliderer.
+const prisStrekninger = computed(() => [
+  ...m.value.strekninger.map((s) => ({ s, nokkel: s.id })),
+  ...(m.value.andreRute?.strekning ? [{ s: m.value.andreRute.strekning, nokkel: `${m.value.andreRute.strekning.id}-b` }] : []),
+])
 const apen = defineModel('apen', { type: Boolean })
 // I veiviseren vises bare faste valg (utseende, app, versjon).
 defineProps({ wizard: Boolean })
@@ -112,7 +117,7 @@ const klikkBakgrunn = (e) => {
         <section aria-labelledby="m-pris" class="flex flex-col">
           <h3 id="m-pris" class="seksjonstittel mb-1">Priser og beregning</h3>
           <PrefBryter v-model="m.inkluderAarskort" tittel="Vurder årskort" tekst="Binder deg i 12 måneder." />
-          <PrefBryter v-if="m.strekninger.some((s) => s.ruter)" v-model="m.reis" tittel="Ruter Reis på enkeltbilletter" tekst="Rabatt fra 5 % på reise nr. 5 til 40 % fra reise nr. 40 de siste 30 dagene. Gjelder bare innenfor Ruters soner (Oslo og Akershus), altså fra Asker. Vy Smartpris er ikke med." />
+          <PrefBryter v-if="prisStrekninger.some((x) => x.s.ruter)" v-model="m.reis" tittel="Ruter Reis på enkeltbilletter" tekst="Rabatt fra 5 % på reise nr. 5 til 40 % fra reise nr. 40 de siste 30 dagene. Gjelder bare innenfor Ruters soner (Oslo og Akershus), altså fra Asker. Vy Smartpris er ikke med." />
           <PrefBryter v-model="m.prisokning.paa" tittel="Prisøkning hver 1. februar" tekst="Regn med at prisene stiger." />
           <div v-if="m.prisokning.paa" class="mt-2 felt-par">
             <div>
@@ -125,20 +130,20 @@ const klikkBakgrunn = (e) => {
             </div>
           </div>
 
-          <details v-for="s in m.strekninger" :key="s.id" class="mt-3 rounded-xl border border-[var(--color-line)] px-3">
+          <details v-for="{ s, nokkel } in prisStrekninger" :key="nokkel" class="mt-3 rounded-xl border border-[var(--color-line)] px-3">
             <summary class="vis-pil min-h-11 font-medium">{{ s.navn }} – priser</summary>
             <div class="grid grid-cols-2 gap-3 pb-3">
               <div>
-                <label class="etikett" :for="`enkelt-${s.id}`">Enkeltbillett</label>
-                <Beloep :id="`enkelt-${s.id}`" v-model="s.enkelt" placeholder="Ukjent" />
+                <label class="etikett" :for="`enkelt-${nokkel}`">Enkeltbillett</label>
+                <Beloep :id="`enkelt-${nokkel}`" v-model="s.enkelt" placeholder="Ukjent" />
               </div>
-              <div>
-                <label class="etikett" :for="`lufthavn-${s.id}`">Enkeltbillett til Oslo lufthavn</label>
-                <Beloep :id="`lufthavn-${s.id}`" v-model="s.lufthavn" placeholder="Ukjent" />
+              <div v-if="nokkel === s.id">
+                <label class="etikett" :for="`lufthavn-${nokkel}`">Enkeltbillett til Oslo lufthavn</label>
+                <Beloep :id="`lufthavn-${nokkel}`" v-model="s.lufthavn" placeholder="Ukjent" />
               </div>
               <div v-for="p in s.perioder" :key="p.dager">
-                <label class="etikett" :for="`p-${s.id}-${p.dager}`">{{ dagerTekst(p.dager) }}</label>
-                <Beloep :id="`p-${s.id}-${p.dager}`" v-model="p.pris" />
+                <label class="etikett" :for="`p-${nokkel}-${p.dager}`">{{ dagerTekst(p.dager) }}</label>
+                <Beloep :id="`p-${nokkel}-${p.dager}`" v-model="p.pris" />
               </div>
               <p class="col-span-2 text-sm text-[var(--color-ink-3)]">Forslagsprisene er Vys voksenpriser {{ PRESET_DATO }}. Sjekk dem mot appen.</p>
             </div>

@@ -1,3 +1,15 @@
+## 2026-10-04 — v2.0.0: Annen strekning noen ukedager
+
+Under «Reiser fra» i Innstillinger, i den lukkede seksjonen «Avansert: annen strekning noen dager» (åpen når den er i bruk, ikke nevnt i wizarden), kan du slå på «Annen strekning noen dager», velge strekning (forhåndsvalgt eller egen) og hvilke ukedager den gjelder. Resten av jobbdagene bruker den første strekningen.
+
+- Hver strekning prises for seg med egne billetter, og summen er hovedtallet.
+- Billettene viser strekningen i detaljer, tabell og kalender. Tidslinjen får én rad per strekning, og utnyttelsen måles mot strekningens egne ukedager.
+- Eksisterende billett og fritidsreiser gjelder den første strekningen.
+- Ruter Reis-rabatten regnes per strekning, så den kan undervurderes litt når begge strekningene har mange enkeltreiser.
+- Priser for den andre strekningen redigeres under «Priser og beregning».
+
+---
+
 ## 2026-10-04 — v1.9.4: Ryddigere fritidstekster
 
 Fjernet de selvforklarende tekstene om at jobbstedet ikke ligger på veien til flyplassen (i skjemaet for egen strekning). Fritidsreisene viser nå «<hjemstasjon> til Oslo lufthavn» i stedet for «Opp til Oslo lufthavn».

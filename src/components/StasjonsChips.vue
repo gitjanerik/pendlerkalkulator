@@ -8,8 +8,15 @@ import Beloep from './Beloep.vue'
 
 const m = defineModel({ type: Object })
 // I veiviseren kan brukeren legge til én egen stasjon; flere finnes i Innstillinger.
-defineProps({ kunEn: Boolean })
-const valgt = computed(() => m.value.strekninger[0])
+// rute «b» er den andre strekningen (egne ukedager); den deler egne stasjoner med den første.
+const props = defineProps({ kunEn: Boolean, rute: { type: String, default: 'a' } })
+const erB = props.rute === 'b'
+const pre = erB ? 'st2' : 'st'
+const valgt = computed(() => (erB ? m.value.andreRute?.strekning : m.value.strekninger[0]))
+const settValgt = (s) => {
+  if (erB) m.value.andreRute = { strekning: s, ukedager: m.value.andreRute?.ukedager ?? [] }
+  else m.value.strekninger = [s]
+}
 const egne = computed(() => m.value.egneStasjoner ?? [])
 const valgtEgen = computed(() => egne.value.find((e) => e.id === valgt.value?.id))
 
@@ -57,12 +64,12 @@ const sjekkFlyplass = async () => {
 const fraValgt = async () => {
   if (klarForSjekk()) sjekkFlyplass()
   await nextTick()
-  document.getElementById('st-til')?.focus()
+  document.getElementById(`${pre}-til`)?.focus()
 }
 const tilValgt = async () => {
   if (klarForSjekk()) sjekkFlyplass()
   await nextTick()
-  document.getElementById('st-enkelt')?.focus()
+  document.getElementById(`${pre}-enkelt`)?.focus()
 }
 // Endres fra eller til, gjelder ikke sjekken lenger.
 const sjekkEndret = () => {
@@ -85,9 +92,9 @@ const FELT = [
 const synligeFelt = computed(() => FELT.filter(([f]) => (f !== 'tillegg' || (forhold.value === 'bak' && !tilOslo.value))))
 const feilListe = computed(() => Object.entries(feil.value))
 
-const velgPreset = (p) => (m.value.strekninger = [strekningFraPreset(p, p.id)])
+const velgPreset = (p) => settValgt(strekningFraPreset(p, p.id))
 // e er et reaktivt objekt, som structuredClone ikke kan klone.
-const velgEgen = (e) => (m.value.strekninger = [JSON.parse(JSON.stringify(e))])
+const velgEgen = (e) => settValgt(JSON.parse(JSON.stringify(e)))
 
 const aapne = async (nyModus) => {
   modus.value = nyModus
@@ -134,17 +141,17 @@ const slett = async () => {
   m.value.egneStasjoner = egne.value.filter((e) => e.id !== id)
   velgPreset(PRESETS[0])
   slettDlg.value.close()
-  melding.value = `Slettet strekning: ${navn}. ${strekningsvalg(m.value.strekninger[0])} er valgt.`
+  melding.value = `Slettet strekning: ${navn}. ${strekningsvalg(valgt.value)} er valgt.`
   await lukk()
 }
 </script>
 
 <template>
   <div>
-    <div class="flex flex-wrap gap-2" role="group" aria-label="Strekning">
+    <div class="flex flex-wrap gap-2" role="group" :aria-label="erB ? 'Andre strekning' : 'Strekning'">
       <button v-for="p in PRESETS" :key="p.id" type="button" class="chip" :aria-pressed="valgt?.id === p.id" @click="velgPreset(p)">{{ strekningsvalg(p) }}</button>
       <button v-for="e in egne" :key="e.id" type="button" class="chip" :aria-pressed="valgt?.id === e.id" @click="velgEgen(e)">{{ strekningsvalg(e) }}</button>
-      <button v-if="!(kunEn && egne.length)" ref="leggTilKnapp" type="button" class="chip" :aria-expanded="modus === 'ny'" aria-controls="stasjon-skjema" @click="modus === 'ny' ? lukk() : aapne('ny')">+ Egen strekning</button>
+      <button v-if="!(kunEn && egne.length)" ref="leggTilKnapp" type="button" class="chip" :aria-expanded="modus === 'ny'" :aria-controls="`${pre}-skjema`" @click="modus === 'ny' ? lukk() : aapne('ny')">+ Egen strekning</button>
     </div>
     <p class="sr-only" role="status">{{ melding }}</p>
 
@@ -153,12 +160,12 @@ const slett = async () => {
       <button type="button" class="knapp knapp-fare" :aria-label="`Slett ${strekningsvalg(valgtEgen)}`" @click="slettDlg.showModal()">Slett</button>
     </div>
 
-    <form v-if="modus" id="stasjon-skjema" ref="skjemaEl" class="mt-3 flex flex-col gap-3 rounded-xl border border-[var(--color-line)] p-3" novalidate @submit.prevent="lagre">
+    <form v-if="modus" :id="`${pre}-skjema`" ref="skjemaEl" class="mt-3 flex flex-col gap-3 rounded-xl border border-[var(--color-line)] p-3" novalidate @submit.prevent="lagre">
       <h4 class="font-semibold">{{ modus === 'ny' ? 'Ny strekning' : `Rediger ${strekningsvalg(valgtEgen)}` }}</h4>
       <p class="text-sm text-[var(--color-ink-2)]">Voksenpriser for strekningen. Du kan finne dem i Vy- eller Ruter-appen.</p>
       <p v-if="feilListe.length" class="text-sm text-[var(--color-bad)]" role="alert">Rett {{ feilListe.length === 1 ? 'feltet' : 'feltene' }} med feil før du lagrer.</p>
       <StasjonsSok
-        id="st-navn"
+        :id="`${pre}-navn`"
         ref="fraSok"
         v-model:navn="skjema.navn"
         v-model:enturId="skjema.enturId"
@@ -169,7 +176,7 @@ const slett = async () => {
         @endret="sjekkEndret"
       />
       <StasjonsSok
-        id="st-til"
+        :id="`${pre}-til`"
         ref="tilSok"
         v-model:navn="skjema.til"
         v-model:enturId="skjema.tilEnturId"
@@ -181,9 +188,9 @@ const slett = async () => {
       />
       <div class="grid grid-cols-2 items-end gap-3">
         <div v-for="[felt, navn] in synligeFelt" :key="felt">
-          <label class="etikett" :for="`st-${felt}`">{{ navn }}<template v-if="felt === 'lufthavn' && forhold === 'bak'"> (valgfritt)</template></label>
-          <Beloep :id="`st-${felt}`" v-model="skjema[felt]" :ugyldig="Boolean(feil[felt])" :max="MAKS_PRIS[felt]" :feil-id="feil[felt] ? `st-${felt}-feil` : undefined" />
-          <p v-if="feil[felt]" :id="`st-${felt}-feil`" class="mt-1 text-sm text-[var(--color-bad)]">{{ feil[felt] }}</p>
+          <label class="etikett" :for="`${pre}-${felt}`">{{ navn }}<template v-if="felt === 'lufthavn' && forhold === 'bak'"> (valgfritt)</template></label>
+          <Beloep :id="`${pre}-${felt}`" v-model="skjema[felt]" :ugyldig="Boolean(feil[felt])" :max="MAKS_PRIS[felt]" :feil-id="feil[felt] ? `${pre}-${felt}-feil` : undefined" />
+          <p v-if="feil[felt]" :id="`${pre}-${felt}-feil`" class="mt-1 text-sm text-[var(--color-bad)]">{{ feil[felt] }}</p>
         </div>
       </div>
       <p class="text-sm text-[var(--color-ink-2)]">
@@ -197,10 +204,10 @@ const slett = async () => {
       </div>
     </form>
 
-    <dialog ref="slettDlg" class="bekreft" aria-labelledby="sl-tittel" aria-describedby="sl-tekst">
+    <dialog ref="slettDlg" class="bekreft" :aria-labelledby="`${pre}-sl-tittel`" :aria-describedby="`${pre}-sl-tekst`">
       <div class="flex flex-col gap-3 p-5">
-        <h2 id="sl-tittel" class="text-lg font-semibold">Slette {{ valgtEgen ? strekningsvalg(valgtEgen) : 'strekningen' }}?</h2>
-        <p id="sl-tekst" class="text-[var(--color-ink-2)]">Strekningen og prisene du la inn fjernes. Appen bytter til {{ stasjonsnavn(PRESETS[0]) }}.</p>
+        <h2 :id="`${pre}-sl-tittel`" class="text-lg font-semibold">Slette {{ valgtEgen ? strekningsvalg(valgtEgen) : 'strekningen' }}?</h2>
+        <p :id="`${pre}-sl-tekst`" class="text-[var(--color-ink-2)]">Strekningen og prisene du la inn fjernes. Appen bytter til {{ stasjonsnavn(PRESETS[0]) }}.</p>
         <div class="flex justify-end gap-2">
           <button type="button" class="knapp" autofocus @click="slettDlg.close()">Avbryt</button>
           <button type="button" class="knapp knapp-fare" @click="slett">Ja, slett</button>
