@@ -117,7 +117,8 @@ export async function flyplassForhold(stasjonId, maal = {}, { hent = fetch, sign
   if (via === null) return null
   if (via) return 'bak'
   const tilJobb = await reise(stasjonId, sted.id, hent, signal)
-  return passererSted(tilJobb, lufthavn.id, 'Oslo lufthavn') ? 'foer' : 'utenfor'
+  // Oslo S er endestasjonen, så flyplassen er enten bak eller før den; noen avganger (f.eks. fra Hamar) går ikke via flyplassen.
+  return !maal.id || passererSted(tilJobb, lufthavn.id, 'Oslo lufthavn') ? 'foer' : 'utenfor'
 }
 
 // Gammel form for Oslo S: true = bak, false = før. «Utenfor» kan ikke skje for Oslo S i praksis og regnes som før.

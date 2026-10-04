@@ -96,7 +96,7 @@ export function byggStasjon(skjema, id) {
 
 export function skjemaFraStasjon(s) {
   const pris = (dager) => s.perioder.find((p) => p.dager === dager)?.pris ?? ''
-  return { navn: stasjonsnavn(s), enturId: s.enturId ?? '', til: maalnavn(s), tilEnturId: s.tilEnturId ?? '', flyplass: s.flyplass ?? (s.bakOsloS === false ? 'foer' : null), enkelt: s.enkelt ?? '', lufthavn: s.lufthavn ?? '', tillegg: s.tillegg ?? '', uke: pris(7), maaned: pris(30), aar: pris(365) }
+  return { navn: stasjonsnavn(s), enturId: s.enturId ?? '', til: maalnavn(s), tilEnturId: s.tilEnturId ?? '', flyplass: s.flyplass === 'utenfor' && gaarTilOsloS(s) ? 'foer' : (s.flyplass ?? (s.bakOsloS === false ? 'foer' : null)), enkelt: s.enkelt ?? '', lufthavn: s.lufthavn ?? '', tillegg: s.tillegg ?? '', uke: pris(7), maaned: pris(30), aar: pris(365) }
 }
 
 export function nyStasjonsId(egne) {

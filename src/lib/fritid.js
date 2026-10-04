@@ -15,6 +15,8 @@ export const OSL_TILLEGG = 134
 // - 'utenfor': jobbstedet ligger ikke på veien. Periodebilletten hjelper ikke, og flyplassreisen er en vanlig enkeltbillett.
 // Strekninger uten svar fra Entur: Oslo S regnes som 'bak' (vanlig fra sør), andre mål som 'utenfor'.
 export const flyplassForhold = (strekning) => {
+  // Oslo S er endestasjonen, så «utenfor» kan ikke stemme; lagrede strekninger med gammelt svar regnes som «før».
+  if (strekning?.flyplass === 'utenfor' && strekning.navn && gaarTilOsloS(strekning)) return 'foer'
   if (strekning?.flyplass) return strekning.flyplass
   if (!strekning?.navn || gaarTilOsloS(strekning)) return strekning?.bakOsloS === false ? 'foer' : 'bak'
   return 'utenfor'

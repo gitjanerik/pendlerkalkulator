@@ -1,3 +1,12 @@
+## 2026-10-04 — v2.1.1: Ryddigere strekningsvalg og flyplass for Hamar–Oslo S
+
+- Valideringsfeil i skjemaet for egen strekning forsvinner så snart feltet er rettet, ikke først ved lagring eller når fokus forlater feltet.
+- Steg 2 har ingen introtekst. Forhåndsvalgene heter «Gulskogen–Oslo S» osv., som egne strekninger, og tittelen er «Hvilken strekning reiser du?».
+- Rediger og slett er blyant og kryss inne i chipen til den valgte egne strekningen.
+- Rettet: for Hamar–Oslo S (og andre strekninger til Oslo S) sa fritidstekstene at flyplassen ikke ligger på veien. Oslo S er endestasjonen, så flyplassen ligger enten bak eller før. Gamle lagrede svar rettes automatisk.
+
+---
+
 ## 2026-10-04 — v2.1.0: Del oppsettet og påminnelse om prisoppdatering
 
 Du kan sende en lenke med strekning og priser til en bekjent, og appen minner deg på å oppdatere prisene.

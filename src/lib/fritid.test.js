@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { OSL_TILLEGG, byggFritidsturer, fritidGrunnpris } from './fritid.js'
+import { OSL_TILLEGG, byggFritidsturer, flyplassForhold, fritidGrunnpris } from './fritid.js'
 import { PRESETS } from './presets.js'
 import { beregn, standardModell } from './modell.js'
 
@@ -76,5 +76,12 @@ describe('beregn med fritidsreiser', () => {
   it('reiser utenfor perioden gir ingen fritidsdel', () => {
     const r = beregn({ ...handoff(), fritidsreiser: [{ fra: '2027-03-01', til: '2027-03-02' }] })
     expect(r.fritid).toBeNull()
+  })
+})
+
+describe('lagret «utenfor» for Oslo S', () => {
+  it('regnes som «foer»', () => {
+    expect(flyplassForhold({ navn: 'Hamar–Oslo S', flyplass: 'utenfor' })).toBe('foer')
+    expect(flyplassForhold({ navn: 'Hamar–Lillestrøm', flyplass: 'utenfor' })).toBe('utenfor')
   })
 })

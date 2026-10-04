@@ -184,5 +184,9 @@ describe('passererOsloS', () => {
       const hent = lag(forslag([ben('Drammen', 'Oslo lufthavn', ['Asker'])]), forslag([ben('Drammen', 'Lillestrøm', ['Asker'])]))
       expect(await flyplassForhold('NSR:drammen', maal, { hent })).toBe('utenfor')
     })
+    it('Oslo S er aldri «utenfor», selv når ikke alle avganger går via flyplassen', async () => {
+      const hent = lag(forslag([ben('Hamar', 'Oslo lufthavn', ['Eidsvoll'])]), forslag([ben('Hamar', 'Oslo S', ['Lillestrøm'])]))
+      expect(await flyplassForhold('NSR:hamar', {}, { hent })).toBe('foer')
+    })
   })
 })

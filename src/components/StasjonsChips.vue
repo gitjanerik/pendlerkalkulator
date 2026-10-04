@@ -1,5 +1,5 @@
 <script setup>
-import { computed, nextTick, reactive, ref } from 'vue'
+import { computed, nextTick, reactive, ref, watch } from 'vue'
 import { PRESETS, strekningFraPreset } from '../lib/presets.js'
 import { flyplassForhold } from '../lib/entur.js'
 import { byggStasjon, MAKS_PRIS, nyStasjonsId, OSLO_S, rensStasjonsnavn, skjemaFraStasjon, stasjonsnavn, strekningsvalg, tomtSkjema, validerStasjon } from '../lib/stasjoner.js'
@@ -91,6 +91,15 @@ const FELT = [
 // Flyplassfeltene avhenger av hvor jobbstedet ligger: tillegg bare på veien til flyplassen (Oslo S har fast tillegg).
 const synligeFelt = computed(() => FELT.filter(([f]) => (f !== 'tillegg' || (forhold.value === 'bak' && !tilOslo.value))))
 const feilListe = computed(() => Object.entries(feil.value))
+// Feil forsvinner så snart feltet er rettet, uten å vente på at fokus forlater det.
+watch(skjema, () => {
+  if (!feilListe.value.length) return
+  const ny = validerStasjon(skjema, egne.value, redigerId.value)
+  feil.value = Object.fromEntries(Object.keys(feil.value).filter((k) => ny[k]).map((k) => [k, ny[k]]))
+})
+const settRedigerKnapp = (el) => {
+  redigerKnapp.value = el
+}
 
 const velgPreset = (p) => settValgt(strekningFraPreset(p, p.id))
 // e er et reaktivt objekt, som structuredClone ikke kan klone.
@@ -149,16 +158,21 @@ const slett = async () => {
 <template>
   <div>
     <div class="flex flex-wrap gap-2" role="group" :aria-label="erB ? 'Andre strekning' : 'Strekning'">
-      <button v-for="p in PRESETS" :key="p.id" type="button" class="chip" :aria-pressed="valgt?.id === p.id" @click="velgPreset(p)">{{ strekningsvalg(p) }}</button>
-      <button v-for="e in egne" :key="e.id" type="button" class="chip" :aria-pressed="valgt?.id === e.id" @click="velgEgen(e)">{{ strekningsvalg(e) }}</button>
+      <button v-for="p in PRESETS" :key="p.id" type="button" class="chip" :aria-pressed="valgt?.id === p.id" @click="velgPreset(p)">{{ p.navn }}</button>
+      <span v-for="e in egne" :key="e.id" class="chip-egen" :data-valgt="valgt?.id === e.id">
+        <button type="button" class="chip-egen-valg" :class="{ 'paa-aksent': valgt?.id === e.id }" :aria-pressed="valgt?.id === e.id" @click="velgEgen(e)">{{ e.navn }}</button>
+        <template v-if="valgt?.id === e.id && !modus">
+          <button :ref="settRedigerKnapp" type="button" class="chip-egen-ikon paa-aksent" :aria-label="`Rediger ${e.navn}`" @click="aapne('rediger')">
+            <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4zM13.5 6.5l4 4" /></svg>
+          </button>
+          <button type="button" class="chip-egen-ikon paa-aksent" :aria-label="`Slett ${e.navn}`" @click="slettDlg.showModal()">
+            <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+          </button>
+        </template>
+      </span>
       <button v-if="!(kunEn && egne.length)" ref="leggTilKnapp" type="button" class="chip" :aria-expanded="modus === 'ny'" :aria-controls="`${pre}-skjema`" @click="modus === 'ny' ? lukk() : aapne('ny')">+ Egen strekning</button>
     </div>
     <p class="sr-only" role="status">{{ melding }}</p>
-
-    <div v-if="valgtEgen && !modus" class="mt-3 flex gap-2">
-      <button ref="redigerKnapp" type="button" class="knapp" :aria-label="`Rediger ${strekningsvalg(valgtEgen)}`" @click="aapne('rediger')">Rediger</button>
-      <button type="button" class="knapp knapp-fare" :aria-label="`Slett ${strekningsvalg(valgtEgen)}`" @click="slettDlg.showModal()">Slett</button>
-    </div>
 
     <form v-if="modus" :id="`${pre}-skjema`" ref="skjemaEl" class="mt-3 flex flex-col gap-3 rounded-xl border border-[var(--color-line)] p-3" novalidate @submit.prevent="lagre">
       <h4 class="font-semibold">{{ modus === 'ny' ? 'Ny strekning' : `Rediger ${strekningsvalg(valgtEgen)}` }}</h4>
