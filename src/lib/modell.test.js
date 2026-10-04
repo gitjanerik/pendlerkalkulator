@@ -160,3 +160,18 @@ describe('andre strekning noen ukedager', () => {
     expect(forst.slice(0, 10) <= '2026-10-08').toBe(true)
   })
 })
+
+describe('årskort før mot etter prisøkning', () => {
+  it('gir forskjellen på årskortet rett før og etter 1. februar', () => {
+    const m = { ...standardModell('2026-10-04'), prisDato: '2026-10-02', fra: '2026-11-01', til: '2027-12-31', fraKlokke: '00:00' }
+    const r = beregn(m).aarskort.foerEtter
+    expect(r.foerDato).toBe('2027-01-31')
+    expect(r.foer).toBe(20380)
+    expect(r.differanse).toBe(815)
+  })
+
+  it('er null uten prisøkning', () => {
+    const m = { ...standardModell('2026-10-04'), prisDato: '2026-10-02', fra: '2026-11-01', til: '2027-12-31', fraKlokke: '00:00', prisokning: { paa: false, prosent: 4, dato: '02-01' } }
+    expect(beregn(m).aarskort.foerEtter).toBeNull()
+  })
+})

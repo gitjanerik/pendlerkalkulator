@@ -17,7 +17,7 @@ import FritidKort from "./components/FritidKort.vue";
 import MonsterGraf from "./components/MonsterGraf.vue";
 import Varsel from "./components/Varsel.vue";
 import { usePwaInstall } from "./composables/usePwaInstall.js";
-import { kr, norskTidspunkt } from "./lib/format.js";
+import { kr, norskDato, norskTidspunkt } from "./lib/format.js";
 import { visJanuarVarsel } from "./lib/priser.js";
 
 useTema();
@@ -132,6 +132,9 @@ const settDager = (n) => (modell.jobbUkedager = [...MONSTER[n]]);
           <p v-else>Årskort lønner seg ikke for denne perioden.</p>
           <p v-if="utfall.aarskort.estimert" class="mt-1 text-sm">
             * Estimat: regner med {{ utfall.prisokningProsent }} % prisøkning hver 1. februar.
+          </p>
+          <p v-if="utfall.aarskort.foerEtter" class="mt-1">
+            Prisene stiger {{ norskDato(utfall.aarskort.foerEtter.etterDato, true) }}. Et årskort som starter senest {{ norskDato(utfall.aarskort.foerEtter.foerDato, true) }} koster ca. {{ kr(utfall.aarskort.foerEtter.foer) }}, mot ca. {{ kr(utfall.aarskort.foerEtter.etter) }} etterpå, altså {{ kr(utfall.aarskort.foerEtter.differanse) }} mer. Sjekk i Vy-appen hvor langt frem du kan forhåndsbestille.
           </p>
           <PrefBryter
             v-if="utfall.aarskort.lonnerSeg || modell.inkluderAarskort"
