@@ -16,10 +16,13 @@ import BillettTidslinje from "./components/BillettTidslinje.vue";
 import FritidKort from "./components/FritidKort.vue";
 import MonsterGraf from "./components/MonsterGraf.vue";
 import Varsel from "./components/Varsel.vue";
+import { usePwaInstall } from "./composables/usePwaInstall.js";
 import { kr, norskTidspunkt } from "./lib/format.js";
 import { visJanuarVarsel } from "./lib/priser.js";
 
 useTema();
+const { canInstall, isInstalled, installer } = usePwaInstall();
+const tilbyInstall = computed(() => !isInstalled.value && canInstall.value);
 const { modell, utfall, monster, nullstill, startKlokke, utdatert, oppdaterNa, deltVarsel, idag } = useModell();
 const januarVarsel = computed(() => visJanuarVarsel(modell.prisDato, modell.prisVarselLukket, idag()));
 const lukkJanuar = () => {
@@ -91,7 +94,8 @@ const settDager = (n) => (modell.jobbUkedager = [...MONSTER[n]]);
         </button>
       </aside>
       <Varsel v-if="deltVarsel" lukkbar @lukk="lukkDelt">
-        Åpnet delt strekning: {{ deltVarsel }}. Ferie og fritidsreiser er dine egne.
+        <p>Åpnet delt strekning: {{ deltVarsel }}.</p>
+        <button v-if="tilbyInstall" type="button" class="knapp mt-2" @click="installer().finally(fokuserInnhold)">Installer som app</button>
       </Varsel>
       <Varsel v-if="januarVarsel" lukkbar @lukk="lukkJanuar">
         <p>Vy og Ruter hever prisene 1. februar. Sjekk at prisene dine er oppdatert.</p>

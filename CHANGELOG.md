@@ -1,3 +1,10 @@
+## 2026-10-04 — v2.1.2: Mer generell flyplasstekst og installering fra delt lenke
+
+- Teksten «Mange turer til flyplassen» i veiviseren gjelder nå både når flyplassen ligger før og bak jobbstedet, ikke bare for reiser sørfra.
+- Varselet etter en delt lenke har ikke lenger setningen om ferie og fritidsreiser, og har knappen «Installer som app» nederst når appen kan installeres.
+
+---
+
 ## 2026-10-04 — v2.1.1: Ryddigere strekningsvalg og flyplass for Hamar–Oslo S
 
 - Valideringsfeil i skjemaet for egen strekning forsvinner så snart feltet er rettet, ikke først ved lagring eller når fokus forlater feltet.
