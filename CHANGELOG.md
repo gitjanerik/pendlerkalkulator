@@ -1,3 +1,9 @@
+## 2026-10-04 — v2.2.0: Nye priser fra en dato
+
+I Innstillinger → Priser og beregning kan du slå på «Nye priser fra en dato». Da får hver strekning et ekstra sett prisfelt, og du velger datoen de nye prisene gjelder fra. Dagens priser gjelder før datoen (uten prosentøkning), de nye fra og med den; tomme felt regnes som uendret. Prosentanslaget gjelder fortsatt som reserve, og kommer på toppen av de nye prisene ved neste 1. februar. Årskortinfoen bruker den oppgitte nye prisen og er da ikke et estimat. Funksjonen er bare i Innstillinger, ikke i veiviseren, og følger ikke med i delte lenker.
+
+---
+
 ## 2026-10-04 — v2.1.4: Mindre bastant om prisøkning
 
 Teksten om prisøkning sier nå at appen antar 1. februar, men at tidspunktet kan variere. Gjelder estimatnotatene, bryteren «Årlig prisøkning», januar-påminnelsen og årskortinfoen.

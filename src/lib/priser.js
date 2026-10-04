@@ -18,6 +18,21 @@ export function prisPaaDato(grunnpris, prisDato, dato, prisokning = STANDARD_PRI
   return Math.round(grunnpris * (1 + prisokning.prosent / 100) ** n)
 }
 
+// Pris på en reisedato. Med nyDato gjelder gammel pris (uten økning) før datoen og ny pris fra den;
+// mangler ny pris for et felt, regnes prisen som uendret fra nyDato. Prosentøkningen gjelder etter den siste kjente prisen.
+export function prisMedNy(grunn, ny, dato, { prisDato, nyDato = null, prisokning = STANDARD_PRISOKNING }) {
+  if (!nyDato) return prisPaaDato(grunn, prisDato, dato, prisokning)
+  if (dato < nyDato) return grunn
+  return prisPaaDato(ny ?? grunn, nyDato, dato, prisokning)
+}
+
+// Prisen er et estimat når minst én prosentøkning er regnet inn.
+export function erEstimert(dato, { prisDato, nyDato = null, prisokning = STANDARD_PRISOKNING }) {
+  if (!prisokning?.paa) return false
+  if (!nyDato) return antallPrisokninger(prisDato, dato, prisokning) > 0
+  return dato >= nyDato && antallPrisokninger(nyDato, dato, prisokning) > 0
+}
+
 // Årskort kjøpt siste dag før neste økning mot første dag etter.
 export function aarskortFoerEtter(grunnpris, prisDato, fraDato, prisokning) {
   const aar = Number(fraDato.slice(0, 4))

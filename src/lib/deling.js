@@ -109,6 +109,7 @@ export function brukDeling(modell, deling) {
     andreRute: andre,
     egneStasjoner: egne,
     prisDato: deling.prisDato ?? modell.prisDato,
+    nyePriser: { paa: false, dato: '' },
     oppsettFerdig: true,
   }
 }

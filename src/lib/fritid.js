@@ -40,11 +40,21 @@ export const fritidGrunnpris = (strekning) => {
 
 // Turene får grunnprisene optimereren trenger: tillegget betales alltid, resten av flyplassbilletten bare uten dekning.
 // Uten dekningsmulighet ('utenfor') er hele billetten «tillegget».
-export function medFritidspriser(turer, strekning) {
+const grunnpriser = (strekning) => {
   const total = fritidGrunnpris(strekning)
-  if (flyplassForhold(strekning) === 'utenfor') return turer.map((t) => ({ ...t, tilleggGrunn: total, enkeltGrunn: 0 }))
+  if (flyplassForhold(strekning) === 'utenfor') return { tilleggGrunn: total, enkeltGrunn: 0 }
   const tillegg = fritidTillegg(strekning)
-  return turer.map((t) => ({ ...t, tilleggGrunn: tillegg, enkeltGrunn: Math.max(0, total - tillegg) }))
+  return { tilleggGrunn: tillegg, enkeltGrunn: Math.max(0, total - tillegg) }
+}
+
+// Strekningen med nye priser lagt over de gamle; felt uten ny pris beholder den gamle.
+const medNyePriser = (s) => ({ ...s, enkelt: s.nye.enkelt ?? s.enkelt, lufthavn: s.nye.lufthavn ?? s.lufthavn, tillegg: s.nye.tillegg ?? s.tillegg })
+
+export function medFritidspriser(turer, strekning) {
+  const gammel = grunnpriser(strekning)
+  const ny = strekning?.nye ? grunnpriser(medNyePriser(strekning)) : null
+  const priser = ny ? { ...gammel, tilleggGrunnNy: ny.tilleggGrunn, enkeltGrunnNy: ny.enkeltGrunn } : gammel
+  return turer.map((t) => ({ ...t, ...priser }))
 }
 
 // Hver registrerte reise er et par: ned en dag og hjem en annen (eller samme) dag.
