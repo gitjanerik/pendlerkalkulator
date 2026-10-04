@@ -1,3 +1,9 @@
+## 2026-10-04 — v1.6.1: Strengere valg av egen stasjon
+
+Egne stasjoner må velges fra Enturs søk, så navnet alltid er offisielt. Skriver du videre etter at du har valgt, må du velge på nytt. Prisfeltene er vanlige tallfelt med `min` og `max`: enkeltbillett og flyplassbillett høyst 999 kr, uke- og månedskort høyst 9 999 kr, årskort høyst 99 999 kr. I veiviseren kan du legge til én egen stasjon; Innstillinger har fortsatt «+ Egen stasjon» uten grense. Egne stasjoner lagret før denne versjonen må velges på nytt fra listen ved neste redigering.
+
+---
+
 ## 2026-10-04 — v1.6.0: Stedsøk for egne stasjoner
 
 Når du legger til en egen hjemstasjon, foreslår Entur jernbanestasjoner mens du skriver (med kommune eller fylke), og et trykk fyller inn navnet og flytter fokus til prisene. Navnet kan fortsatt skrives fritt, så appen virker uten nett. Prisene fylles fortsatt ut selv, siden Entur ikke åpner for dem uten partneravtale.
