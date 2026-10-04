@@ -65,6 +65,6 @@ const sparing = computed(() => {
     </div>
     <p class="mt-1 text-center text-sm text-[var(--color-ink-3)]" aria-hidden="true">Dager med hjemmekontor i uka</p>
     <p class="mt-3 text-sm text-[var(--color-ink-2)]">{{ tekst }}<Estimat v-if="tekst && tekstEstimert" /><span v-if="sparing" class="mt-1 block font-medium text-[var(--color-ink)]">{{ sparing }}<Estimat v-if="sparingEstimert" /></span></p>
-    <p v-if="monster.some((m) => m.estimert)" class="mt-2 text-sm text-[var(--color-ink-3)]">* Estimat: regner med {{ prosent }} % prisøkning hver 1. februar.</p>
+    <p v-if="monster.some((m) => m.estimert)" class="mt-2 text-sm text-[var(--color-ink-3)]">* Estimat: antar {{ prosent }} % årlig prisøkning rundt 1. februar.</p>
   </section>
 </template>

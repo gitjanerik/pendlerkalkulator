@@ -34,6 +34,6 @@ const status = (r) => {
         </p>
       </li>
     </ul>
-    <p v-if="fritid.estimert" class="mt-2 text-sm text-[var(--color-ink-3)]">* Estimat: regner med årlig prisøkning hver 1. februar.</p>
+    <p v-if="fritid.estimert" class="mt-2 text-sm text-[var(--color-ink-3)]">* Estimat: antar årlig prisøkning rundt 1. februar.</p>
   </section>
 </template>

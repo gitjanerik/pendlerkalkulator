@@ -37,7 +37,7 @@ onBeforeUnmount(() => clearTimeout(tidtaker))
       Ruter Reis sparer {{ kr(utfall.resultat.reis.besparelse) }} på {{ flertall(utfall.resultat.reis.enkeltreiser, 'enkeltreise', 'enkeltreiser') }} (opptil {{ utfall.resultat.reis.maksProsent }} %).
     </p>
     <p v-if="utfall.resultat.estimert" class="mt-3 text-sm text-[var(--color-ink-3)]">
-      * Estimat: regner med {{ utfall.prisokningProsent }} % prisøkning hver 1. februar.
+      * Estimat: antar {{ utfall.prisokningProsent }} % årlig prisøkning rundt 1. februar.
     </p>
   </section>
 </template>

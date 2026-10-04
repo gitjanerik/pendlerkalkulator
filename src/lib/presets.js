@@ -2,7 +2,7 @@
 // Enkeltprisene til Oslo S er oppgitt av eieren; Asker er lik hos Vy og Ruter.
 // Reisetid er omtrent, i minutter til Oslo S (Gulskogen, Drammen, Lier, Heggedal, Røyken og Spikkestad oppgitt av eieren).
 // Lufthavn er enkeltbillett hjemstasjon–Oslo lufthavn, oppgitt av eieren oktober 2026.
-// Vy hever prisene 1. februar, så tallene er et utgangspunkt og ingen fasit.
+// Vy hever prisene normalt en gang i året, så tallene er et utgangspunkt og ingen fasit.
 export const PRESET_DATO = '2026-10-02'
 
 export const PRESETS = [

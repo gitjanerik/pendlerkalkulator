@@ -1,3 +1,9 @@
+## 2026-10-04 — v2.1.4: Mindre bastant om prisøkning
+
+Teksten om prisøkning sier nå at appen antar 1. februar, men at tidspunktet kan variere. Gjelder estimatnotatene, bryteren «Årlig prisøkning», januar-påminnelsen og årskortinfoen.
+
+---
+
 ## 2026-10-04 — v2.1.3: Info om årskort før prisøkningen
 
 Under årskortvurderingen står det nå hva et årskort koster rett før og rett etter neste prisøkning (1. februar), og hvor mye mer det blir. Teksten ber deg sjekke i Vy-appen hvor langt frem du kan forhåndsbestille, siden grensen flytter seg. Vises bare når prisøkning er slått på og det er en forskjell.
