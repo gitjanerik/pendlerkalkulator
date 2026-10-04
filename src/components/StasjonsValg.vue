@@ -15,6 +15,7 @@ const bildag = (i) => {
 <template>
   <section aria-labelledby="st-tittel">
     <h3 id="st-tittel" class="seksjonstittel">Reiser fra</h3>
+    <p class="mt-1 text-sm text-[var(--color-ink-2)]">Målet er Oslo S, og vi har priseksempler for åtte stasjoner. Andre strekninger legger du til selv.</p>
     <StasjonsChips v-model="m" class="mt-3" />
     <div v-if="valgt?.bil" class="mt-4">
       <p class="etikett">Dager du kjører bil i stedet</p>

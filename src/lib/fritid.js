@@ -9,23 +9,38 @@ import { gaarTilOsloS } from './stasjoner.js'
 // Tillegget Oslo S–Oslo lufthavn. Strekninger uten oppgitt flyplasspris bruker enkeltbillett til Oslo S pluss dette som anslag.
 export const OSL_TILLEGG = 134
 
-// Fritidsreiser til Oslo lufthavn regnes bare for strekninger til Oslo S.
-export const harFlyplass = (strekning) => !strekning || gaarTilOsloS(strekning)
+// Forholdet mellom jobbstedet og flyplassen på reisen hjemstasjon–Oslo lufthavn:
+// - 'bak': jobbstedet ligger på veien til flyplassen. Periodebilletten dekker til jobbstedet, så det kjøpes bare tillegget videre.
+// - 'foer': flyplassen ligger på veien til jobbstedet (fra nord til Oslo S). Billetten dekker hele veien.
+// - 'utenfor': jobbstedet ligger ikke på veien. Periodebilletten hjelper ikke, og flyplassreisen er en vanlig enkeltbillett.
+// Strekninger uten svar fra Entur: Oslo S regnes som 'bak' (vanlig fra sør), andre mål som 'utenfor'.
+export const flyplassForhold = (strekning) => {
+  if (strekning?.flyplass) return strekning.flyplass
+  if (!strekning?.navn || gaarTilOsloS(strekning)) return strekning?.bakOsloS === false ? 'foer' : 'bak'
+  return 'utenfor'
+}
 
-export const bakOsloS = (strekning) => strekning?.bakOsloS !== false
+const tall = (v) => (Number.isFinite(Number(v)) && v !== '' && v != null ? Number(v) : null)
 
 // Kroner som kommer på toppen av en periodebillett som dekker reisen.
-export const fritidTillegg = (strekning) => (bakOsloS(strekning) ? OSL_TILLEGG : 0)
+export const fritidTillegg = (strekning) => {
+  if (flyplassForhold(strekning) !== 'bak') return 0
+  if (!strekning?.navn || gaarTilOsloS(strekning)) return OSL_TILLEGG
+  return tall(strekning.tillegg) ?? 0
+}
 
 export const fritidGrunnpris = (strekning) => {
-  if (strekning?.lufthavn != null) return strekning.lufthavn
-  if (!bakOsloS(strekning)) return Number.isFinite(strekning?.enkelt) ? strekning.enkelt : 0
-  return Number.isFinite(strekning?.enkelt) ? strekning.enkelt + OSL_TILLEGG : OSL_TILLEGG
+  const lufthavn = tall(strekning?.lufthavn)
+  if (lufthavn != null) return lufthavn
+  const enkelt = tall(strekning?.enkelt) ?? 0
+  return flyplassForhold(strekning) === 'bak' ? enkelt + fritidTillegg(strekning) : enkelt
 }
 
 // Turene får grunnprisene optimereren trenger: tillegget betales alltid, resten av flyplassbilletten bare uten dekning.
+// Uten dekningsmulighet ('utenfor') er hele billetten «tillegget».
 export function medFritidspriser(turer, strekning) {
   const total = fritidGrunnpris(strekning)
+  if (flyplassForhold(strekning) === 'utenfor') return turer.map((t) => ({ ...t, tilleggGrunn: total, enkeltGrunn: 0 }))
   const tillegg = fritidTillegg(strekning)
   return turer.map((t) => ({ ...t, tilleggGrunn: tillegg, enkeltGrunn: Math.max(0, total - tillegg) }))
 }

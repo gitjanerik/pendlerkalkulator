@@ -1,8 +1,8 @@
 <script setup>
 import { computed, nextTick, reactive, ref } from 'vue'
 import { PRESETS, strekningFraPreset } from '../lib/presets.js'
-import { flyplassBakOsloS } from '../lib/entur.js'
-import { byggStasjon, MAKS_PRIS, nyStasjonsId, OSLO_S, skjemaFraStasjon, stasjonsnavn, strekningsvalg, tomtSkjema, validerStasjon } from '../lib/stasjoner.js'
+import { flyplassForhold } from '../lib/entur.js'
+import { byggStasjon, MAKS_PRIS, nyStasjonsId, OSLO_S, rensStasjonsnavn, skjemaFraStasjon, stasjonsnavn, strekningsvalg, tomtSkjema, validerStasjon } from '../lib/stasjoner.js'
 import StasjonsSok from './StasjonsSok.vue'
 import Beloep from './Beloep.vue'
 
@@ -27,51 +27,64 @@ const flyStatus = ref('')
 const tilOslo = computed(() => skjema.til.trim().toLowerCase() === OSLO_S.toLowerCase())
 const slettDlg = ref(null)
 
-// Ligger flyplassen før eller bak Oslo S på reisen? Uten svar regner vi som bak (vanlig fra sør).
+// Hvor ligger jobbstedet i forhold til flyplassen? Uten svar regnes Oslo S som «bak» (vanlig fra sør), andre mål som «utenfor».
 const sjekker = ref(false)
 let sjekkId = 0
-const sjekkFlyplass = async (id) => {
+const maalId = computed(() => (tilOslo.value ? {} : skjema.tilEnturId ? { id: skjema.tilEnturId, navn: rensStasjonsnavn(skjema.til) } : null))
+const klarForSjekk = () => Boolean(skjema.enturId && maalId.value && skjema.flyplass === null && !sjekker.value)
+const maalTekst = () => (tilOslo.value ? 'Oslo S' : rensStasjonsnavn(skjema.til))
+const sjekkFlyplass = async () => {
   const mitt = ++sjekkId
   sjekker.value = true
-  skjema.bakOsloS = null
+  skjema.flyplass = null
+  flyStatus.value = 'Sjekker veien til flyplassen …'
   try {
-    const bak = await flyplassBakOsloS(id)
+    const f = await flyplassForhold(skjema.enturId, maalId.value)
     if (mitt !== sjekkId) return
-    skjema.bakOsloS = bak
-    flyStatus.value = bak === false
-      ? `${skjema.navn} er valgt. Flyplassen ligger før Oslo S på din reise, så fyll inn prisen på billett til Oslo lufthavn.`
-      : `${skjema.navn} er valgt.`
+    skjema.flyplass = f
+    const maal = maalTekst()
+    flyStatus.value = f === 'foer'
+      ? `Flyplassen ligger før ${maal} på din reise, så fyll inn prisen på billett til Oslo lufthavn.`
+      : f === 'utenfor'
+        ? `${maal} ligger ikke på veien til Oslo lufthavn, så fyll inn prisen på billett til flyplassen.`
+        : f === 'bak' && !tilOslo.value
+          ? `${maal} ligger på veien til Oslo lufthavn, så fyll inn tillegget ${maal}–Oslo lufthavn.`
+          : ''
   } catch {
-    if (mitt === sjekkId) flyStatus.value = `${skjema.navn} er valgt, men vi kunne ikke sjekke veien til flyplassen. Vi regner med at den ligger bak Oslo S.`
+    if (mitt === sjekkId) flyStatus.value = `Vi kunne ikke sjekke veien til flyplassen. ${tilOslo.value ? 'Vi regner med at flyplassen ligger bak Oslo S.' : `Fyll inn prisen på billett til Oslo lufthavn.`}`
   } finally {
     if (mitt === sjekkId) sjekker.value = false
   }
 }
-const fraValgt = async (f) => {
-  flyStatus.value = `${f.navn} valgt. Sjekker veien til flyplassen …`
-  if (tilOslo.value) sjekkFlyplass(f.id)
+const fraValgt = async () => {
+  if (klarForSjekk()) sjekkFlyplass()
   await nextTick()
   document.getElementById('st-til')?.focus()
 }
 const tilValgt = async () => {
-  if (tilOslo.value && skjema.enturId && skjema.bakOsloS === null) sjekkFlyplass(skjema.enturId)
+  if (klarForSjekk()) sjekkFlyplass()
   await nextTick()
   document.getElementById('st-enkelt')?.focus()
 }
-// Fra-valget fjernes når brukeren skriver videre, og da gjelder ikke sjekken lenger.
-const fraEndret = () => {
-  skjema.bakOsloS = null
+// Endres fra eller til, gjelder ikke sjekken lenger.
+const sjekkEndret = () => {
+  skjema.flyplass = null
   flyStatus.value = ''
   sjekkId++
   sjekker.value = false
 }
+// Uten svar regnes Oslo S som «bak» og andre mål som «utenfor».
+const forhold = computed(() => skjema.flyplass ?? (tilOslo.value ? 'bak' : 'utenfor'))
 const FELT = [
   ['enkelt', 'Enkeltbillett'],
   ['lufthavn', 'Enkeltbillett til Oslo lufthavn'],
+  ['tillegg', 'Tillegg til Oslo lufthavn'],
   ['uke', 'Ukeskort (7 dager)'],
   ['maaned', 'Månedskort (30 dager)'],
   ['aar', 'Årskort (365 dager, valgfritt)'],
 ]
+// Flyplassfeltene avhenger av hvor jobbstedet ligger: tillegg bare på veien til flyplassen (Oslo S har fast tillegg).
+const synligeFelt = computed(() => FELT.filter(([f]) => (f !== 'tillegg' || (forhold.value === 'bak' && !tilOslo.value))))
 const feilListe = computed(() => Object.entries(feil.value))
 
 const velgPreset = (p) => (m.value.strekninger = [strekningFraPreset(p, p.id)])
@@ -97,8 +110,8 @@ const lukk = async (tilbake) => {
   ;(tilbake?.value ?? leggTilKnapp.value)?.focus()
 }
 const lagre = async () => {
-  // Er målet Oslo S først etter at fra-stasjonen ble valgt, mangler sjekken av flyplassen.
-  if (tilOslo.value && skjema.enturId && skjema.bakOsloS === null && !sjekker.value) await sjekkFlyplass(skjema.enturId)
+  // Er målet valgt først etter fra-stasjonen, eller er sjekken ikke ferdig, mangler svaret om flyplassen.
+  if (klarForSjekk()) await sjekkFlyplass()
   if (sjekker.value) {
     flyStatus.value = 'Vent et øyeblikk, vi sjekker veien til flyplassen.'
     return
@@ -154,7 +167,7 @@ const slett = async () => {
         :feil="feil.navn"
         :tilleggsstatus="skjema.enturId ? flyStatus : ''"
         @valgt="fraValgt"
-        @endret="fraEndret"
+        @endret="sjekkEndret"
       />
       <StasjonsSok
         id="st-til"
@@ -165,17 +178,20 @@ const slett = async () => {
         :feil="feil.til"
         :standard-navn="OSLO_S"
         @valgt="tilValgt"
+        @endret="sjekkEndret"
       />
       <div class="grid grid-cols-2 items-end gap-3">
-        <div v-for="[felt, navn] in FELT.filter(([f]) => f !== 'lufthavn' || tilOslo)" :key="felt">
-          <label class="etikett" :for="`st-${felt}`">{{ navn }}<template v-if="felt === 'lufthavn' && skjema.bakOsloS !== false"> (valgfritt)</template></label>
+        <div v-for="[felt, navn] in synligeFelt" :key="felt">
+          <label class="etikett" :for="`st-${felt}`">{{ navn }}<template v-if="felt === 'lufthavn' && forhold === 'bak'"> (valgfritt)</template></label>
           <Beloep :id="`st-${felt}`" v-model="skjema[felt]" :ugyldig="Boolean(feil[felt])" :max="MAKS_PRIS[felt]" :feil-id="feil[felt] ? `st-${felt}-feil` : undefined" />
           <p v-if="feil[felt]" :id="`st-${felt}-feil`" class="mt-1 text-sm text-[var(--color-bad)]">{{ feil[felt] }}</p>
         </div>
       </div>
-      <p v-if="tilOslo" class="text-sm text-[var(--color-ink-2)]">
-        <template v-if="skjema.bakOsloS === false">Flyplassen ligger før Oslo S på din reise. Periodebilletten dekker da hele veien, og flyplassprisen brukes bare når du ikke har gyldig billett.</template>
-        <template v-else>Billett til Oslo lufthavn er valgfri. Uten den regner vi enkeltbillett pluss 134 kr (tillegget Oslo S–Oslo lufthavn).</template>
+      <p class="text-sm text-[var(--color-ink-2)]">
+        <template v-if="forhold === 'foer'">Flyplassen ligger før {{ maalTekst() }} på din reise. Periodebilletten dekker da hele veien, og flyplassprisen brukes bare når du ikke har gyldig billett.</template>
+        <template v-else-if="forhold === 'utenfor'">{{ maalTekst() }} ligger ikke på veien til Oslo lufthavn. Periodebilletten hjelper da ikke, og reisen til flyplassen regnes som en vanlig enkeltbillett.</template>
+        <template v-else-if="tilOslo">Billett til Oslo lufthavn er valgfri. Uten den regner vi enkeltbillett pluss 134 kr (tillegget Oslo S–Oslo lufthavn).</template>
+        <template v-else>{{ maalTekst() }} ligger på veien til Oslo lufthavn. Periodebilletten dekker til {{ maalTekst() }}, så fra den dekker regner vi bare tillegget {{ maalTekst() }}–Oslo lufthavn. Billett til Oslo lufthavn er valgfri; uten den bruker vi enkeltbillett pluss tillegget.</template>
       </p>
       <div class="flex justify-end gap-2">
         <button type="button" class="knapp" @click="lukk(modus === 'ny' ? leggTilKnapp : redigerKnapp)">Avbryt</button>

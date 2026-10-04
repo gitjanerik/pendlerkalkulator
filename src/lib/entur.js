@@ -83,26 +83,47 @@ export const FLYPLASS_RUTE = `query ($fra: String!, $til: String!) {
   }
 }`
 
-const erOsloS = (sted, osloSId) => sted?.name === 'Oslo S' || (osloSId && (sted?.stopPlace?.id ?? sted?.quay?.stopPlace?.id) === osloSId)
+const erSted = (sted, id, navn) => (navn && sted?.name === navn) || (id && (sted?.stopPlace?.id ?? sted?.quay?.stopPlace?.id) === id)
 
-// true: alle forslagene går via Oslo S. false: minst ett går uten. null: ingen reiser funnet.
-export function passererOsloS(json, osloSId) {
+// true: alle forslagene går via stedet. false: minst ett går uten. null: ingen reiser funnet.
+export function passererSted(json, id, navn) {
   const forslag = json?.data?.trip?.tripPatterns ?? []
   if (!forslag.length) return null
-  const via = forslag.map((f) => f.legs.some((l) => [l.fromPlace, l.toPlace, ...(l.intermediateQuays ?? [])].some((q) => erOsloS(q, osloSId))))
+  const via = forslag.map((f) => f.legs.some((l) => [l.fromPlace, l.toPlace, ...(l.intermediateQuays ?? [])].some((q) => erSted(q, id, navn))))
   return via.every(Boolean)
 }
 
-export async function flyplassBakOsloS(stasjonId, { hent = fetch, signal } = {}) {
-  const [oslo, lufthavn] = await Promise.all([finnStasjon('Oslo S', hent, signal), finnStasjon('Oslo lufthavn', hent, signal)])
-  if (!lufthavn) return null
-  const svar = await json(hent, PLANLEGGER, {
+export const passererOsloS = (json, osloSId) => passererSted(json, osloSId, 'Oslo S')
+
+const reise = async (fra, til, hent, signal) =>
+  json(hent, PLANLEGGER, {
     method: 'POST',
     headers: { ...HODER, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ query: FLYPLASS_RUTE, variables: { fra: stasjonId, til: lufthavn.id } }),
+    body: JSON.stringify({ query: FLYPLASS_RUTE, variables: { fra, til } }),
     signal,
   })
-  return passererOsloS(svar, oslo?.id)
+
+// Hvor ligger jobbstedet i forhold til flyplassen? 'bak', 'foer' eller 'utenfor' (se fritid.js), null uten svar.
+// maal er { id, navn }; uten id slås Oslo S opp.
+export async function flyplassForhold(stasjonId, maal = {}, { hent = fetch, signal } = {}) {
+  const [sted, lufthavn] = await Promise.all([
+    maal.id ? { id: maal.id, navn: maal.navn } : finnStasjon('Oslo S', hent, signal),
+    finnStasjon('Oslo lufthavn', hent, signal),
+  ])
+  if (!lufthavn || !sted) return null
+  const navn = maal.id ? maal.navn : 'Oslo S'
+  const mot = await reise(stasjonId, lufthavn.id, hent, signal)
+  const via = passererSted(mot, sted.id, navn)
+  if (via === null) return null
+  if (via) return 'bak'
+  const tilJobb = await reise(stasjonId, sted.id, hent, signal)
+  return passererSted(tilJobb, lufthavn.id, 'Oslo lufthavn') ? 'foer' : 'utenfor'
+}
+
+// Gammel form for Oslo S: true = bak, false = før. «Utenfor» kan ikke skje for Oslo S i praksis og regnes som før.
+export async function flyplassBakOsloS(stasjonId, opsjoner = {}) {
+  const f = await flyplassForhold(stasjonId, {}, opsjoner)
+  return f === null ? null : f === 'bak'
 }
 
 export const finnStasjon = async (navn, hent = fetch, signal) =>

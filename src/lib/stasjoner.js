@@ -2,13 +2,13 @@ import { PRESETS } from './presets.js'
 
 export const MAKS_NAVN = 40
 // Høyeste pris per felt i kroner. Samme tall står som max i skjemafeltene.
-export const MAKS_PRIS = { enkelt: 999, lufthavn: 999, uke: 9999, maaned: 9999, aar: 99999 }
+export const MAKS_PRIS = { enkelt: 999, lufthavn: 999, tillegg: 999, uke: 9999, maaned: 9999, aar: 99999 }
 
-// bakOsloS: true/false fra Entur, null mens vi sjekker eller ikke fikk svar (regnes som true).
+// flyplass: 'bak' | 'foer' | 'utenfor' fra Entur (se fritid.js), null mens vi sjekker eller ikke fikk svar.
 export const OSLO_S = 'Oslo S'
 
 // navn og enturId er fra-stasjonen; til er målet (Oslo S er standard og trenger ikke Entur-id).
-export const tomtSkjema = () => ({ navn: '', enturId: '', til: OSLO_S, tilEnturId: '', bakOsloS: null, enkelt: '', lufthavn: '', uke: '', maaned: '', aar: '' })
+export const tomtSkjema = () => ({ navn: '', enturId: '', til: OSLO_S, tilEnturId: '', flyplass: null, enkelt: '', lufthavn: '', tillegg: '', uke: '', maaned: '', aar: '' })
 
 // Entur kaller dem «Asker stasjon»; i appen heter de bare «Asker».
 // Tankestrek (–) skiller stasjonen fra Oslo S i strekningsnavnet, så den byttes mot bindestrek.
@@ -57,8 +57,10 @@ export function validerStasjon(skjema, egne = [], redigerer = null) {
     return null
   }
   const enkelt = tall(skjema.enkelt, 'enkelt', { paakrevd: true, tekst: 'prisen på enkeltbillett' })
-  // Ligger flyplassen før Oslo S, er prisen ikke noe vi kan regne ut fra enkeltbilletten.
-  tall(skjema.lufthavn, 'lufthavn', { paakrevd: tilOslo && skjema.bakOsloS === false, tekst: 'prisen på enkeltbillett til Oslo lufthavn' })
+  // Flyplassprisen kan bare regnes ut av enkeltbilletten pluss tillegget når jobbstedet ligger på veien til flyplassen.
+  const forhold = skjema.flyplass ?? (tilOslo ? 'bak' : 'utenfor')
+  tall(skjema.lufthavn, 'lufthavn', { paakrevd: (tilOslo && forhold !== 'bak') || (!tilOslo && forhold === 'utenfor'), tekst: 'prisen på enkeltbillett til Oslo lufthavn' })
+  tall(skjema.tillegg, 'tillegg', { paakrevd: !tilOslo && forhold === 'bak', tekst: `prisen på tillegget ${til}–Oslo lufthavn` })
   const uke = tall(skjema.uke, 'uke', { paakrevd: true, tekst: 'prisen på ukeskort' })
   const maaned = tall(skjema.maaned, 'maaned', { paakrevd: true, tekst: 'prisen på månedskort' })
   const aar = tall(skjema.aar, 'aar', { paakrevd: false })
@@ -81,19 +83,20 @@ export function byggStasjon(skjema, id) {
     id,
     enturId: skjema.enturId,
     tilEnturId: skjema.tilEnturId ?? '',
-    bakOsloS: skjema.bakOsloS !== false,
+    flyplass: skjema.flyplass ?? null,
     navn: `${normalt(skjema.navn)}–${normalt(skjema.til)}`,
     bil: false,
     ruter: false,
     enkelt: Number(skjema.enkelt),
-    lufthavn: lik(normalt(skjema.til), OSLO_S) ? tallEllerTom(skjema.lufthavn) : '',
+    lufthavn: tallEllerTom(skjema.lufthavn),
+    tillegg: lik(normalt(skjema.til), OSLO_S) ? '' : tallEllerTom(skjema.tillegg),
     perioder,
   }
 }
 
 export function skjemaFraStasjon(s) {
   const pris = (dager) => s.perioder.find((p) => p.dager === dager)?.pris ?? ''
-  return { navn: stasjonsnavn(s), enturId: s.enturId ?? '', til: maalnavn(s), tilEnturId: s.tilEnturId ?? '', bakOsloS: s.bakOsloS !== false, enkelt: s.enkelt ?? '', lufthavn: s.lufthavn ?? '', uke: pris(7), maaned: pris(30), aar: pris(365) }
+  return { navn: stasjonsnavn(s), enturId: s.enturId ?? '', til: maalnavn(s), tilEnturId: s.tilEnturId ?? '', flyplass: s.flyplass ?? (s.bakOsloS === false ? 'foer' : null), enkelt: s.enkelt ?? '', lufthavn: s.lufthavn ?? '', tillegg: s.tillegg ?? '', uke: pris(7), maaned: pris(30), aar: pris(365) }
 }
 
 export function nyStasjonsId(egne) {
