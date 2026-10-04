@@ -69,12 +69,11 @@ function optimaliserKjerne(turer, strekninger, opsjoner = {}) {
     }
   }
 
-  if (!Number.isFinite(f[0]) && n > 0) return { mulig: false, kostnad: null, billetter: [], udekteDager: [], fritid: [] }
+  if (!Number.isFinite(f[0]) && n > 0) return { mulig: false, kostnad: null, billetter: [], udekteDager: [] }
 
   const billetter = []
   const enkeltPerDag = new Map()
   const enkeltReiser = []
-  const fritid = []
   for (let i = 0; i < n; i = valg[i].neste) {
     const v = valg[i]
     if (v.type === 'enkelt') {
@@ -84,7 +83,6 @@ function optimaliserKjerne(turer, strekninger, opsjoner = {}) {
       dag.kostnad += v.pris
       enkeltPerDag.set(dag.dato, dag)
       enkeltReiser.push({ tid: turer[i].tid, dato: turer[i].dato, pris: v.pris, ruter: Boolean(v.strekning.ruter), estimert: estimert(turer[i]) })
-      if (turer[i].fritid) fritid.push({ dato: turer[i].dato, retning: turer[i].retning, tid: turer[i].tid, dekning: 'enkelt', pris: v.pris })
       continue
     }
     const dekket = turer.slice(i, v.neste)
@@ -106,20 +104,16 @@ function optimaliserKjerne(turer, strekninger, opsjoner = {}) {
       bindende: v.dager >= AARSKORT_DAGER,
       estimert: estimert(turer[i]),
     })
-    for (const t of dekket) {
-      if (t.fritid) fritid.push({ dato: t.dato, retning: t.retning, tid: t.tid, dekning: 'periode', dager: v.dager })
-    }
   }
 
   return {
     mulig: true,
     estimert: billetter.some((b) => b.estimert) || enkeltReiser.some((r) => r.estimert),
-    // Tillegget er likt for alle planer, så det påvirker ikke hva som er billigst.
+    // Fritidsreisene er egne billetter, likt for alle planer, så de påvirker ikke hva som er billigst.
     kostnad: billetter.reduce((sum, b) => sum + b.andelPris, 0) + enkeltReiser.reduce((sum, r) => sum + r.pris, 0) + fritidTillegg,
     billetter,
     udekteDager: [...enkeltPerDag.values()],
     enkeltReiser,
-    fritid: fritid.sort((a, b) => a.tid - b.tid),
   }
 }
 

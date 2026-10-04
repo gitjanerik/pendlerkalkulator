@@ -1,6 +1,6 @@
 // Alle datoer er ISO-strenger (YYYY-MM-DD) og alle tidspunkter er minutter siden
 // 1970-01-01 00:00 i NAIV lokaltid. Billettvarighet er «samme klokkeslett N døgn
-// senere», så sommertid er med vilje ikke en del av regnestykket (se varsler.js).
+// senere», så sommertid er med vilje ikke en del av regnestykket.
 const MS_DAG = 86400000
 export const MIN_DOEGN = 1440
 

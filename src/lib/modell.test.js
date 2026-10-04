@@ -14,7 +14,6 @@ describe('beregn', () => {
     expect(r.feil).toBeNull()
     expect(r.resultat.kostnad).toBeCloseTo(5027.39, 1)
     expect(r.alternativer.find((a) => a.navn === 'Bare 30-dagersbilletter').differanse).toBeCloseTo(158.19, 1)
-    expect(r.varsler).toHaveLength(1)
   })
 
   it('meldinger for ugyldig input', () => {
@@ -124,7 +123,7 @@ describe('tidshorisont uten kunstig slutt', () => {
   })
 
   it('årskort bruker hele prisen i et år, ikke et tilfeldig utsnitt', () => {
-    const r = beregn({ ...standardModell('2026-10-05'), til: '2027-10-04' })
+    const r = beregn({ ...standardModell('2026-10-05'), inkluderAarskort: true, til: '2027-10-04' })
     expect(r.resultat.billetter.map((b) => b.dager)).toEqual([365])
     expect(r.resultat.kostnad).toBeCloseTo(20380 * 1.0, -3)
   })

@@ -62,7 +62,6 @@ export function beregnBilletter(inn) {
       lonnerSeg: r.aarskort.lonnerSeg,
       besparelse: r.aarskort.besparelse,
     },
-    sommertidVarsler: r.varsler.map((v) => ({ dato: v.dato, dager: v.billett.dager })),
     oppsummering: r.oppsummering,
   }
 }

@@ -1,9 +1,34 @@
 import { tidspunkt, ukedag } from './dato.js'
+import { antallPrisokninger, prisPaaDato } from './priser.js'
 
-// Fritidsreise til Oslo lufthavn: periodebilletten til/fra Oslo S gjelder fram til
-// Oslo S, så det som mangler er tilleggsbilletten Oslo S–Oslo lufthavn.
+// Fritidsreise til Oslo lufthavn kjøpes som én enkeltbillett hjemstasjon–Oslo lufthavn.
+// To billetter (til Oslo S og tillegg videre) lønner seg aldri, og periodebilletten teller ikke med.
 // Kilde: oppgitt av eier oktober 2026 – ikke sjekket mot Vy.
+export const OSL_PRISER = {
+  gulskogen: 308,
+  drammen: 298,
+  brakeroya: 295,
+  lier: 283,
+  asker: 162,
+  heggedal: 162,
+  royken: 162,
+  spikkestad: 162,
+}
+// Egne strekninger uten kjent pris: enkeltbillett til Oslo S pluss tillegget Oslo S–Oslo lufthavn.
 export const OSL_TILLEGG = 134
+
+export const fritidGrunnpris = (strekning) => OSL_PRISER[strekning?.id] ?? (Number.isFinite(strekning?.enkelt) ? strekning.enkelt + OSL_TILLEGG : OSL_TILLEGG)
+
+export function prisFritidsturer(turer, strekning, prisDato, prisokning) {
+  const grunn = fritidGrunnpris(strekning)
+  return turer.map((t) => ({
+    dato: t.dato,
+    retning: t.retning,
+    tid: t.tid,
+    pris: prisPaaDato(grunn, prisDato, t.dato, prisokning),
+    estimert: Boolean(prisokning?.paa) && antallPrisokninger(prisDato, t.dato, prisokning) > 0,
+  }))
+}
 
 // Hver registrerte reise er et par: ned en dag og hjem en annen (eller samme) dag.
 // Klokkeslettet er avreisen fra hjemstasjonen (ned) og fra Oslo S (hjem), som for jobbreiser.
