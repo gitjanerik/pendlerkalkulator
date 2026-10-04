@@ -30,6 +30,8 @@ export function standardModell(idag) {
     ferie: [],
     // Fritidsreiser til Oslo lufthavn: [{ fra: dato ned, til: dato hjem }]
     fritidsreiser: [],
+    // Hjemstasjoner brukeren har lagt til selv, samme form som en strekning.
+    egneStasjoner: [],
     jobbUkedager: [...MONSTER[5]],
     bilUkedager: [0, 1, 2, 3, 4],
     prisokning: { ...STANDARD_PRISOKNING },

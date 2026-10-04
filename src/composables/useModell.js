@@ -55,6 +55,10 @@ export function useModell() {
   const effektiv = computed(() => ({ ...modell, fraKlokke: startKlokke.value }))
   const utfall = computed(() => beregn(effektiv.value))
   const monster = computed(() => monsterAnalyse(effektiv.value))
-  const nullstill = () => Object.assign(modell, standardModell(idag()))
+  const nullstill = (ogsaaStasjoner = false) => {
+    const egne = modell.egneStasjoner
+    Object.assign(modell, standardModell(idag()))
+    if (!ogsaaStasjoner) modell.egneStasjoner = egne
+  }
   return { modell, utfall, monster, nullstill, startKlokke, utdatert, oppdaterNa }
 }

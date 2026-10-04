@@ -1,6 +1,6 @@
 <script setup>
 import { computed, ref } from 'vue'
-import { PRESETS, strekningFraPreset } from '../lib/presets.js'
+import StasjonsChips from './StasjonsChips.vue'
 import { UKEDAGER_KORT, UKEDAGER_LANG } from '../lib/dagmonster.js'
 import Beloep from './Beloep.vue'
 import PrefBryter from './PrefBryter.vue'
@@ -56,9 +56,6 @@ const etterSteg = () => {
   else if (i.value === 0) nesteKnapp.value?.focus()
 }
 
-const velgStasjon = (p) => {
-  m.value.strekninger = [strekningFraPreset(p, p.id)]
-}
 const dagMelding = ref('')
 const veksleDag = (d) => {
   const s = new Set(m.value.jobbUkedager)
@@ -134,10 +131,8 @@ const taster = (e) => {
           </template>
 
           <template v-else-if="STEG[i] === 'stasjon'">
-            <p class="steg-tekst">Oslo S er målet.</p>
-            <div class="mt-4 flex flex-wrap gap-2" role="group" aria-label="Fra-stasjon">
-              <button v-for="p in PRESETS" :key="p.id" type="button" class="chip" :aria-pressed="strekning?.id === p.id" @click="velgStasjon(p)">{{ p.navn.split('–')[0] }}</button>
-            </div>
+            <p class="steg-tekst">Oslo S er målet. Mangler stasjonen din, kan du legge den til selv.</p>
+            <StasjonsChips v-model="m" class="mt-4" />
           </template>
 
           <template v-else-if="STEG[i] === 'uke'">

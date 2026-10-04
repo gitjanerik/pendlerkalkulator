@@ -28,10 +28,15 @@ const bekreft = ref(null)
 // Tekststørrelsen settes ved slipp, så ikke menyen flytter seg under fingeren.
 const skalaVis = ref(skala.value)
 const settSkala = () => (skala.value = skalaVis.value)
+const slettStasjoner = ref(false)
+const aapneBekreft = () => {
+  slettStasjoner.value = false
+  bekreft.value.showModal()
+}
 const nullstillNaa = () => {
   bekreft.value.close()
   apen.value = false
-  emit('nullstill')
+  emit('nullstill', slettStasjoner.value)
 }
 
 watch(apen, (v) => {
@@ -162,7 +167,7 @@ const klikkBakgrunn = (e) => {
 
       <div class="flex items-center justify-between gap-3 border-t border-[var(--color-line)] pt-4 text-sm text-[var(--color-ink-3)]">
         <span>v{{ APP_VERSION }}</span>
-        <button v-if="!wizard" type="button" class="knapp knapp-fare" @click="bekreft.showModal()">Nullstill</button>
+        <button v-if="!wizard" type="button" class="knapp knapp-fare" @click="aapneBekreft">Nullstill</button>
       </div>
     </div>
   </dialog>
@@ -171,8 +176,9 @@ const klikkBakgrunn = (e) => {
     <div class="flex flex-col gap-3 p-5">
       <h2 id="bk-tittel" class="text-lg font-semibold">Er du sikker?</h2>
       <p id="bk-tekst" class="text-[var(--color-ink-2)]">
-        Alt du har lagt inn fjernes: ferie, billetten du har nå, egne priser og andre innstillinger. Du starter oppsettet på nytt.
+        Alt du har lagt inn fjernes: ferie, billetten du har nå, egne priser og andre innstillinger. Du starter oppsettet på nytt. Hjemstasjonene du har lagt til beholdes, med mindre du slår på bryteren under.
       </p>
+      <PrefBryter v-model="slettStasjoner" tittel="Slett også egne hjemstasjoner" tekst="Stasjonene og prisene du la inn fjernes." />
       <div class="flex justify-end gap-2">
         <button type="button" class="knapp" autofocus @click="bekreft.close()">Avbryt</button>
         <button type="button" class="knapp knapp-fare" @click="nullstillNaa">Ja, nullstill</button>
