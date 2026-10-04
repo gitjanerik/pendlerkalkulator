@@ -1,3 +1,9 @@
+## 2026-10-04 — v1.9.4: Ryddigere fritidstekster
+
+Fjernet de selvforklarende tekstene om at jobbstedet ikke ligger på veien til flyplassen (i skjemaet for egen strekning). Fritidsreisene viser nå «<hjemstasjon> til Oslo lufthavn» i stedet for «Opp til Oslo lufthavn».
+
+---
+
 ## 2026-10-04 — v1.9.3: Egne stasjoner kan velges, endres og slettes igjen
 
 Feil rettet: et trykk på en lagret egen strekning (som Stokke) ga en feil, så den kunne ikke velges. Dermed kom heller ikke Rediger og Slett frem, hverken i veiviseren eller i Innstillinger.

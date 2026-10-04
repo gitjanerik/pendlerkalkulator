@@ -45,11 +45,9 @@ const sjekkFlyplass = async () => {
     const maal = maalTekst()
     flyStatus.value = f === 'foer'
       ? `Flyplassen ligger før ${maal} på din reise, så fyll inn prisen på billett til Oslo lufthavn.`
-      : f === 'utenfor'
-        ? `${maal} ligger ikke på veien til Oslo lufthavn, så fyll inn prisen på billett til flyplassen.`
-        : f === 'bak' && !tilOslo.value
-          ? `${maal} ligger på veien til Oslo lufthavn, så fyll inn tillegget ${maal}–Oslo lufthavn.`
-          : ''
+      : f === 'bak' && !tilOslo.value
+        ? `${maal} ligger på veien til Oslo lufthavn, så fyll inn tillegget ${maal}–Oslo lufthavn.`
+        : ''
   } catch {
     if (mitt === sjekkId) flyStatus.value = `Vi kunne ikke sjekke veien til flyplassen. ${tilOslo.value ? 'Vi regner med at flyplassen ligger bak Oslo S.' : `Fyll inn prisen på billett til Oslo lufthavn.`}`
   } finally {
@@ -190,7 +188,6 @@ const slett = async () => {
       </div>
       <p class="text-sm text-[var(--color-ink-2)]">
         <template v-if="forhold === 'foer'">Flyplassen ligger før {{ maalTekst() }} på din reise. Periodebilletten dekker da hele veien, og flyplassprisen brukes bare når du ikke har gyldig billett.</template>
-        <template v-else-if="forhold === 'utenfor'">{{ maalTekst() }} ligger ikke på veien til Oslo lufthavn. Periodebilletten hjelper da ikke, og reisen til flyplassen regnes som en vanlig enkeltbillett.</template>
         <template v-else-if="tilOslo">Billett til Oslo lufthavn er valgfri. Uten den regner vi enkeltbillett pluss 134 kr (tillegget Oslo S–Oslo lufthavn).</template>
         <template v-else>{{ maalTekst() }} ligger på veien til Oslo lufthavn. Periodebilletten dekker til {{ maalTekst() }}, så fra den dekker regner vi bare tillegget {{ maalTekst() }}–Oslo lufthavn. Billett til Oslo lufthavn er valgfri; uten den bruker vi enkeltbillett pluss tillegget.</template>
       </p>
