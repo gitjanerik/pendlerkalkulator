@@ -1,6 +1,7 @@
 <script setup>
 import { computed, ref } from 'vue'
 import StasjonsChips from './StasjonsChips.vue'
+import { bakOsloS } from '../lib/fritid.js'
 import { UKEDAGER_KORT, UKEDAGER_LANG } from '../lib/dagmonster.js'
 import Beloep from './Beloep.vue'
 import PrefBryter from './PrefBryter.vue'
@@ -127,7 +128,7 @@ const taster = (e) => {
                 <span class="block text-sm text-[var(--color-ink-2)]">Treffer ferien rett etter en fornyelse, sparer du opptil ett månedskort. Treffer den feil, sparer du ingenting.</span>
               </li>
             </ul>
-            <p class="mt-3 text-sm text-[var(--color-ink-3)]">Tallene er regnet ut av appen for Vys priser høsten 2026 (Gulskogen–Oslo S).</p>
+            <p class="mt-3 text-sm text-[var(--color-ink-3)]">Tallene er regnet ut av appen for Vys priser høsten 2026.</p>
           </template>
 
           <template v-else-if="STEG[i] === 'stasjon'">
@@ -176,7 +177,11 @@ const taster = (e) => {
           </template>
 
           <template v-else-if="STEG[i] === 'fritid'">
-            <p class="steg-tekst">Valgfritt. Skal du til Oslo lufthavn en bestemt dag? Da regner vi med tilleggsbilletten når periodebilletten dekker resten, og ellers en enkeltbillett hele veien.</p>
+            <p class="steg-tekst">
+              Valgfritt. Skal du til Oslo lufthavn en bestemt dag?
+              <template v-if="bakOsloS(strekning)">Fra {{ stasjon }} ligger flyplassen bak Oslo S. Er periodebilletten gyldig, regner vi bare med tillegget Oslo S–Oslo lufthavn. Ellers regner vi med enkeltbillett hele veien.</template>
+              <template v-else>Fra {{ stasjon }} ligger flyplassen på veien til Oslo S. Er periodebilletten gyldig, koster reisen ingenting ekstra. Ellers regner vi med enkeltbillett til flyplassen.</template>
+            </p>
             <div class="mt-4"><FritidListe v-model="m" /></div>
           </template>
 

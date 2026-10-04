@@ -1,3 +1,9 @@
+## 2026-10-04 — v1.7.1: Tekster i veiviseren
+
+Teksten under «Her gjør appen størst forskjell» nevner ikke lenger Gulskogen–Oslo S: «Tallene er regnet ut av appen for Vys priser høsten 2026.» Forklaringen i steget «Fritidsreiser» (og under fritidslisten i Innstillinger) tilpasser seg hjemstasjonen: ligger flyplassen bak Oslo S, nevnes tillegget Oslo S–Oslo lufthavn, og ligger den på veien til Oslo S, sies det at periodebilletten dekker hele reisen.
+
+---
+
 ## 2026-10-04 — v1.7.0: Flyplassen før eller bak Oslo S
 
 Fritidsreiser til Oslo lufthavn regnes nå riktig for pendlere fra nord (Hamar, Eidsvoll). Når du velger en egen stasjon, spør appen Enturs reiseplanlegger om reisen til Oslo lufthavn går via Oslo S. Fra sør (alle forhåndsvalgene) er det som før: periodebilletten dekker til Oslo S, og du kjøper bare tillegget Oslo S–Oslo lufthavn. Fra nord ligger flyplassen før Oslo S, så periodebilletten dekker hele veien og reisen koster ingenting ekstra. Uten gyldig billett kjøpes hele billetten til flyplassen. Fra nord er flyplassprisen påkrevd i skjemaet, siden den ikke kan regnes ut fra enkeltbilletten til Oslo S. Fra sør er den fortsatt valgfri, og skjemaet forklarer anslaget. Får appen ikke svar fra Entur, regnes flyplassen som bak Oslo S. Fikser også statusteksten under søkefeltet, som viste feil melding siden v1.6.1.
