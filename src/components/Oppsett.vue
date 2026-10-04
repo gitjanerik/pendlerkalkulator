@@ -135,7 +135,7 @@ const taster = (e) => {
               </li>
               <li class="py-3">
                 <strong class="block">Mange turer til flyplassen</strong>
-                <span class="block text-sm text-[var(--color-ink-2)]">Med gyldig periodebillett kjøper du bare tillegget videre, ikke ny billett hele veien. Appen tar hensyn til fritidsreisene når den velger når billettene skal starte. Gjelder når jobbstedet ligger på veien til flyplassen.</span>
+                <span class="block text-sm text-[var(--color-ink-2)]">Med gyldig periodebillett slipper du ny billett hele veien: ligger flyplassen før jobbstedet på reisen, koster den ingenting ekstra, og ligger den videre bak jobbstedet, kjøper du bare tillegget dit. Appen tar hensyn til fritidsreisene når den velger når billettene skal starte. Gjelder når flyplassen og jobbstedet ligger langs samme linje.</span>
               </li>
             </ul>
             <p class="mt-3 text-sm text-[var(--color-ink-3)]">Tallene er regnet ut av appen for Vys priser høsten 2026.</p>
