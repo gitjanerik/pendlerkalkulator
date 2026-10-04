@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest'
-import { rensStasjonsnavn, byggStasjon, nyStasjonsId, skjemaFraStasjon, tomtSkjema, validerStasjon } from './stasjoner.js'
+import { gaarTilOsloS, maalnavn, rensStasjonsnavn, stasjonsnavn, strekningsvalg, byggStasjon, nyStasjonsId, skjemaFraStasjon, tomtSkjema, validerStasjon } from './stasjoner.js'
 import { beregn, standardModell } from './modell.js'
 
-const gyldig = { navn: 'Lillestrøm', enturId: 'NSR:StopPlace:1', bakOsloS: true, enkelt: 90, lufthavn: 120, uke: 500, maaned: 1200, aar: 12000 }
+const gyldig = { navn: 'Lillestrøm', enturId: 'NSR:StopPlace:1', til: 'Oslo S', tilEnturId: '', bakOsloS: true, enkelt: 90, lufthavn: 120, uke: 500, maaned: 1200, aar: 12000 }
 
 describe('validerStasjon', () => {
   it('godtar et gyldig skjema, og at årskort og flyplass er valgfrie', () => {
@@ -15,9 +15,8 @@ describe('validerStasjon', () => {
   it('godtar bare stasjoner valgt fra Entur', () => {
     expect(validerStasjon({ ...gyldig, enturId: '' }).navn).toMatch(/Entur/)
     expect(validerStasjon({ ...gyldig, navn: '  ', enturId: '' }).navn).toBeTruthy()
-    for (const navn of ['Oslo S', 'oslo', 'x'.repeat(41)]) {
-      expect(validerStasjon({ ...gyldig, navn }).navn, navn).toBeTruthy()
-    }
+    expect(validerStasjon({ ...gyldig, navn: 'x'.repeat(41) }).navn).toBeTruthy()
+    expect(validerStasjon({ ...gyldig, navn: 'Oslo S' }).til).toMatch(/samme/)
   })
   it('krever flyplassprisen når flyplassen ligger før Oslo S', () => {
     expect(validerStasjon({ ...gyldig, bakOsloS: false, lufthavn: '' }).lufthavn).toMatch(/Oslo lufthavn/)
@@ -26,9 +25,9 @@ describe('validerStasjon', () => {
     expect(byggStasjon({ ...gyldig, bakOsloS: false, lufthavn: 150 }, 'x').bakOsloS).toBe(false)
   })
   it('avviser navn som finnes fra før, uavhengig av store bokstaver', () => {
-    expect(validerStasjon({ ...gyldig, navn: 'drammen' }).navn).toMatch(/allerede/)
+    expect(validerStasjon({ ...gyldig, navn: 'drammen' }).til).toMatch(/allerede/)
     const egne = [{ id: 'egen-1', navn: 'Lillestrøm–Oslo S' }]
-    expect(validerStasjon(gyldig, egne).navn).toMatch(/allerede/)
+    expect(validerStasjon(gyldig, egne).til).toMatch(/allerede/)
     expect(validerStasjon(gyldig, egne, 'egen-1')).toEqual({})
   })
   it('avviser ugyldige og urimelige priser', () => {
@@ -69,5 +68,37 @@ describe('rensStasjonsnavn', () => {
     expect(rensStasjonsnavn('Asker stasjon')).toBe('Asker')
     expect(rensStasjonsnavn('Stasjonsveien')).toBe('Stasjonsveien')
     expect(rensStasjonsnavn('Mo–Rana stasjon')).toBe('Mo-Rana')
+  })
+})
+
+describe('fritt valgt mål', () => {
+  const drammenTilAsker = { ...gyldig, navn: 'Drammen', til: 'Asker', tilEnturId: 'NSR:asker' }
+  it('målet må velges fra Entur, unntatt Oslo S', () => {
+    expect(validerStasjon(drammenTilAsker)).toEqual({})
+    expect(validerStasjon({ ...drammenTilAsker, tilEnturId: '' }).til).toMatch(/Entur/)
+    expect(validerStasjon({ ...drammenTilAsker, til: '' }).til).toBeTruthy()
+    expect(validerStasjon({ ...drammenTilAsker, til: 'drammen' }).til).toMatch(/samme/)
+  })
+  it('Drammen–Asker er en annen strekning enn Drammen–Oslo S', () => {
+    expect(validerStasjon(drammenTilAsker)).toEqual({})
+    expect(validerStasjon({ ...drammenTilAsker, til: 'Oslo S' }).til).toMatch(/allerede/)
+  })
+  it('flyplassprisen kreves bare på strekninger til Oslo S', () => {
+    expect(validerStasjon({ ...drammenTilAsker, bakOsloS: false, lufthavn: '' })).toEqual({})
+    expect(validerStasjon({ ...gyldig, bakOsloS: false, lufthavn: '' }).lufthavn).toBeTruthy()
+  })
+  it('bygger strekning, navn og valg', () => {
+    const s = byggStasjon({ ...drammenTilAsker, lufthavn: 150 }, 'egen-1')
+    expect(s).toMatchObject({ navn: 'Drammen–Asker', tilEnturId: 'NSR:asker', lufthavn: '' })
+    expect([stasjonsnavn(s), maalnavn(s), gaarTilOsloS(s), strekningsvalg(s)]).toEqual(['Drammen', 'Asker', false, 'Drammen–Asker'])
+    expect(skjemaFraStasjon(s)).toMatchObject({ navn: 'Drammen', til: 'Asker', tilEnturId: 'NSR:asker' })
+    expect(strekningsvalg({ navn: 'Lier–Oslo S' })).toBe('Lier')
+    expect(maalnavn({ navn: 'Lier' })).toBe('Oslo S')
+  })
+  it('kan brukes i beregningen, og fritidsreiser ignoreres uten Oslo S', () => {
+    const m = { ...standardModell('2026-10-02'), strekninger: [byggStasjon(drammenTilAsker, 'egen-1')], til: '2026-12-18', fritidsreiser: [{ fra: '2026-10-10', til: '2026-10-11' }] }
+    const r = beregn(m)
+    expect(r.feil).toBeNull()
+    expect(r.fritid).toBeNull()
   })
 })

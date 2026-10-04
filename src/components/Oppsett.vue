@@ -1,7 +1,8 @@
 <script setup>
 import { computed, ref } from 'vue'
 import StasjonsChips from './StasjonsChips.vue'
-import { bakOsloS } from '../lib/fritid.js'
+import { bakOsloS, harFlyplass } from '../lib/fritid.js'
+import { maalnavn, OSLO_S, stasjonsnavn } from '../lib/stasjoner.js'
 import { UKEDAGER_KORT, UKEDAGER_LANG } from '../lib/dagmonster.js'
 import Beloep from './Beloep.vue'
 import PrefBryter from './PrefBryter.vue'
@@ -23,7 +24,7 @@ const settIGang = async () => {
   emit('klar')
 }
 
-const STEG = ['intro', 'stasjon', 'uke', 'tider', 'billett', 'fri', 'ferie', 'fritid', 'priser', 'klar']
+const ALLE_STEG = ['intro', 'stasjon', 'uke', 'tider', 'billett', 'fri', 'ferie', 'fritid', 'priser', 'klar']
 const TITLER = {
   intro: 'Hvor mye har du å vinne?',
   stasjon: 'Hvor reiser du fra?',
@@ -41,10 +42,13 @@ const retning = ref('frem')
 const nesteKnapp = ref(null)
 const klarKnapp = ref(null)
 const strekning = computed(() => m.value.strekninger[0])
-const stasjon = computed(() => strekning.value?.navn.split('–')[0] ?? '')
+const stasjon = computed(() => (strekning.value ? stasjonsnavn(strekning.value) : ''))
+const maal = computed(() => (strekning.value ? maalnavn(strekning.value) : OSLO_S))
+// Fritidsreiser til flyplassen finnes bare for strekninger til Oslo S.
+const STEG = computed(() => ALLE_STEG.filter((s) => s !== 'fritid' || harFlyplass(strekning.value)))
 
 const gaa = (n) => {
-  const ny = Math.min(Math.max(i.value + n, 0), STEG.length - 1)
+  const ny = Math.min(Math.max(i.value + n, 0), STEG.value.length - 1)
   if (ny === i.value) return
   retning.value = n > 0 ? 'frem' : 'tilbake'
   i.value = ny
@@ -53,7 +57,7 @@ const gaa = (n) => {
 // Knappen som ble trykt skjules i endene; fokus må videre til noe som finnes.
 const etterSteg = () => {
   if (document.activeElement && document.activeElement !== document.body) return
-  if (i.value === STEG.length - 1) klarKnapp.value?.focus()
+  if (i.value === STEG.value.length - 1) klarKnapp.value?.focus()
   else if (i.value === 0) nesteKnapp.value?.focus()
 }
 
@@ -132,7 +136,7 @@ const taster = (e) => {
           </template>
 
           <template v-else-if="STEG[i] === 'stasjon'">
-            <p class="steg-tekst">Oslo S er målet. Mangler stasjonen din, kan du søke den opp og legge den til.</p>
+            <p class="steg-tekst">Målet er Oslo S. Jobber du et annet sted, eller mangler stasjonen din, kan du legge til en egen strekning.</p>
             <StasjonsChips v-model="m" kun-en class="mt-4" />
           </template>
 
@@ -151,11 +155,11 @@ const taster = (e) => {
                 <input id="op-morgen" v-model="m.morgen" class="felt" type="time" />
               </div>
               <div>
-                <label class="etikett" for="op-ettermiddag">Fra Oslo S</label>
+                <label class="etikett" for="op-ettermiddag">Fra {{ maal }}</label>
                 <input id="op-ettermiddag" v-model="m.ettermiddag" class="felt" type="time" />
               </div>
             </div>
-            <div class="mt-3"><ForslagKnapp v-model="m" :stasjon="stasjon" /></div>
+            <div class="mt-3"><ForslagKnapp v-model="m" :stasjon="stasjon" :maal="maal" /></div>
           </template>
 
           <template v-else-if="STEG[i] === 'billett'">
@@ -186,7 +190,7 @@ const taster = (e) => {
           </template>
 
           <template v-else-if="STEG[i] === 'priser'">
-            <p class="steg-tekst">{{ stasjon }} – Oslo S, voksen. Rett dem hvis de er feil.</p>
+            <p class="steg-tekst">{{ stasjon }} – {{ maal }}, voksen. Rett dem hvis de er feil.</p>
             <div class="mt-4 grid grid-cols-2 items-end gap-3">
               <div v-for="[n, navn] in PRISFELT" :key="n">
                 <label class="etikett" :for="`pr-${n}`">{{ navn }}</label>

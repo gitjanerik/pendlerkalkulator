@@ -5,7 +5,7 @@ import { stasjonsId } from '../composables/useAvganger.js'
 import { idagIso } from '../lib/dato.js'
 
 const m = defineModel({ type: Object })
-const props = defineProps({ stasjon: { type: String, required: true } })
+const props = defineProps({ stasjon: { type: String, required: true }, maal: { type: String, default: 'Oslo S' } })
 const laster = ref(false)
 const melding = ref('')
 
@@ -14,7 +14,7 @@ async function foreslaa() {
   laster.value = true
   melding.value = ''
   try {
-    const [hjem, oslo] = await Promise.all([stasjonsId(props.stasjon), stasjonsId('Oslo S')])
+    const [hjem, oslo] = await Promise.all([stasjonsId(props.stasjon), stasjonsId(props.maal)])
     const f = await foreslaaAvganger(hjem, oslo, idagIso(), { morgen: m.value.morgen, ettermiddag: m.value.ettermiddag })
     if (f.morgen) m.value.morgen = f.morgen
     if (f.ettermiddag) m.value.ettermiddag = f.ettermiddag
