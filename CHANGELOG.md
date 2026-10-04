@@ -1,3 +1,9 @@
+## 2026-10-04 — v1.9.3: Egne stasjoner kan velges, endres og slettes igjen
+
+Feil rettet: et trykk på en lagret egen strekning (som Stokke) ga en feil, så den kunne ikke velges. Dermed kom heller ikke Rediger og Slett frem, hverken i veiviseren eller i Innstillinger.
+
+---
+
 ## 2026-10-04 — v1.9.2: Fritidsreiser i introduksjonen
 
 Nytt punkt under «Her gjør appen størst forskjell»: mange turer til flyplassen gir fordel, og fritidsreisene påvirker når billettene starter.

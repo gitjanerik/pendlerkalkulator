@@ -88,7 +88,8 @@ const synligeFelt = computed(() => FELT.filter(([f]) => (f !== 'tillegg' || (for
 const feilListe = computed(() => Object.entries(feil.value))
 
 const velgPreset = (p) => (m.value.strekninger = [strekningFraPreset(p, p.id)])
-const velgEgen = (e) => (m.value.strekninger = [structuredClone(e)])
+// e er et reaktivt objekt, som structuredClone ikke kan klone.
+const velgEgen = (e) => (m.value.strekninger = [JSON.parse(JSON.stringify(e))])
 
 const aapne = async (nyModus) => {
   modus.value = nyModus
