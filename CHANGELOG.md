@@ -1,3 +1,9 @@
+## 2026-10-05 — v2.3.0: Moss som hjemstasjon
+
+Moss–Oslo S er lagt til som forhåndsutfylt hjemstasjon: enkelt 202 kr, 7 dager 1007 kr, 30 dager 2419 kr og 365 dager 24 190 kr.
+
+---
+
 ## 2026-10-04 — v2.2.2: Ryddigere billett-tabell
 
 Pris-kolonnen i tabellen ligger ikke lenger fast ved scrolling. Ukekolonnen er smalere, med siste uke på linje to. Årskort markeres med en liten pil mot høyre i stedet for ∞. «Full pendleruke» kommer nå før «Periode».

@@ -14,6 +14,7 @@ export const PRESETS = [
   { id: 'heggedal', navn: 'Heggedal–Oslo S', ruter: true, reisetid: 45, enkelt: 75, lufthavn: 162, perioder: [[7, 662], [30, 1556], [365, 17560]] },
   { id: 'royken', navn: 'Røyken–Oslo S', reisetid: 50, enkelt: 105, lufthavn: 162, perioder: [[7, 918], [30, 2198], [365, 24980]] },
   { id: 'spikkestad', navn: 'Spikkestad–Oslo S', reisetid: 53, enkelt: 105, lufthavn: 162, perioder: [[7, 918], [30, 2198], [365, 24980]] },
+  { id: 'moss', navn: 'Moss–Oslo S', reisetid: 40, enkelt: 202, perioder: [[7, 1007], [30, 2419], [365, 24190]] },
 ]
 
 // Skjemafeltene er tekst-tolerante, så tomme felt er '' og ikke null.
