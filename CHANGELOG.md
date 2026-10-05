@@ -1,3 +1,9 @@
+## 2026-10-05 — v2.3.1: Lufthavnpris for Moss
+
+Moss–Oslo S har nå lufthavnpris (349 kr), og reisetiden 40 min er bekreftet.
+
+---
+
 ## 2026-10-05 — v2.3.0: Moss som hjemstasjon
 
 Moss–Oslo S er lagt til som forhåndsutfylt hjemstasjon: enkelt 202 kr, 7 dager 1007 kr, 30 dager 2419 kr og 365 dager 24 190 kr.

@@ -17,7 +17,7 @@ describe('byggFritidsturer', () => {
 
 describe('flyplassprisen', () => {
   it('alle forhåndsvalg har en pris', () => {
-    expect(PRESETS.every((p) => fritidGrunnpris(p) > 0)).toBe(true)
+    expect(PRESETS.every((p) => p.lufthavn > 0)).toBe(true)
   })
   it('egen strekning bruker oppgitt pris, ellers enkeltbillett pluss tillegg', () => {
     expect(fritidGrunnpris({ lufthavn: 250, enkelt: 100 })).toBe(250)
