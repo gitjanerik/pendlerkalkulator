@@ -76,7 +76,7 @@ const dager = computed(() => (m.value.fra && m.value.til >= m.value.fra ? datoer
       </button>
     </div>
     <p class="mt-1 text-sm text-[var(--color-ink-2)]">{{ hjelp }}</p>
-    <PrefBryter v-model="m.sisteFullPris" tittel="Siste billett i full pris" tekst="Perioden slutter ved sluttdatoen. Fjern avkryssingen hvis du reiser videre etter den, så regnes siste billett forholdsmessig." />
+    <PrefBryter v-model="m.sisteFullPris" tittel="Optimer for selve perioden" tekst="Finner billigste billetter for akkurat denne perioden, så siste billett koster full pris selv om den varer lenger enn sluttdatoen. Fjern avkryssingen hvis du skal reise videre etter sluttdatoen; da regnes siste billett forholdsmessig." />
     <p v-if="dager" class="mt-3 text-sm text-[var(--color-ink-2)]">{{ dager }} dager</p>
   </section>
 </template>
