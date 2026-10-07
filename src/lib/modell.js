@@ -23,6 +23,8 @@ export function standardModell(idag) {
     // Tom streng betyr «nå» (første dag) – appen setter klokkeslettet selv.
     fraKlokke: '',
     til: tilEtterMaaneder(idag, STANDARD_MND),
+    // Perioden er en reell slutt: siste billett koster full pris. Av betyr at brukeren reiser videre etter sluttdatoen.
+    sisteFullPris: true,
     // Faktiske avgangstider fra stasjonen og fra Oslo S.
     morgen: '07:00',
     ettermiddag: '16:00',
@@ -182,7 +184,7 @@ export function beregn(modell) {
     prisokning: modell.prisokning,
     inkluderAarskort: modell.inkluderAarskort,
     reis: Boolean(modell.reis),
-    vinduSlutt,
+    vinduSlutt: modell.sisteFullPris === false ? vinduSlutt : Infinity,
   }
   const { beste, alternativer } = sammenlignAlternativer(turer, strekninger, opsjoner)
   if (!beste.mulig) {

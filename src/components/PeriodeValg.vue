@@ -4,6 +4,7 @@ import { tilEtterMaaneder } from '../lib/periode.js'
 import { datoerMellom, idagIso } from '../lib/dato.js'
 import { norskDato } from '../lib/format.js'
 import Kalender from './Kalender.vue'
+import PrefBryter from './PrefBryter.vue'
 
 const m = defineModel({ type: Object })
 defineProps({ startKlokke: { type: String, default: '00:00' }, utdatert: Boolean })
@@ -75,6 +76,7 @@ const dager = computed(() => (m.value.fra && m.value.til >= m.value.fra ? datoer
       </button>
     </div>
     <p class="mt-1 text-sm text-[var(--color-ink-2)]">{{ hjelp }}</p>
+    <PrefBryter v-model="m.sisteFullPris" tittel="Siste billett i full pris" tekst="Perioden slutter ved sluttdatoen. Fjern avkryssingen hvis du reiser videre etter den, så regnes siste billett forholdsmessig." />
     <p v-if="dager" class="mt-3 text-sm text-[var(--color-ink-2)]">{{ dager }} dager</p>
   </section>
 </template>

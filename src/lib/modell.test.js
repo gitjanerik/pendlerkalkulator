@@ -7,6 +7,7 @@ const handoff = () => ({
   fraKlokke: '16:00',
   til: '2026-12-18',
   inkluderAarskort: false,
+  sisteFullPris: false,
 })
 
 describe('beregn', () => {
@@ -62,6 +63,15 @@ describe('jobbdager og rabatt', () => {
     expect(tre).toBeLessThanOrEqual(alle)
   })
 
+  it('full pris på siste billett er standard; av gir forholdsmessig pris', () => {
+    const m = { ...base(), fra: '2026-10-12', til: '2026-12-23', fraKlokke: '06:30' }
+    expect(m.sisteFullPris).toBe(true)
+    const full = beregn(m).resultat
+    const andel = beregn({ ...m, sisteFullPris: false }).resultat
+    expect(full.kostnad).toBeGreaterThan(andel.kostnad)
+    expect(full.billetter.every((b) => b.andelPris === b.pris)).toBe(true)
+  })
+
   it('uten jobbdager gir feilmelding', () => {
     expect(beregn({ ...base(), jobbUkedager: [] }).feil).toMatch(/jobbdag/)
   })
@@ -108,7 +118,7 @@ describe('eksisterende periodebillett', () => {
 })
 
 describe('tidshorisont uten kunstig slutt', () => {
-  const aar = (fra, til) => ({ ...standardModell(fra), til, inkluderAarskort: false })
+  const aar = (fra, til) => ({ ...standardModell(fra), til, inkluderAarskort: false, sisteFullPris: false })
 
   it('et år fra 5. oktober er bare månedskort, uten 7-dagers og enkeltbilletter', () => {
     const r = beregn(aar('2026-10-05', '2027-10-04'))
@@ -178,7 +188,7 @@ describe('årskort før mot etter prisøkning', () => {
 
 describe('nye priser fra dato', () => {
   const med = (nyePriser, nye, ekstra = {}) => {
-    const m = { ...standardModell('2026-10-04'), prisDato: '2026-10-02', fra: '2026-11-01', til: '2027-12-31', fraKlokke: '00:00', ...ekstra }
+    const m = { ...standardModell('2026-10-04'), prisDato: '2026-10-02', fra: '2026-11-01', til: '2027-12-31', fraKlokke: '00:00', sisteFullPris: false, ...ekstra }
     m.strekninger = [{ ...m.strekninger[0], nye }]
     return { ...m, nyePriser }
   }
