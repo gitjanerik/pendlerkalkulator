@@ -32,7 +32,7 @@ export const beregnSkjema = {
   jobberPaaskeMandagOnsdag: z.boolean().optional(),
   jobberRomjul: z.boolean().optional(),
   inkluderAarskort: z.boolean().optional(),
-  sisteFullPris: z.boolean().optional().describe('Siste billett i full pris (standard). Falsk regner den forholdsmessig mot sluttdatoen'),
+  sisteFullPris: z.boolean().optional().describe('Optimer for selve perioden (standard): siste billett i full pris. Falsk når brukeren reiser videre etter sluttdatoen, så siste billett regnes forholdsmessig'),
   reis: z.boolean().optional().describe('Ruter Reis: rabatt på enkeltbilletter etter antall reiser siste 30 dager'),
   prisDato: dato.optional().describe('Dato prisene gjelder fra, standard = fra'),
 }
