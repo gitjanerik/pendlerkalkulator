@@ -1,5 +1,6 @@
 <script setup>
-import { leggTilDager } from '../lib/dato.js'
+import { watch } from 'vue'
+import { idagIso, leggTilDager } from '../lib/dato.js'
 
 const m = defineModel({ type: Object })
 const TYPER = [
@@ -7,10 +8,25 @@ const TYPER = [
   ['maaned', 'Månedskort'],
   ['aar', 'Årskort'],
 ]
+const VARIGHET = { uke: 7, maaned: 30, aar: 365 }
+const idag = idagIso()
+const maksDato = () => leggTilDager(idag, VARIGHET[m.value.eksisterende.type] ?? 365)
 const sett = (paa) => {
   m.value.eksisterende.paa = paa
-  if (paa && !m.value.eksisterende.til) m.value.eksisterende.til = leggTilDager(m.value.fra, 14)
+  if (paa && !m.value.eksisterende.til) m.value.eksisterende.til = leggTilDager(idag, Math.min(14, VARIGHET[m.value.eksisterende.type]))
 }
+
+// Billetten kan ikke gjelde lenger frem enn typens varighet, og beregningen starter først når den utløper.
+watch(
+  () => [m.value.eksisterende.paa, m.value.eksisterende.type, m.value.eksisterende.til],
+  () => {
+    const e = m.value.eksisterende
+    if (!e.paa || !e.til) return
+    if (e.til > maksDato()) e.til = maksDato()
+    if (e.til > m.value.fra) m.value.fra = e.til
+  },
+  { immediate: true },
+)
 </script>
 
 <template>
@@ -25,7 +41,7 @@ const sett = (paa) => {
       </div>
       <p id="eb-utloper" class="etikett !mb-0">Når utløper billetten?</p>
       <div class="felt-par" role="group" aria-labelledby="eb-utloper">
-        <input v-model="m.eksisterende.til" class="felt" type="date" aria-label="Utløpsdato" />
+        <input v-model="m.eksisterende.til" class="felt" type="date" aria-label="Utløpsdato" :min="idag" :max="maksDato()" />
         <input v-model="m.eksisterende.klokke" class="felt" type="time" aria-label="Utløpsklokkeslett" />
       </div>
       <details class="text-sm text-[var(--color-ink-2)]">

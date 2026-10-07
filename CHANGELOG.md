@@ -1,3 +1,9 @@
+## 2026-10-07 — v2.4.0: Full pris på siste billett og grenser for eksisterende billett
+
+Siste billett i perioden koster nå full pris som standard, så månedskort på slutten av en kort periode ikke lenger ser nesten gratis ut. Bryteren «Siste billett i full pris» under Periode kan slås av hvis du reiser videre etter sluttdatoen. Utløpsdatoen for eksisterende billett kan ikke lenger settes lenger frem enn billettypen varer (uke 7, måned 30, år 365 dager), og perioden starter nå når billetten utløper.
+
+---
+
 ## 2026-10-05 — v2.3.1: Lufthavnpris for Moss
 
 Moss–Oslo S har nå lufthavnpris (349 kr), og reisetiden 40 min er bekreftet.

@@ -8,6 +8,7 @@ describe('MCP-verktøy', () => {
       til: '2026-12-18',
       fraKlokke: '16:00',
       inkluderAarskort: false,
+      sisteFullPris: false,
       strekninger: [
         { navn: 'Gulskogen–Oslo S', enkelt: 156, perioder: [{ dager: 7, pris: 827 }, { dager: 30, pris: 2038 }] },
       ],

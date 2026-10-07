@@ -32,6 +32,7 @@ export const beregnSkjema = {
   jobberPaaskeMandagOnsdag: z.boolean().optional(),
   jobberRomjul: z.boolean().optional(),
   inkluderAarskort: z.boolean().optional(),
+  sisteFullPris: z.boolean().optional().describe('Siste billett i full pris (standard). Falsk regner den forholdsmessig mot sluttdatoen'),
   reis: z.boolean().optional().describe('Ruter Reis: rabatt på enkeltbilletter etter antall reiser siste 30 dager'),
   prisDato: dato.optional().describe('Dato prisene gjelder fra, standard = fra'),
 }
@@ -46,7 +47,7 @@ export function beregnBilletter(inn) {
     enkelt: s.enkelt ?? '',
     perioder: s.perioder,
   }))
-  for (const k of ['fraKlokke', 'morgen', 'ettermiddag', 'retninger', 'ferie', 'bilUkedager', 'jobbUkedager', 'reis', 'inkluderAarskort', 'prisDato']) {
+  for (const k of ['fraKlokke', 'morgen', 'ettermiddag', 'retninger', 'ferie', 'bilUkedager', 'jobbUkedager', 'reis', 'inkluderAarskort', 'sisteFullPris', 'prisDato']) {
     if (inn[k] !== undefined) m[k] = inn[k]
   }
   if (inn.jobberPaaskeMandagOnsdag !== undefined) m.innstillinger.jobberPaaskeMandagOnsdag = inn.jobberPaaskeMandagOnsdag
