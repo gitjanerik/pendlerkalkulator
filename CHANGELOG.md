@@ -1,3 +1,9 @@
+## 2026-10-08 — v3.0.1: Strekning innenfor hovedstrekningen koster ikke ekstra
+
+Velger du en annen strekning noen dager, og den ligger innenfor hovedstrekningen på samme linje (for eksempel Drammen–Oslo S når du har Gulskogen–Oslo S, eller Heggedal–Oslo S når du har Spikkestad–Oslo S), dekkes den nå av hovedbilletten og legges ikke til som ekstra kostnad. Appen sier fra om det under valget. Egne strekninger regnes ikke som dekket.
+
+---
+
 ## 2026-10-08 — v3.0.0: Ny design og enklere språk
 
 Ny indigo-farge i stedet for grønn, tydeligere knapper, brytere og valg, og et større hovedtall. Veiviseren har fått fremdriftslinje og fast Tilbake/Neste nederst. All tekst er gjennomgått: enklere ord, samme begreper overalt, og mer nøkterne formuleringer. Appen sier nå ærlig at gevinsten ofte er liten, og at det kan lønne seg å beholde billetten du har. Delingsvarselet forklarer hva som følger med lenken og ber mottakeren sjekke prisene.
