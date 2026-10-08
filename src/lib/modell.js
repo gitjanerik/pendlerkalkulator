@@ -56,9 +56,20 @@ export function standardModell(idag) {
   }
 }
 
+// Strekningen ligger helt innenfor hovedstrekningen (samme linje, kortere vei fra Oslo S), så hovedbilletten dekker den.
+// Egne strekninger har ingen linje og regnes aldri som dekket.
+export function dekketAvHoved(andre, hoved) {
+  if (!andre || !hoved || andre.id === hoved.id) return false
+  const a = PRESETS.find((p) => p.id === andre.id)
+  const h = PRESETS.find((p) => p.id === hoved.id)
+  if (!a?.linjer || !h?.linjer) return false
+  return Object.entries(a.linjer).some(([linje, avstand]) => h.linjer[linje] >= avstand)
+}
+
 // Andre strekning på bestemte ukedager (0 = mandag). Gir null uten gyldige priser eller ukedager.
 export function ekstraRute(andre, hoved) {
   if (!andre?.strekning || !Array.isArray(andre.ukedager) || !andre.ukedager.length || !hoved) return null
+  if (dekketAvHoved(andre.strekning, hoved)) return null
   const id = andre.strekning.id === hoved.id ? `${hoved.id}-2` : andre.strekning.id
   const [strekning] = normaliserStrekninger([{ ...andre.strekning, id }])
   return strekning ? { strekning, ukedager: new Set(andre.ukedager) } : null
