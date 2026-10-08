@@ -140,55 +140,6 @@ describe('tidshorisont uten kunstig slutt', () => {
   })
 })
 
-describe('andre strekning noen ukedager', () => {
-  const base = () => ({ ...standardModell('2026-10-05'), til: '2027-03-31', inkluderAarskort: false })
-  const rute = (i) => strekningFraPreset(PRESETS[i], PRESETS[i].id)
-
-  it('prises som to separate reiser lagt sammen', () => {
-    const a = beregn({ ...base(), strekninger: [rute(0)], jobbUkedager: [0, 1] })
-    const b = beregn({ ...base(), strekninger: [rute(8)], jobbUkedager: [2, 3, 4] })
-    const begge = beregn({ ...base(), strekninger: [rute(0)], andreRute: { strekning: rute(8), ukedager: [2, 3, 4] } })
-    expect(begge.flereRuter).toMatchObject({ ekstraDager: [2, 3, 4] })
-    expect(begge.resultat.kostnad).toBeCloseTo(a.resultat.kostnad + b.resultat.kostnad, 6)
-    expect(new Set(begge.resultat.billetter.map((x) => x.strekningNavn))).toEqual(new Set([rute(0).navn, rute(8).navn]))
-  })
-  it('strekning innenfor hovedstrekningen dekkes av hovedbilletten', () => {
-    const alene = beregn({ ...base(), strekninger: [rute(0)] })
-    const med = beregn({ ...base(), strekninger: [rute(0)], andreRute: { strekning: rute(1), ukedager: [4] } })
-    expect(med.flereRuter).toBeFalsy()
-    expect(med.resultat.kostnad).toBeCloseTo(alene.resultat.kostnad, 6)
-  })
-  it('lenger strekning på samme linje dekkes ikke', () => {
-    const r = beregn({ ...base(), strekninger: [rute(1)], andreRute: { strekning: rute(0), ukedager: [4] } })
-    expect(r.flereRuter).toBeTruthy()
-  })
-  it('Heggedal ligger ikke på Drammenbanen, men Asker dekkes begge steder', () => {
-    const hjelp = (hoved, ekstra) => beregn({ ...base(), strekninger: [rute(hoved)], andreRute: { strekning: rute(ekstra), ukedager: [4] } }).flereRuter
-    const id = (x) => PRESETS.findIndex((p) => p.id === x)
-    expect(hjelp(id('gulskogen'), id('heggedal'))).toBeTruthy()
-    expect(hjelp(id('gulskogen'), id('asker'))).toBeFalsy()
-    expect(hjelp(id('spikkestad'), id('heggedal'))).toBeFalsy()
-    expect(hjelp(id('spikkestad'), id('asker'))).toBeFalsy()
-  })
-  it('samme strekning to ganger får egen id og feiler ikke', () => {
-    const r = beregn({ ...base(), strekninger: [rute(0)], andreRute: { strekning: rute(0), ukedager: [4] } })
-    expect(r.feil).toBeNull()
-    expect(r.flereRuter).toBeTruthy()
-  })
-  it('uten ukedager eller priser brukes bare første strekning', () => {
-    const en = beregn({ ...base(), strekninger: [rute(0)] })
-    const tom = beregn({ ...base(), strekninger: [rute(0)], andreRute: { strekning: rute(8), ukedager: [] } })
-    expect(tom.flereRuter).toBeNull()
-    expect(tom.resultat.kostnad).toBe(en.resultat.kostnad)
-  })
-  it('eksisterende billett dekker bare første strekning', () => {
-    const eksisterende = { paa: true, type: 'maaned', til: '2026-11-05', klokke: '07:00' }
-    const r = beregn({ ...base(), strekninger: [rute(0)], eksisterende, andreRute: { strekning: rute(8), ukedager: [2, 3, 4] } })
-    const forst = r.resultat.billetter.filter((b) => b.strekningNavn === rute(8).navn).map((b) => b.aktivering).sort()[0]
-    expect(forst.slice(0, 10) <= '2026-10-08').toBe(true)
-  })
-})
-
 describe('årskort før mot etter prisøkning', () => {
   it('gir forskjellen på årskortet rett før og etter 1. februar', () => {
     const m = { ...standardModell('2026-10-04'), prisDato: '2026-10-02', fra: '2026-11-01', til: '2027-12-31', fraKlokke: '00:00' }

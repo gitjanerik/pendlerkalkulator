@@ -180,45 +180,8 @@ function optimaliserGruppe(turer, strekninger, opsjoner = {}) {
   return beste ?? { ...optimaliserKjerne(turer, strekninger, rest), reis: null }
 }
 
-// Turer med `rute` hører til én bestemt strekning (ulike strekninger ulike ukedager). Billettene gjelder bare sin
-// egen strekning, så rutene kan prises hver for seg og legges sammen. Turer uten rute (fritidsreiser) følger første strekning.
-// Ruter Reis-rabatten regnes per rute, så den undervurderes litt når begge rutene har mange enkeltreiser.
-function slaaSammen(planer) {
-  if (planer.some((p) => !p.mulig)) return { mulig: false, kostnad: null, billetter: [], udekteDager: [], fritid: [], reis: null }
-  const dager = new Map()
-  for (const d of planer.flatMap((p) => p.udekteDager)) {
-    const e = dager.get(d.dato)
-    if (e) Object.assign(e, { antallTurer: e.antallTurer + d.antallTurer, kostnad: e.kostnad + d.kostnad, estimert: e.estimert || d.estimert })
-    else dager.set(d.dato, { ...d })
-  }
-  const reis = planer.map((p) => p.reis).filter(Boolean)
-  return {
-    mulig: true,
-    estimert: planer.some((p) => p.estimert),
-    kostnad: planer.reduce((sum, p) => sum + p.kostnad, 0),
-    billetter: planer.flatMap((p) => p.billetter).sort((a, b) => a.aktivering.localeCompare(b.aktivering)),
-    udekteDager: [...dager.values()].sort((a, b) => a.dato.localeCompare(b.dato)),
-    enkeltReiser: planer.flatMap((p) => p.enkeltReiser).sort((a, b) => a.tid - b.tid),
-    fritid: planer.flatMap((p) => p.fritid).sort((a, b) => a.tid - b.tid),
-    reis: reis.length
-      ? {
-          enkeltreiser: reis.reduce((s, r) => s + r.enkeltreiser, 0),
-          rabatterte: reis.reduce((s, r) => s + r.rabatterte, 0),
-          maksProsent: Math.max(...reis.map((r) => r.maksProsent)),
-          besparelse: reis.reduce((s, r) => s + r.besparelse, 0),
-        }
-      : null,
-  }
-}
-
 export function optimaliser(turer, strekninger, opsjoner = {}) {
-  if (strekninger.length < 2 || !turer.some((t) => t.rute)) return optimaliserGruppe(turer, strekninger, opsjoner)
-  const forste = strekninger[0].id
-  const planer = strekninger
-    .map((s) => ({ s, turer: turer.filter((t) => (t.rute ?? forste) === s.id) }))
-    .filter((g) => g.turer.length)
-    .map((g) => optimaliserGruppe(g.turer, [g.s], opsjoner))
-  return slaaSammen(planer)
+  return optimaliserGruppe(turer, strekninger, opsjoner)
 }
 
 // Enkle alternativer å måle den optimale kjeden mot. Hver bruker én billettype

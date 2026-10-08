@@ -49,14 +49,9 @@ export function delingsParametre(modell) {
   if (!hoved) return params
   const nyDato = modell.nyePriser?.paa && ISO.test(modell.nyePriser.dato ?? '') ? modell.nyePriser.dato : null
   params.set('s', kod(hoved, Boolean(nyDato)))
-  const andre = modell.andreRute
-  if (andre?.strekning && andre.ukedager?.length) {
-    params.set('s2', kod(andre.strekning, Boolean(nyDato)))
-    params.set('d2', [...andre.ukedager].sort().join(''))
-  }
-  const harNye = [hoved, andre?.strekning].some((s) => s && kod(s, Boolean(nyDato)).includes('"ny":'))
+  const harNye = Boolean(kod(hoved, Boolean(nyDato)).includes('"ny":'))
   if (harNye) params.set('nd', nyDato)
-  const egendefinert = [hoved, andre?.strekning].some((s) => s && kod(s)[0] === '{')
+  const egendefinert = kod(hoved)[0] === '{'
   if (egendefinert && ISO.test(modell.prisDato ?? '')) params.set('pd', modell.prisDato)
   return params
 }
@@ -106,12 +101,10 @@ export function lesDeling(sok) {
   const q = new URLSearchParams(sok)
   const hoved = dekod(q.get('s'))
   if (!hoved) return null
-  const andre = dekod(q.get('s2'))
-  const ukedager = [...new Set([...(q.get('d2') ?? '')].map(Number))].filter((d) => d >= 0 && d <= 4).sort()
   const pd = q.get('pd')
   const nd = q.get('nd')
-  const harNye = Boolean(hoved.nye || andre?.nye)
-  return { hoved, andre: andre && ukedager.length ? { strekning: andre, ukedager } : null, prisDato: ISO.test(pd ?? '') ? pd : null, nyDato: harNye && ISO.test(nd ?? '') ? nd : null }
+  const harNye = Boolean(hoved.nye)
+  return { hoved, prisDato: ISO.test(pd ?? '') ? pd : null, nyDato: harNye && ISO.test(nd ?? '') ? nd : null }
 }
 
 // Egendefinerte strekninger legges blant mottakerens egne, så de kan velges og endres som andre.
@@ -126,11 +119,9 @@ export function brukDeling(modell, deling) {
     return ny
   }
   const hoved = plasser(deling.hoved)
-  const andre = deling.andre ? { strekning: plasser(deling.andre.strekning), ukedager: deling.andre.ukedager } : null
   return {
     ...modell,
     strekninger: [hoved],
-    andreRute: andre,
     egneStasjoner: egne,
     prisDato: deling.prisDato ?? modell.prisDato,
     nyePriser: deling.nyDato ? { paa: true, dato: deling.nyDato } : { paa: false, dato: '' },

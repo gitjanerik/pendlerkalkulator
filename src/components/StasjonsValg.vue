@@ -1,10 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import StasjonsChips from './StasjonsChips.vue'
-import PrefBryter from './PrefBryter.vue'
-import { PRESETS, strekningFraPreset } from '../lib/presets.js'
 import { UKEDAGER_KORT } from '../lib/dagmonster.js'
-import { dekketAvHoved } from '../lib/modell.js'
 
 const m = defineModel({ type: Object })
 const valgt = computed(() => m.value.strekninger[0])
@@ -12,27 +9,6 @@ const bildag = (i) => {
   const s = new Set(m.value.bilUkedager)
   s.has(i) ? s.delete(i) : s.add(i)
   m.value.bilUkedager = [...s].sort()
-}
-
-const startAapen = !!m.value.andreRute
-const harAndre = computed({
-  get: () => Boolean(m.value.andreRute),
-  set: (paa) => {
-    if (!paa) {
-      m.value.andreRute = null
-      return
-    }
-    // Starter med en annen forhåndsvalgt strekning og siste jobbdag i uka.
-    const annen = PRESETS.find((p) => p.id !== valgt.value?.id) ?? PRESETS[0]
-    const siste = Math.max(...(m.value.jobbUkedager ?? [4]).filter((d) => d < 5), 4)
-    m.value.andreRute = { strekning: strekningFraPreset(annen, annen.id), ukedager: [siste] }
-  },
-})
-const dekket = computed(() => dekketAvHoved(m.value.andreRute?.strekning, valgt.value))
-const andreDag = (i) => {
-  const s = new Set(m.value.andreRute.ukedager)
-  s.has(i) ? s.delete(i) : s.add(i)
-  m.value.andreRute.ukedager = [...s].sort()
 }
 </script>
 
@@ -56,24 +32,5 @@ const andreDag = (i) => {
         </button>
       </div>
     </div>
-
-    <details class="mt-4 border-t border-[var(--color-line)] pt-1" :open="startAapen">
-      <summary class="vis-pil min-h-11 font-medium text-[var(--color-ink)]">Avansert: annen strekning noen dager</summary>
-      <PrefBryter v-model="harAndre" tittel="Annen strekning noen dager" tekst="Reiser du fra en annen stasjon eller til et annet sted enkelte ukedager? Hver strekning får egne billetter." />
-      <div v-if="m.andreRute" class="mt-2">
-        <StasjonsChips v-model="m" rute="b" />
-        <p class="etikett mt-4" id="andre-dager">Ukedager på den andre strekningen</p>
-        <div class="flex flex-wrap gap-2" role="group" aria-labelledby="andre-dager">
-          <button v-for="(d, i) in UKEDAGER_KORT.slice(0, 5)" :key="d" type="button" class="chip" :aria-pressed="m.andreRute.ukedager.includes(i)" @click="andreDag(i)">{{ d }}</button>
-        </div>
-        <p v-if="dekket" class="mt-2 text-sm text-[var(--color-ink-2)]">
-          Billetten din fra {{ valgt?.navn.split('–')[0] }} gjelder også til {{ m.andreRute.strekning.navn.split('–')[0] }}, så denne strekningen koster ikke ekstra.
-        </p>
-        <p v-else class="mt-2 text-sm text-[var(--color-ink-2)]">
-          <template v-if="!m.andreRute.ukedager.length">Velg minst én ukedag, ellers brukes bare den første strekningen.</template>
-          <template v-else>Resten av jobbdagene bruker {{ valgt?.navn.split('–')[0] }}. Fritidsreiser og billetten du har nå gjelder for den første strekningen.</template>
-        </p>
-      </div>
-    </details>
   </section>
 </template>

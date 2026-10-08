@@ -1,3 +1,9 @@
+## 2026-10-08 — v3.0.2: Fjernet «annen strekning noen dager»
+
+Valget om en annen strekning på enkelte ukedager er fjernet, med alt som hørte til: beregning, deling via lenke og linjedata. Appen regner igjen med én strekning om gangen. Delingslenker med `s2` og `d2` åpnes fortsatt, men den andre strekningen ignoreres.
+
+---
+
 ## 2026-10-08 — v3.0.1: Strekning innenfor hovedstrekningen koster ikke ekstra
 
 Velger du en annen strekning noen dager, og den ligger innenfor hovedstrekningen på samme linje (for eksempel Drammen–Oslo S når du har Gulskogen–Oslo S, eller Heggedal–Oslo S når du har Spikkestad–Oslo S), dekkes den nå av hovedbilletten og legges ikke til som ekstra kostnad. Appen sier fra om det under valget. Egne strekninger regnes ikke som dekket.
