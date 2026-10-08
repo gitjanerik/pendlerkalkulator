@@ -163,7 +163,7 @@ const uker = computed(() => {
 <template>
   <section class="kort" aria-labelledby="bt-tittel">
     <h2 id="bt-tittel" class="seksjonstittel">Billettene dine</h2>
-    <div class="mt-3 flex flex-wrap gap-1 rounded-xl border border-[var(--color-edge)] p-0.5" role="group" aria-label="Visning">
+    <div class="segmentkontroll mt-3" role="group" aria-label="Visning">
       <button v-for="v in VISNINGER" :key="v.id" type="button" class="visning" :aria-pressed="visning === v.id" @click="visning = v.id">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden sm:block" aria-hidden="true"><path :d="v.ikon" /></svg>
         {{ v.navn }}
@@ -274,11 +274,11 @@ const uker = computed(() => {
           <p class="font-semibold">{{ dagerTekst(detalj.dager) }} · {{ kr(detalj.pris) }}<Estimat v-if="detalj.estimert" /></p>
           <dl class="mt-1 grid grid-cols-[auto_1fr] gap-x-3 text-[var(--color-ink-2)]">
             <template v-if="utfall.flereRuter"><dt>Strekning</dt><dd>{{ detalj.strekningNavn }}</dd></template>
-            <dt>Aktiver</dt><dd>{{ norskTidspunkt(detalj.aktivering) }}</dd>
+            <dt>Aktiveres</dt><dd>{{ norskTidspunkt(detalj.aktivering) }}</dd>
             <dt>Utløper</dt><dd>{{ norskTidspunkt(detalj.utloper) }}</dd>
             <dt>Dekker</dt><dd>{{ detalj.antallTurer }} reiser</dd>
           </dl>
-          <p v-if="detalj.passPaa" class="mt-2 text-[var(--color-warn)]"><span aria-hidden="true">⚠ </span>Tett margin – aktiver i tide.</p>
+          <p v-if="detalj.passPaa" class="mt-2 text-[var(--color-warn)]"><span aria-hidden="true">⚠ </span>Tett margin: aktiver billetten i god tid.</p>
         </div>
         <p v-else class="mt-3 text-sm text-[var(--color-ink-2)]">{{ visning === 'kalender' ? 'Trykk på en farget dag for detaljer.' : 'Trykk på en billett for detaljer.' }}</p>
       </div>
@@ -287,7 +287,7 @@ const uker = computed(() => {
     <template v-else>
       <div class="mt-4 overflow-x-auto" role="region" aria-label="Tabell over billettene" tabindex="0">
         <table class="w-full min-w-[40rem] border-collapse text-left text-sm whitespace-nowrap tabular-nums">
-          <caption class="sr-only">Periodebillettene i billigste løsning</caption>
+          <caption class="sr-only">Periodebillettene i beregningen</caption>
           <thead class="text-sm text-[var(--color-ink-3)]">
             <tr>
               <th scope="col" class="sticky left-0 z-10 bg-[var(--color-surface)] shadow-[1px_0_0_var(--color-line)] py-2 pr-3 font-medium">Uke</th>
@@ -324,7 +324,7 @@ const uker = computed(() => {
           </tfoot>
         </table>
       </div>
-      <p class="mt-2 text-sm text-[var(--color-ink-3)]">Utnyttelse = reiser billetten dekker ÷ reiser en full arbeidsuke (man–fre) ville gitt i gyldighetstiden. Hjemmekontor, ferie og fridager gir lavere tall.<template v-if="sum.estimert"> * Estimert pris med prisøkning.</template></p>
+      <p class="mt-2 text-sm text-[var(--color-ink-3)]">Utnyttelse = reisene billetten dekker, delt på reisene en full arbeidsuke (man–fre) ville gitt i gyldighetstiden. Hjemmekontor, ferie og fridager gir lavere tall.<template v-if="sum.estimert"> * Estimert pris med prisøkning.</template></p>
       <p class="mt-2 text-sm text-[var(--color-ink-3)]">Summen er hele billettprisene. Hovedtallet regner siste billett forholdsmessig og tar også med enkeltbilletter og tillegg.</p>
     </template>
 

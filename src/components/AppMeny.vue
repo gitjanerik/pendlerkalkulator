@@ -43,7 +43,7 @@ let delTimer
 const del = async () => {
   const url = delingsUrl(m.value, `${window.location.origin}${window.location.pathname}`)
   if (!url) return
-  const data = { title: 'Pendlerkalkulator', text: `Pendlerkalkulator: ${m.value.strekninger[0].navn.replace('–', ' – ')}`, url }
+  const data = { title: 'Pendlerkalkulator', text: `Pendlerkalkulator: ${m.value.strekninger[0].navn.replace('–', ' – ')}. Sjekk prisene mot Vy eller Ruter.`, url }
   if (typeof navigator.share === 'function' && navigator.canShare?.(data) !== false) {
     try {
       await navigator.share(data)
@@ -56,7 +56,7 @@ const del = async () => {
     await navigator.clipboard.writeText(url)
     delStatus.value = 'Lenken er kopiert.'
   } catch {
-    delStatus.value = 'Kunne ikke kopiere lenken.'
+    delStatus.value = 'Kunne ikke kopiere lenken. Prøv igjen, eller kopier adressen fra nettleseren.'
   }
   clearTimeout(delTimer)
   delTimer = setTimeout(() => (delStatus.value = ''), 4000)
@@ -110,17 +110,17 @@ const klikkBakgrunn = (e) => {
       </div>
 
       <div class="-mt-4 text-sm text-[var(--color-ink-2)]">
-        <p>Lønner det seg å fornye månedskortet? Sammenlign periodebilletter og finn billigste kombinasjon for din arbeidsuke.</p>
+        <p>Lønner det seg å fornye månedskortet? Appen sammenligner periodebilletter ut fra prisene du legger inn, og viser en beregning for arbeidsuka di.</p>
         <details class="mt-2">
-          <summary class="vis-pil min-h-11 font-medium text-[var(--color-ink)]">Lei av månedsbasert billettpsykose?</summary>
-          <p class="mt-1">Som pendler er det surt å subsidiere Vy med dårlig utnyttede ukes- og månedskort. Legg inn ferie og fravær i god tid, så finner appen billigste totalpris. Jo lengre periode, jo bedre optimalisering.</p>
+          <summary class="vis-pil min-h-11 font-medium text-[var(--color-ink)]">Hvorfor bruke appen?</summary>
+          <p class="mt-1">Har du ferie, fri eller hjemmekontor, kan du betale for billetter du ikke bruker. Legg inn ferie og fri i god tid, så beregner appen en kombinasjon av periodebilletter ut fra prisene dine. Jo lengre periode du velger, jo bedre kan billettene tilpasses. Gevinsten er ofte liten, og det kan lønne seg å beholde det du har.</p>
         </details>
       </div>
 
       <template v-if="!wizard">
         <section aria-labelledby="m-dager" class="flex flex-col">
           <h3 id="m-dager" class="seksjonstittel mb-1">Fri og ferie</h3>
-          <PrefBryter v-model="m.innstillinger.jobberPaaskeMandagOnsdag" tittel="Jobber i påske mandag–onsdag" tekst="Skjærtorsdag til 2. påskedag er alltid fri." />
+          <PrefBryter v-model="m.innstillinger.jobberPaaskeMandagOnsdag" tittel="Jobber mandag–onsdag i påskeuka" tekst="Skjærtorsdag til 2. påskedag er alltid fri." />
           <PrefBryter v-model="m.innstillinger.jobberRomjul" tittel="Jobber i romjul" tekst="27.–30. desember. Julaften og nyttårsaften er alltid fri." />
           <div class="mt-3"><FerieListe v-model="m" /></div>
         </section>
@@ -138,7 +138,7 @@ const klikkBakgrunn = (e) => {
         </section>
 
         <section aria-labelledby="m-tider" class="flex flex-col gap-3">
-          <h3 id="m-tider" class="seksjonstittel">Avreisetid</h3>
+          <h3 id="m-tider" class="seksjonstittel">Avreisetider</h3>
           <div class="felt-par">
             <div>
               <label class="etikett" for="morgen">Fra {{ stasjon }}</label>
@@ -167,14 +167,14 @@ const klikkBakgrunn = (e) => {
               <input id="prisdato" v-model="m.prisDato" class="felt" type="date" />
             </div>
           </div>
-          <PrefBryter v-if="m.nyePriser" v-model="m.nyePriser.paa" tittel="Nye priser fra en dato" tekst="Midlertidig: legg inn nye priser ved siden av dagens. Dagens priser gjelder før datoen, de nye fra og med den." />
+          <PrefBryter v-if="m.nyePriser" v-model="m.nyePriser.paa" tittel="Nye priser fra en dato" tekst="Har du fått beskjed om nye priser? Legg dem inn ved siden av dagens. Dagens priser gjelder før datoen, de nye fra og med den." />
           <div v-if="m.nyePriser?.paa" class="mt-2">
             <label class="etikett" for="nyprisdato">Nye priser gjelder fra</label>
             <input id="nyprisdato" v-model="m.nyePriser.dato" class="felt" type="date" :min="m.prisDato" />
-            <p class="mt-1 text-sm text-[var(--color-ink-3)]">Fyll ut nye priser under hver strekning. Felt du lar stå tomme regnes som uendret. Fra og med datoen kan prosentøkningen komme på toppen ved neste prisøkning.</p>
+            <p class="mt-1 text-sm text-[var(--color-ink-3)]">Fyll inn nye priser under hver strekning. Felt du lar stå tomme regnes som uendret. Fra og med datoen kan prosentøkningen komme på toppen ved neste prisøkning.</p>
           </div>
           <Varsel v-if="gamlePriser" class="mt-3">
-            Prisene ble registrert {{ norskDatoLang(m.prisDato) }}, for mer enn tre måneder siden. Sjekk dem mot Vy og Ruter, og endre datoen når du har oppdatert.
+            Prisene ble registrert {{ norskDatoLang(m.prisDato) }}, for mer enn tre måneder siden. Sjekk dem mot Vy og Ruter, og endre datoen når du har oppdatert prisene.
           </Varsel>
 
           <details v-for="{ s, nokkel } in prisStrekninger" :key="nokkel" class="mt-3 rounded-xl border border-[var(--color-line)] px-3">
@@ -207,14 +207,14 @@ const klikkBakgrunn = (e) => {
                   <Beloep :id="`ny-p-${nokkel}-${p.dager}`" v-model="p.pris" placeholder="Uendret" />
                 </div>
               </template>
-              <p class="col-span-2 text-sm text-[var(--color-ink-3)]">Forslagsprisene er Vys voksenpriser {{ PRESET_DATO }}. Sjekk dem mot appen.</p>
+              <p class="col-span-2 text-sm text-[var(--color-ink-3)]">Forslagsprisene er Vys voksenpriser {{ PRESET_DATO }}. Sjekk dem mot Vy-appen.</p>
             </div>
           </details>
         </section>
 
         <section aria-labelledby="m-del" class="flex flex-col gap-3">
           <h3 id="m-del" class="seksjonstittel">Del</h3>
-          <p class="text-sm text-[var(--color-ink-2)]">Send en lenke med strekning, priser og eventuelle nye priser til en bekjent. Ferie, fritidsreiser og billetten du har nå følger ikke med.</p>
+          <p class="text-sm text-[var(--color-ink-2)]">Send en lenke med strekning og priser, også nye priser hvis du har lagt dem inn. Ferie, fritidsreiser og billetten du har nå følger ikke med. Mottakeren bør sjekke prisene mot Vy eller Ruter.</p>
           <button type="button" class="knapp" @click="del">Del lenke</button>
           <p role="status" class="text-sm text-[var(--color-ink-2)]">{{ delStatus }}</p>
         </section>
@@ -250,11 +250,11 @@ const klikkBakgrunn = (e) => {
 
   <dialog ref="bekreft" class="bekreft" aria-labelledby="bk-tittel" aria-describedby="bk-tekst">
     <div class="flex flex-col gap-3 p-5">
-      <h2 id="bk-tittel" class="text-lg font-semibold">Er du sikker?</h2>
+      <h2 id="bk-tittel" class="text-lg font-semibold">Nullstille alt?</h2>
       <p id="bk-tekst" class="text-[var(--color-ink-2)]">
-        Alt du har lagt inn fjernes: ferie, billetten du har nå, egne priser og andre innstillinger. Du starter oppsettet på nytt. Hjemstasjonene du har lagt til beholdes, med mindre du slår på bryteren under.
+        Alt du har lagt inn fjernes: ferie, billetten du har nå, egne priser og andre innstillinger. Du starter oppsettet på nytt. Strekningene du har lagt til beholdes, med mindre du slår på bryteren under.
       </p>
-      <PrefBryter v-model="slettStasjoner" tittel="Slett også egne hjemstasjoner" tekst="Stasjonene og prisene du la inn fjernes." />
+      <PrefBryter v-model="slettStasjoner" tittel="Slett også egne strekninger" tekst="Strekningene og prisene du la inn fjernes." />
       <div class="flex justify-end gap-2">
         <button type="button" class="knapp" autofocus @click="bekreft.close()">Avbryt</button>
         <button type="button" class="knapp knapp-fare" @click="nullstillNaa">Ja, nullstill</button>

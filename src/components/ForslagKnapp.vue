@@ -18,9 +18,9 @@ async function foreslaa() {
     const f = await foreslaaAvganger(hjem, oslo, idagIso(), { morgen: m.value.morgen, ettermiddag: m.value.ettermiddag })
     if (f.morgen) m.value.morgen = f.morgen
     if (f.ettermiddag) m.value.ettermiddag = f.ettermiddag
-    if (!f.morgen || !f.ettermiddag) melding.value = 'Fant ikke alle avgangene. Fyll inn selv.'
+    if (!f.morgen || !f.ettermiddag) melding.value = 'Fant ikke alle avgangene. Fyll inn tidene selv.'
   } catch {
-    melding.value = 'Fikk ikke kontakt med Entur. Fyll inn selv.'
+    melding.value = 'Fikk ikke kontakt med Entur. Sjekk nettforbindelsen, eller fyll inn tidene selv.'
   } finally {
     laster.value = false
   }
@@ -31,7 +31,7 @@ async function foreslaa() {
   <div class="flex flex-col gap-2">
     <!-- aria-disabled i stedet for disabled, så fokus blir stående mens det lastes. -->
     <button type="button" class="chip self-start px-3 aria-disabled:opacity-60" :aria-disabled="laster" @click="foreslaa">
-      {{ laster ? 'Henter …' : 'Foreslå fra Entur' }}
+      {{ laster ? 'Henter tider …' : 'Foreslå tider fra Entur' }}
     </button>
     <p v-if="melding" class="text-sm" role="status">{{ melding }}</p>
   </div>

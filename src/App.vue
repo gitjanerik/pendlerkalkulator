@@ -57,15 +57,18 @@ const settDager = (n) => (modell.jobbUkedager = [...MONSTER[n]]);
 
 <template>
   <header
-    class="sticky top-0 z-20 border-b border-[var(--color-line)] bg-[var(--color-app)]"
+    class="topp sticky top-0 z-20"
   >
-    <div class="mx-auto flex max-w-xl items-center gap-2 px-2 py-1">
+    <div class="mx-auto flex max-w-xl items-center gap-2 px-2 py-1.5">
       <MenyKnapp
         :apen="menyApen"
         @click="menyApen = true"
       />
+      <span class="logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3l-3 18M17 3l3 18M5.5 9h13M4.8 15h14.4" /></svg>
+      </span>
       <div class="min-w-0 leading-tight">
-        <h1 class="text-lg font-semibold">Pendlerkalkulator</h1>
+        <h1 class="text-lg font-bold tracking-tight">Pendlerkalkulator</h1>
         <p v-if="modell.oppsettFerdig && strekning" class="truncate text-sm text-[var(--color-ink-2)]">{{ strekning }}</p>
       </div>
     </div>
@@ -77,12 +80,12 @@ const settDager = (n) => (modell.jobbUkedager = [...MONSTER[n]]);
       <!-- Snakkeboble: pila peker opp på tannhjulet (midt i 44 px-knappen, 30 px fra kanten) -->
       <aside
         v-if="!modell.infoLukket"
-        class="relative -mt-1 rounded-2xl rounded-tl-sm bg-[var(--color-accent)] py-3 pl-4 pr-12 text-sm text-[var(--color-on-accent)] shadow-[0_4px_10px_-2px_rgb(0_0_0/0.3)]"
+        class="relative -mt-1 rounded-2xl rounded-tl-sm bg-[linear-gradient(135deg,var(--color-accent-hi),var(--color-accent-lo))] py-3 pl-4 pr-12 text-sm font-medium text-[var(--color-on-accent)] shadow-[var(--shadow-lofte)]"
         aria-label="Tips"
       >
-        <span class="absolute -top-2.5 left-1 h-0 w-0 border-x-[10px] border-b-[10px] border-x-transparent border-b-[var(--color-accent)]" aria-hidden="true"></span>
+        <span class="absolute -top-2.5 left-1 h-0 w-0 border-x-[10px] border-b-[10px] border-x-transparent border-b-[var(--color-accent-hi)]" aria-hidden="true"></span>
         <p class="relative">
-          Ferie, fritid, hjemstasjon og priser tilpasser du i Innstillinger.
+          Ferie, fritidsreiser, strekning og priser endrer du under Innstillinger (tannhjulet).
         </p>
         <button
           type="button"
@@ -94,12 +97,12 @@ const settDager = (n) => (modell.jobbUkedager = [...MONSTER[n]]);
         </button>
       </aside>
       <Varsel v-if="deltVarsel" lukkbar @lukk="lukkDelt">
-        <p>Åpnet delt strekning: {{ deltVarsel }}.</p>
+        <p>Du åpnet en lenke med strekningen {{ deltVarsel }} og tilhørende priser. Sjekk prisene mot Vy eller Ruter. Ferie, fritidsreiser og billetten du har nå fulgte ikke med.</p>
         <button v-if="tilbyInstall" type="button" class="knapp mt-2" @click="installer().finally(fokuserInnhold)">Installer som app</button>
       </Varsel>
       <Varsel v-if="januarVarsel" lukkbar @lukk="lukkJanuar">
-        <p>Prisene endres ofte rundt nyttår. Sjekk at prisene dine er oppdatert.</p>
-        <button type="button" class="mt-1 min-h-11 font-medium underline" @click="menyApen = true">Åpne innstillinger</button>
+        <p>Prisene endres ofte rundt nyttår. Sjekk at prisene i appen stemmer.</p>
+        <button type="button" class="mt-1 min-h-11 font-medium underline" @click="menyApen = true">Sjekk prisene i Innstillinger</button>
       </Varsel>
       <!-- Resultatet står rett over det som styrer det, så tallet er synlig uten å rulle. -->
       <p v-if="utfall.feil" class="kort text-[var(--color-bad)]" role="alert">
@@ -129,7 +132,7 @@ const settDager = (n) => (modell.jobbUkedager = [...MONSTER[n]]);
           <p v-if="utfall.aarskort.lonnerSeg">
             Årskort sparer deg {{ kr(utfall.aarskort.besparelse) }}<Estimat v-if="utfall.aarskort.estimert" /> i perioden.
           </p>
-          <p v-else>Årskort lønner seg ikke for denne perioden.</p>
+          <p v-else>Årskort lønner seg ikke i denne perioden.</p>
           <p v-if="utfall.aarskort.estimert" class="mt-1 text-sm">
             * Estimat: antar {{ utfall.prisokningProsent }} % årlig prisøkning rundt 1. februar.
           </p>
@@ -157,7 +160,7 @@ const settDager = (n) => (modell.jobbUkedager = [...MONSTER[n]]);
           v-if="modell.eksisterende.paa && modell.eksisterende.til"
           class="kort text-sm text-[var(--color-ink-2)]"
         >
-          Din eksisterende periodebillett gjelder til
+          Periodebilletten du har nå gjelder til
           {{
             norskTidspunkt(
               `${modell.eksisterende.til}T${modell.eksisterende.klokke}`,
