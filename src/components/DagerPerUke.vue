@@ -10,7 +10,7 @@ const veksle = (i) => {
   const s = new Set(m.value.jobbUkedager)
   if (s.has(i)) {
     if (s.size === 1) {
-      melding.value = 'Minst én dag må være valgt.'
+      melding.value = 'Du må ha minst én dag valgt. Velg en annen dag først.'
       return
     }
     s.delete(i)
@@ -19,7 +19,7 @@ const veksle = (i) => {
   m.value.jobbUkedager = [...s].sort()
 }
 const tittel = computed(() =>
-  antall.value === 5 ? 'Full pendleruke' : antall.value === 1 ? '1 dag pendling i uka' : `${antall.value} dager pendling`,
+  antall.value === 5 ? 'Full pendleruke' : antall.value === 1 ? '1 dag pendling i uka' : `${antall.value} dager pendling i uka`,
 )
 </script>
 

@@ -28,7 +28,7 @@ const sparing = computed(() => {
   const v = valgt.value
   const full = p.monster.find((m) => m.antall === 5)
   if (!v?.kostnad || !full?.kostnad) return ''
-  if (v.antall === 5) return 'Uten hjemmekontor er sammenligningsgrunnlaget.'
+  if (v.antall === 5) return 'Vi sammenligner med en full pendleruke uten hjemmekontor.'
   const d = full.kostnad - v.kostnad
   if (d <= 0) return `Uten hjemmekontor ville det kostet ${kr(full.kostnad)}.`
   return `Uten hjemmekontor ville det kostet ${kr(full.kostnad)} – du sparer ${kr(d)}.`

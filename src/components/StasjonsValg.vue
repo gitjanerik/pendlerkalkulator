@@ -66,7 +66,7 @@ const andreDag = (i) => {
         </div>
         <p class="mt-2 text-sm text-[var(--color-ink-2)]">
           <template v-if="!m.andreRute.ukedager.length">Velg minst én ukedag, ellers brukes bare den første strekningen.</template>
-          <template v-else>Resten av jobbdagene bruker {{ valgt?.navn.split('–')[0] }}. Fritidsreiser og eksisterende billett gjelder den første strekningen.</template>
+          <template v-else>Resten av jobbdagene bruker {{ valgt?.navn.split('–')[0] }}. Fritidsreiser og billetten du har nå gjelder for den første strekningen.</template>
         </p>
       </div>
     </details>

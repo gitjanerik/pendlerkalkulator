@@ -18,10 +18,10 @@ onBeforeUnmount(() => clearTimeout(tidtaker))
 </script>
 
 <template>
-  <section class="kort" aria-labelledby="ht-tittel">
-    <h2 id="ht-tittel" class="seksjonstittel">Billigste løsning</h2>
-    <p class="mt-2 text-[clamp(1.75rem,11vw,3rem)] leading-tight font-semibold tabular-nums break-words">{{ kr(utfall.perMaaned) }}<Estimat v-if="utfall.resultat.estimert" /><span class="text-base font-normal text-[var(--color-ink-2)]"> i måneden</span></p>
-    <p class="mt-2 text-[var(--color-ink-2)]">
+  <section class="kort hero" aria-labelledby="ht-tittel">
+    <h2 id="ht-tittel" class="text-sm font-semibold tracking-wide text-[var(--color-accent-text)]">Beregnet kostnad</h2>
+    <p class="hero-tall mt-2 text-[clamp(2.5rem,15vw,4.25rem)] leading-none font-extrabold tracking-tight tabular-nums break-words">{{ kr(utfall.perMaaned) }}<Estimat v-if="utfall.resultat.estimert" /><span class="mt-1 block text-lg font-medium tracking-normal text-[var(--color-ink-2)]">i måneden</span></p>
+    <p class="mt-3 text-lg text-[var(--color-ink-2)]">
       ca. <strong class="text-[var(--color-ink)]">{{ kr(utfall.resultat.kostnad) }}</strong><Estimat v-if="utfall.resultat.estimert" /> i perioden
     </p>
     <p class="sr-only" role="status">{{ kunngjoring }}</p>
@@ -41,3 +41,20 @@ onBeforeUnmount(() => clearTimeout(tidtaker))
     </p>
   </section>
 </template>
+
+<style scoped>
+.hero {
+  background:
+    radial-gradient(28rem 14rem at 100% 0%, color-mix(in srgb, var(--color-accent) 16%, transparent), transparent 70%),
+    var(--color-surface);
+  border-color: color-mix(in srgb, var(--color-accent) 35%, var(--color-line));
+}
+.hero-tall {
+  color: var(--color-accent-text);
+}
+@media (forced-colors: active) {
+  .hero {
+    border-color: ButtonText;
+  }
+}
+</style>

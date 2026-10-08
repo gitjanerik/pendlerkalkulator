@@ -15,7 +15,7 @@ const hjelp = computed(() =>
   !automatisk.value
     ? 'Valgt av deg. Reiser før dette klokkeslettet regnes ikke med.'
     : m.value.fra === idagIso()
-      ? 'Følger klokka nå, så reiser som allerede har gått regnes ikke med. Endre klokkeslettet hvis du for eksempel først skal fornye billetten i ettermiddag.'
+      ? 'Følger klokka nå, så reiser som allerede har gått regnes ikke med. Endre klokkeslettet hvis du først skal fornye billetten senere i dag.'
       : 'Starter ved midnatt på startdatoen. Velg et klokkeslett for å begynne senere den dagen.',
 )
 const LENGDER = [1, 3, 6, 12, 24]
@@ -76,7 +76,7 @@ const dager = computed(() => (m.value.fra && m.value.til >= m.value.fra ? datoer
       </button>
     </div>
     <p class="mt-1 text-sm text-[var(--color-ink-2)]">{{ hjelp }}</p>
-    <PrefBryter v-model="m.sisteFullPris" tittel="Optimer for selve perioden" tekst="Finner billigste billetter for akkurat denne perioden, så siste billett koster full pris selv om den varer lenger enn sluttdatoen. Fjern avkryssingen hvis du skal reise videre etter sluttdatoen; da regnes siste billett forholdsmessig." />
+    <PrefBryter v-model="m.sisteFullPris" tittel="Tilpass billettene til selve perioden" tekst="Beregner billetter for akkurat denne perioden. Siste billett koster full pris, selv om den varer lenger enn sluttdatoen. Skal du reise videre etter sluttdatoen, slår du bryteren av. Da regnes siste billett forholdsmessig." />
     <p v-if="dager" class="mt-3 text-sm text-[var(--color-ink-2)]">{{ dager }} dager</p>
   </section>
 </template>

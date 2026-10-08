@@ -11,9 +11,9 @@ const status = (r) => {
   const { forhold, maal } = fritid.value
   if (forhold === 'utenfor') return `${maal} ligger ikke på veien til flyplassen. Kjøp enkeltbillett hele veien.`
   const rest = forhold === 'bak' ? `Kjøp bare tillegget ${maal}–Oslo lufthavn.` : `Flyplassen ligger før ${maal}, så du trenger ingen ekstra billett.`
-  if (r.dekning === 'periode') return `Dekket av ${r.dager >= 365 ? 'årskortet' : `${r.dager}-dagersbilletten`}. ${rest}`
+  if (r.dekning === 'periode') return `Dekket av ${r.dager >= 365 ? 'årskortet' : r.dager === 7 ? 'ukeskortet' : 'månedskortet'}. ${rest}`
   if (r.dekning === 'eksisterende') return `Dekket av billetten du har nå. ${rest}`
-  return 'Ingen periodebillett gyldig. Kjøp én enkeltbillett hele veien.'
+  return 'Ingen gyldig periodebillett. Kjøp én enkeltbillett hele veien.'
 }
 </script>
 
@@ -21,7 +21,7 @@ const status = (r) => {
   <section v-if="fritid" class="kort" aria-labelledby="fr-tittel">
     <h2 id="fr-tittel" class="seksjonstittel">Fritidsreiser til Oslo lufthavn</h2>
     <p class="mt-1 text-sm text-[var(--color-ink-2)]">
-      Til sammen {{ kr(fritid.sum) }}<Estimat v-if="fritid.estimert" />, med i totalen.
+      Til sammen {{ kr(fritid.sum) }}<Estimat v-if="fritid.estimert" />, og er med i totalen.
     </p>
     <ul class="mt-3 flex flex-col divide-y divide-[var(--color-line)]">
       <li v-for="r in fritid.reiser" :key="r.tid + r.retning" class="py-2 text-sm">

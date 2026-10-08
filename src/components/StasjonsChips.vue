@@ -177,7 +177,7 @@ const slett = async () => {
     <form v-if="modus" :id="`${pre}-skjema`" ref="skjemaEl" class="mt-3 flex flex-col gap-3 rounded-xl border border-[var(--color-line)] p-3" novalidate @submit.prevent="lagre">
       <h4 class="font-semibold">{{ modus === 'ny' ? 'Ny strekning' : `Rediger ${strekningsvalg(valgtEgen)}` }}</h4>
       <p class="text-sm text-[var(--color-ink-2)]">Voksenpriser for strekningen. Du kan finne dem i Vy- eller Ruter-appen.</p>
-      <p v-if="feilListe.length" class="text-sm text-[var(--color-bad)]" role="alert">Rett {{ feilListe.length === 1 ? 'feltet' : 'feltene' }} med feil før du lagrer.</p>
+      <p v-if="feilListe.length" class="text-sm text-[var(--color-bad)]" role="alert">Du må rette {{ feilListe.length === 1 ? 'feltet' : 'feltene' }} med feil før du kan lagre.</p>
       <StasjonsSok
         :id="`${pre}-navn`"
         ref="fraSok"

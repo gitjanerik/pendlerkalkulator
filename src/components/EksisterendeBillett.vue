@@ -46,7 +46,7 @@ watch(
       </div>
       <details class="text-sm text-[var(--color-ink-2)]">
         <summary class="vis-pil min-h-11 py-2 font-medium">Når starter den nye billetten?</summary>
-        <p>Beregningen starter når billetten din utløper. Vi foreslår aldri ny billett rett etter utløp, men ved neste arbeidsreise. Gjelder billetten til fredag ettermiddag, starter den nye for eksempel mandag morgen. Vi tar også høyde for hvilke arbeidsdager du har valgt.</p>
+        <p>Beregningen starter når billetten utløper. Ny billett foreslås ikke rett etter utløp, men ved neste arbeidsreise. Utløper billetten fredag ettermiddag, starter den nye for eksempel mandag morgen. Arbeidsdagene du har valgt tas også med.</p>
       </details>
     </div>
   </div>

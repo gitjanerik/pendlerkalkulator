@@ -23,7 +23,7 @@ async function lesFil(e) {
   gjentakende.value = antall
   // Heldagshendelser er oftest ferie og fri; møter og lignende krysses av for hånd.
   valgt.value = new Set(liste.flatMap((h, i) => (h.heldag ? [i] : [])))
-  melding.value = liste.length ? '' : 'Fant ingen hendelser i filen.'
+  melding.value = liste.length ? '' : 'Fant ingen hendelser i filen. Sjekk at du valgte en kalenderfil (.ics).'
   dlg.value.showModal()
 }
 
@@ -65,7 +65,7 @@ const periode = (h) => (h.fra === h.til ? norskDato(h.fra, true) : `${norskDato(
               <input type="checkbox" class="mt-1 h-5 w-5 shrink-0 accent-[var(--color-accent)]" :checked="valgt.has(i)" @change="veksle(i)" />
               <span class="min-w-0">
                 <span class="block font-medium break-words">{{ h.navn }}</span>
-                <span class="block text-sm text-[var(--color-ink-2)]">{{ periode(h) }}{{ h.heldag ? '' : ' · tidsfestet' }}</span>
+                <span class="block text-sm text-[var(--color-ink-2)]">{{ periode(h) }}{{ h.heldag ? '' : ' · med klokkeslett' }}</span>
               </span>
             </label>
           </li>
