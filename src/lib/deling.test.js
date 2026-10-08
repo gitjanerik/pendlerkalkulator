@@ -59,16 +59,14 @@ describe('deling', () => {
     expect(igjen.egneStasjoner).toHaveLength(1)
   })
 
-  it('tar med andre strekning og ukedager, men ikke ferie, fritid eller billett', () => {
+  it('tar ikke med ferie, fritid eller billett', () => {
     const m = modell()
-    m.andreRute = { strekning: strekningFraPreset(PRESETS[1], 'drammen'), ukedager: [0, 2] }
     m.ferie = [{ fra: '2026-12-01', til: '2026-12-05' }]
     m.fritidsreiser = [{ fra: '2026-11-01', til: '2026-11-03' }]
     m.eksisterende = { paa: true, type: 'maaned', til: '2026-11-01', klokke: '07:00' }
     const q = delingsParametre(m).toString()
-    expect(q).toBe('s=gulskogen&s2=drammen&d2=02')
+    expect(q).toBe('s=gulskogen')
     const ut = brukDeling(modell(), lesDeling(q))
-    expect(ut.andreRute.ukedager).toEqual([0, 2])
     expect(ut.ferie).toEqual([])
     expect(ut.eksisterende.paa).toBe(false)
   })

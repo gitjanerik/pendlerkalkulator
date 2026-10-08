@@ -8,14 +8,11 @@ import Beloep from './Beloep.vue'
 
 const m = defineModel({ type: Object })
 // I veiviseren kan brukeren legge til én egen stasjon; flere finnes i Innstillinger.
-// rute «b» er den andre strekningen (egne ukedager); den deler egne stasjoner med den første.
-const props = defineProps({ kunEn: Boolean, rute: { type: String, default: 'a' } })
-const erB = props.rute === 'b'
-const pre = erB ? 'st2' : 'st'
-const valgt = computed(() => (erB ? m.value.andreRute?.strekning : m.value.strekninger[0]))
+const props = defineProps({ kunEn: Boolean })
+const pre = 'st'
+const valgt = computed(() => m.value.strekninger[0])
 const settValgt = (s) => {
-  if (erB) m.value.andreRute = { strekning: s, ukedager: m.value.andreRute?.ukedager ?? [] }
-  else m.value.strekninger = [s]
+  m.value.strekninger = [s]
 }
 const egne = computed(() => m.value.egneStasjoner ?? [])
 const valgtEgen = computed(() => egne.value.find((e) => e.id === valgt.value?.id))
@@ -157,7 +154,7 @@ const slett = async () => {
 
 <template>
   <div>
-    <div class="flex flex-wrap gap-2" role="group" :aria-label="erB ? 'Andre strekning' : 'Strekning'">
+    <div class="flex flex-wrap gap-2" role="group" aria-label="Strekning">
       <button v-for="p in PRESETS" :key="p.id" type="button" class="chip" :aria-pressed="valgt?.id === p.id" @click="velgPreset(p)">{{ p.navn }}</button>
       <span v-for="e in egne" :key="e.id" class="chip-egen" :data-valgt="valgt?.id === e.id">
         <button type="button" class="chip-egen-valg" :class="{ 'paa-aksent': valgt?.id === e.id }" :aria-pressed="valgt?.id === e.id" @click="velgEgen(e)">{{ e.navn }}</button>

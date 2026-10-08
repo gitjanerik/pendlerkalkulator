@@ -22,11 +22,7 @@ import EksisterendeBillett from './EksisterendeBillett.vue'
 const m = defineModel('modell', { type: Object })
 const stasjon = computed(() => (m.value.strekninger[0] ? stasjonsnavn(m.value.strekninger[0]) : 'stasjon'))
 const maal = computed(() => (m.value.strekninger[0] ? maalnavn(m.value.strekninger[0]) : OSLO_S))
-// Redigerer de faktiske strekningene; den andre får egen nøkkel så id-ene ikke kolliderer.
-const prisStrekninger = computed(() => [
-  ...m.value.strekninger.map((s) => ({ s, nokkel: s.id })),
-  ...(m.value.andreRute?.strekning ? [{ s: m.value.andreRute.strekning, nokkel: `${m.value.andreRute.strekning.id}-b` }] : []),
-])
+const prisStrekninger = computed(() => m.value.strekninger.map((s) => ({ s, nokkel: s.id })))
 const apen = defineModel('apen', { type: Boolean })
 // Feltene for nye priser opprettes når bryteren slås på, og for strekninger som kommer til etterpå.
 const sikreNye = () => {
