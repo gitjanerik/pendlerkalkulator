@@ -10,6 +10,7 @@ import {
   parseTidspunkt,
   datoerMellom,
   sisteSondag,
+  periodeSlutt,
 } from './dato.js'
 
 describe('dato', () => {
@@ -52,5 +53,14 @@ describe('dato', () => {
   it('siste søndag i oktober og mars', () => {
     expect(sisteSondag(2026, 10)).toBe('2026-10-25')
     expect(sisteSondag(2027, 3)).toBe('2027-03-28')
+  })
+
+  it('periodeSlutt følger Vys 24-timersdøgn over sommertid og vintertid', () => {
+    const slutt = (iso, kl, dager) => formaterTidspunkt(periodeSlutt(tidspunkt(iso, kl), dager))
+    expect(slutt('2026-10-20', '07:00', 30)).toBe('2026-11-19T06:00')
+    expect(slutt('2027-03-10', '07:00', 30)).toBe('2027-04-09T08:00')
+    expect(slutt('2026-11-02', '07:00', 30)).toBe('2026-12-02T07:00')
+    expect(slutt('2026-10-26', '07:00', 7)).toBe('2026-11-02T07:00')
+    expect(slutt('2026-10-20', '07:00', 365)).toBe('2027-10-20T07:00')
   })
 })

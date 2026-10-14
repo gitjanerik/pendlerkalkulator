@@ -1,6 +1,6 @@
 // Alle datoer er ISO-strenger (YYYY-MM-DD) og alle tidspunkter er minutter siden
-// 1970-01-01 00:00 i NAIV lokaltid. Billettvarighet er «samme klokkeslett N døgn
-// senere», så sommertid er med vilje ikke en del av regnestykket.
+// 1970-01-01 00:00 i NAIV lokaltid. Sommertid håndteres bare der det betyr noe:
+// i periodeSlutt.
 const MS_DAG = 86400000
 export const MIN_DOEGN = 1440
 
@@ -63,4 +63,21 @@ export function sisteSondag(aar, maaned) {
 export function idagIso() {
   const d = new Date()
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
+}
+
+// Vy regner periodebilletter som N × 24 timer. Krysser billetten overgangen til vintertid
+// (siste søndag i oktober, 03:00 → 02:00), utløper den én time tidligere på klokka;
+// krysser den overgangen til sommertid (siste søndag i mars, 02:00 → 03:00), én time senere.
+export function periodeSlutt(start, dager) {
+  const naiv = start + dager * MIN_DOEGN
+  const fraAar = Number(formaterTidspunkt(start).slice(0, 4))
+  const tilAar = Number(formaterTidspunkt(naiv).slice(0, 4))
+  let justering = 0
+  for (let aar = fraAar; aar <= tilAar; aar++) {
+    const vaar = tidspunkt(sisteSondag(aar, 3), '02:00')
+    const hoest = tidspunkt(sisteSondag(aar, 10), '03:00')
+    if (start < vaar && vaar < naiv) justering += 60
+    if (start < hoest && hoest < naiv) justering -= 60
+  }
+  return naiv + justering
 }

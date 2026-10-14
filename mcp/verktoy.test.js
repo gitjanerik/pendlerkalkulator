@@ -13,7 +13,7 @@ describe('MCP-verktøy', () => {
         { navn: 'Gulskogen–Oslo S', enkelt: 156, perioder: [{ dager: 7, pris: 827 }, { dager: 30, pris: 2038 }] },
       ],
     })
-    expect(r.kostnad).toBe(5027)
+    expect(r.kostnad).toBe(5183)
     expect(r.billetter.map((b) => b.dager)).toEqual([30, 30, 30])
   })
 

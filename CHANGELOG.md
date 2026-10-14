@@ -1,3 +1,9 @@
+## 2026-10-14 — v3.0.3: Sommertid og vintertid i periodebilletter
+
+Vy regner en periodebillett som et antall døgn à 24 timer. Krysser billetten overgangen til vintertid i oktober, utløper den derfor én time tidligere på klokka, og krysser den overgangen til sommertid i mars, én time senere. Beregningen tar nå hensyn til dette. Et månedskort kjøpt 19. oktober kl. 16 utløper 18. november kl. 15, så ettermiddagsturen den dagen trenger ny billett.
+
+---
+
 ## 2026-10-08 — v3.0.2: Fjernet «annen strekning noen dager»
 
 Valget om en annen strekning på enkelte ukedager er fjernet, med alt som hørte til: beregning, deling via lenke og linjedata. Appen regner igjen med én strekning om gangen. Delingslenker med `s2` og `d2` åpnes fortsatt, men den andre strekningen ignoreres.

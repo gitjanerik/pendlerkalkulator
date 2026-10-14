@@ -14,8 +14,8 @@ describe('beregn', () => {
   it('reproduserer handoff-eksempelet fra skjematilstand', () => {
     const r = beregn(handoff())
     expect(r.feil).toBeNull()
-    expect(r.resultat.kostnad).toBeCloseTo(5027.39, 1)
-    expect(r.alternativer.find((a) => a.navn === 'Bare 30-dagersbilletter').differanse).toBeCloseTo(158.19, 1)
+    expect(r.resultat.kostnad).toBeCloseTo(5183.39, 1)
+    expect(r.alternativer.find((a) => a.navn === 'Bare 30-dagersbilletter').differanse).toBeCloseTo(2.19, 1)
   })
 
   it('meldinger for ugyldig input', () => {
@@ -120,10 +120,11 @@ describe('eksisterende periodebillett', () => {
 describe('tidshorisont uten kunstig slutt', () => {
   const aar = (fra, til) => ({ ...standardModell(fra), til, inkluderAarskort: false, sisteFullPris: false })
 
-  it('et år fra 5. oktober er bare månedskort, uten 7-dagers og enkeltbilletter', () => {
+  it('et år fra 5. oktober er bare månedskort, uten 7-dagers og bare én enkeltbillett', () => {
     const r = beregn(aar('2026-10-05', '2027-10-04'))
     expect(r.resultat.billetter.map((b) => b.dager)).toEqual(Array(12).fill(30))
-    expect(r.resultat.enkeltReiser).toHaveLength(0)
+    // Vintertid gjør at et månedskort fra 5. oktober kl. 07 utløper kl. 06 4. november.
+    expect(r.resultat.enkeltReiser.map((e) => e.dato)).toEqual(['2026-10-05'])
   })
 
   it('siste billett tilpasses ikke sluttdatoen', () => {

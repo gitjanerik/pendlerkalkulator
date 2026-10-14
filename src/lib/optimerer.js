@@ -1,4 +1,4 @@
-import { MIN_DOEGN, formaterTidspunkt } from './dato.js'
+import { MIN_DOEGN, formaterTidspunkt, periodeSlutt } from './dato.js'
 import { erEstimert, prisMedNy, STANDARD_PRISOKNING } from './priser.js'
 import { anvendReis } from './reis.js'
 
@@ -59,7 +59,7 @@ function optimaliserKjerne(turer, strekninger, opsjoner = {}) {
 
     for (const { s, p } of perioder) {
       if (!tillatt(tur, s)) continue
-      const utloper = tur.tid + p.dager * MIN_DOEGN
+      const utloper = periodeSlutt(tur.tid, p.dager)
       let j = i + 1
       while (j < n && turer[j].tid <= utloper && tillatt(turer[j], s)) j++
       const billettpris = pris(p.pris, p.ny, tur)
