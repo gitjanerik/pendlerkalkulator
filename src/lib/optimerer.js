@@ -105,6 +105,7 @@ function optimaliserKjerne(turer, strekninger, opsjoner = {}) {
       andelPris: v.andelPris,
       aktivering: formaterTidspunkt(turer[i].tid),
       utloper: formaterTidspunkt(v.utloper),
+      klokkejustering: v.utloper - turer[i].tid - v.dager * MIN_DOEGN,
       foersteTur: { dato: turer[i].dato, retning: turer[i].retning },
       sisteTur: { dato: siste.dato, retning: siste.retning, tid: formaterTidspunkt(siste.tid) },
       antallTurer: dekket.length,
