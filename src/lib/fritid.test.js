@@ -26,7 +26,7 @@ describe('flyplassprisen', () => {
 })
 
 describe('flyplass før Oslo S (fra nord)', () => {
-  const reise = { fra: '2026-10-10', til: '2026-10-11' }
+  const reise = { fra: '2026-10-17', til: '2026-10-18' }
   const nord = (m, lufthavn = 200) => ({ ...m, strekninger: [{ ...m.strekninger[0], flyplass: "foer", lufthavn }] })
 
   it('periodebillett dekker hele veien, uten tillegg', () => {
@@ -48,7 +48,7 @@ describe('flyplass før Oslo S (fra nord)', () => {
 })
 
 describe('beregn med fritidsreiser', () => {
-  const reise = { fra: '2026-10-10', til: '2026-10-11' }
+  const reise = { fra: '2026-10-17', til: '2026-10-18' }
   it('periodebillett dekker strekningen, så bare tillegget kjøpes', () => {
     const base = beregn(handoff())
     const r = beregn({ ...handoff(), fritidsreiser: [reise] })

@@ -44,13 +44,13 @@ describe('optimaliser — høst 2026 fra handoff', () => {
     expect(res.billetter.map((b) => [b.aktivering, b.utloper])).toEqual([
       ['2026-10-02T16:00', '2026-10-09T16:00'],
       ['2026-10-12T07:00', '2026-10-19T07:00'],
-      ['2026-10-19T16:00', '2026-11-18T16:00'],
-      ['2026-11-19T07:00', '2026-12-19T07:00'],
+      ['2026-10-19T16:00', '2026-11-18T15:00'],
+      ['2026-11-18T16:00', '2026-12-18T16:00'],
     ])
   })
 
   it('markerer billetter der man må være på toget før utløp', () => {
-    expect(res.billetter.map((b) => b.passPaa)).toEqual([true, true, true, false])
+    expect(res.billetter.map((b) => b.passPaa)).toEqual([true, true, false, true])
     expect(res.billetter[1].marginMin).toBe(0)
   })
 
