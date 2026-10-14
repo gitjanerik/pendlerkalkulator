@@ -49,6 +49,10 @@ describe('optimaliser — høst 2026 fra handoff', () => {
     ])
   })
 
+  it('oppgir klokkejustering når billetten krysser vintertid', () => {
+    expect(res.billetter.map((b) => b.klokkejustering)).toEqual([0, 0, -60, 0])
+  })
+
   it('markerer billetter der man må være på toget før utløp', () => {
     expect(res.billetter.map((b) => b.passPaa)).toEqual([true, true, false, true])
     expect(res.billetter[1].marginMin).toBe(0)

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { kr, kiloKr, norskDato, norskDatoLang, norskTidspunkt, dagerTekst, flertall } from './format.js'
+import { kr, kiloKr, norskDato, norskDatoLang, norskTidspunkt, dagerTekst, flertall, klokkejusteringTekst } from './format.js'
 
 describe('format', () => {
   it('hele dato- og månedsnavn for skjermlesere', () => {
@@ -45,5 +45,13 @@ describe('kiloKr', () => {
     expect(kiloKr(5000)).toBe('5k')
     expect(kiloKr(3740)).toBe('3,7k')
     expect(kiloKr(950)).toBe('1k')
+  })
+
+  it('merknad for sommertid og vintertid', () => {
+    expect(klokkejusteringTekst(0)).toBe('')
+    expect(klokkejusteringTekst(-60)).toBe('Går over til vintertid, så billetten utløper én time tidligere på klokka.')
+    expect(klokkejusteringTekst(60)).toBe('Går over til sommertid, så billetten utløper én time senere på klokka.')
+    expect(klokkejusteringTekst(-60, true)).toBe('−1 t vintertid')
+    expect(klokkejusteringTekst(60, true)).toBe('+1 t sommertid')
   })
 })

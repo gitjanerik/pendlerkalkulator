@@ -1,7 +1,7 @@
 <script setup>
 import { computed, ref } from 'vue'
 import { dagNr, isoFraDagNr, ukedag } from '../lib/dato.js'
-import { kr, norskTidspunkt, norskDato, norskDatoLang, dagerTekst, MAANED_NAVN, UKEDAG_NAVN, UKEDAG_LANGE } from '../lib/format.js'
+import { kr, klokkejusteringTekst, norskTidspunkt, norskDato, norskDatoLang, dagerTekst, MAANED_NAVN, UKEDAG_NAVN, UKEDAG_LANGE } from '../lib/format.js'
 import { isoUke, utnyttelse } from '../lib/billetter.js'
 import Estimat from './Estimat.vue'
 
@@ -170,7 +170,7 @@ const uker = computed(() => {
           class="segment absolute top-0 h-7 rounded-sm border-2 border-[var(--color-accent)]"
           :class="{ valgt: valgt === s.i }"
           :style="{ left: s.left + '%', width: s.width + '%', background: fyll(s.dager) }"
-          :aria-label="`${dagerTekst(s.dager)}, ${kr(s.pris)}${s.estimert ? ' (estimert)' : ''}, aktiveres ${norskDatoLang(s.aktivering.slice(0, 10))}`"
+          :aria-label="`${dagerTekst(s.dager)}, ${kr(s.pris)}${s.estimert ? ' (estimert)' : ''}, aktiveres ${norskDatoLang(s.aktivering.slice(0, 10))}${s.klokkejustering ? `, ${klokkejusteringTekst(s.klokkejustering, true)}` : ''}`"
           :aria-pressed="valgt === s.i"
           @click="velg(s.i)"
         ></button>
@@ -261,7 +261,11 @@ const uker = computed(() => {
           <p class="font-semibold">{{ dagerTekst(detalj.dager) }} · {{ kr(detalj.pris) }}<Estimat v-if="detalj.estimert" /></p>
           <dl class="mt-1 grid grid-cols-[auto_1fr] gap-x-3 text-[var(--color-ink-2)]">
             <dt>Aktiveres</dt><dd>{{ norskTidspunkt(detalj.aktivering) }}</dd>
-            <dt>Utløper</dt><dd>{{ norskTidspunkt(detalj.utloper) }}</dd>
+            <dt>Utløper</dt>
+            <dd>
+              {{ norskTidspunkt(detalj.utloper) }}
+              <span v-if="detalj.klokkejustering" class="block text-[var(--color-ink-3)]">{{ klokkejusteringTekst(detalj.klokkejustering) }}</span>
+            </dd>
             <dt>Dekker</dt><dd>{{ detalj.antallTurer }} reiser</dd>
           </dl>
           <p v-if="detalj.passPaa" class="mt-2 text-[var(--color-warn)]"><span aria-hidden="true">⚠ </span>Tett margin: aktiver billetten i god tid.</p>
@@ -294,7 +298,7 @@ const uker = computed(() => {
               </td>
               <td class="px-3 py-2">{{ r.antallTurer }}</td>
               <td class="px-3 py-2">{{ dagTekst(r.fra) }}<span class="block text-sm text-[var(--color-ink-3)]">{{ r.klokkeFra }}</span></td>
-              <td class="px-3 py-2">{{ dagTekst(r.til) }}<span class="block text-sm text-[var(--color-ink-3)]">{{ r.klokkeTil }}</span></td>
+              <td class="px-3 py-2">{{ dagTekst(r.til) }}<span class="block text-sm text-[var(--color-ink-3)]">{{ r.klokkeTil }}<template v-if="r.klokkejustering"> · <abbr :title="klokkejusteringTekst(r.klokkejustering)" class="no-underline">{{ klokkejusteringTekst(r.klokkejustering, true) }}</abbr></template></span></td>
               <td class="px-3 py-2">{{ dagerTekst(r.dager) }}</td>
               <td class="px-3 py-2">{{ kr(r.pris) }}<Estimat v-if="r.estimert" /></td>
             </tr>
@@ -311,6 +315,7 @@ const uker = computed(() => {
         </table>
       </div>
       <p class="mt-2 text-sm text-[var(--color-ink-3)]">Utnyttelse = reisene billetten dekker, delt på reisene en full arbeidsuke (man–fre) ville gitt i gyldighetstiden. Hjemmekontor, ferie og fridager gir lavere tall.<template v-if="sum.estimert"> * Estimert pris med prisøkning.</template></p>
+      <p v-if="rader.some((r) => r.klokkejustering)" class="mt-2 text-sm text-[var(--color-ink-3)]">Vy regner periodebilletter i hele døgn à 24 timer. Over overgangen til vintertid utløper billetten derfor én time tidligere på klokka, og over sommertid én time senere.</p>
       <p class="mt-2 text-sm text-[var(--color-ink-3)]">Summen er hele billettprisene. Hovedtallet regner siste billett forholdsmessig og tar også med enkeltbilletter og tillegg.</p>
     </template>
 

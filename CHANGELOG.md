@@ -1,3 +1,9 @@
+## 2026-10-14 — v3.0.4: Sommertid og vintertid vises i billettoversikten
+
+Når en periodebillett går over til vintertid eller sommertid, sier detaljene i tidslinjen og kalenderen fra om at den utløper én time tidligere eller senere på klokka. Tabellen viser «−1 t vintertid» eller «+1 t sommertid» under utløpstidspunktet, med en kort forklaring under tabellen.
+
+---
+
 ## 2026-10-14 — v3.0.3: Sommertid og vintertid i periodebilletter
 
 Vy regner en periodebillett som et antall døgn à 24 timer. Krysser billetten overgangen til vintertid i oktober, utløper den derfor én time tidligere på klokka, og krysser den overgangen til sommertid i mars, én time senere. Beregningen tar nå hensyn til dette. Et månedskort kjøpt 19. oktober kl. 16 utløper 18. november kl. 15, så ettermiddagsturen den dagen trenger ny billett.

@@ -37,3 +37,11 @@ export function norskTidspunkt(tekst) {
   const [dato, klokke] = tekst.split('T')
   return `${norskDato(dato)} kl. ${klokke}`
 }
+
+// Minutter periodeSlutt flyttet utløpet på klokka: negativt over vintertid, positivt over sommertid.
+export function klokkejusteringTekst(min, kort = false) {
+  if (!min) return ''
+  const tid = min < 0 ? 'vintertid' : 'sommertid'
+  if (kort) return `${min < 0 ? '−' : '+'}1 t ${tid}`
+  return `Går over til ${tid}, så billetten utløper én time ${min < 0 ? 'tidligere' : 'senere'} på klokka.`
+}
